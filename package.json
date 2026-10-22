@@ -1,12 +1,8 @@
 {
   "name": "sregrr55-recovered-frontend",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
-  "description": "Partial static frontend recovery from a browser HAR capture; not the original full source project.",
-  "engines": {
-    "node": ">=18"
-  },
-  "scripts": {
-    "start": "node server.js"
-  }
+  "description": "Recovered responsive frontend preview with Node server for Render",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node server.js" }
 }

@@ -1,0 +1,15 @@
+(()=>{
+const $=(s)=>document.querySelector(s); const $$=(s)=>document.querySelectorAll(s);
+const modal=$('#modal'), form=$('#auth-form'), message=$('#form-message'); let mode='login',toastTimer;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
+function setMode(next){mode=next;$$('[data-auth]').forEach(b=>b.classList.toggle('selected',b.dataset.auth===mode));$('#modal-title').textContent=mode==='login'?'Welcome back':'Create your account';$('.modal-desc').textContent=mode==='login'?'Enter your details to continue.':'Set up your preview account.';$('#auth-submit').textContent=mode==='login'?'Log in (preview)':'Register (preview)';$('#confirm-wrap').hidden=mode!=='register';$('#confirm').required=mode==='register';message.textContent='';message.className='form-message'}
+function openModal(next='login'){modal.hidden=false;document.body.style.overflow='hidden';setMode(next);setTimeout(()=>$('#phone').focus(),60)}
+function closeModal(){modal.hidden=true;document.body.style.overflow='';form.reset();message.textContent=''}
+$$('[data-page]').forEach(b=>b.addEventListener('click',()=>{const page=b.dataset.page;if(page==='help'){toast('Help centre is not connected in this frontend preview.');return}openModal(page)}));
+$$('[data-auth]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.auth)));
+$('#modal-close').addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal()});
+$('.close-notice').addEventListener('click',()=>$('.notice').remove());
+$$('[data-game]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.game+' is a placeholder in this recovered frontend.')));
+$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{const tab=b.dataset.tab;$$('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));if(tab==='account'){openModal('login');return}if(tab==='home'){window.scrollTo({top:0,behavior:'smooth'});return}if(tab==='promotion'){document.querySelector('.promo').scrollIntoView({behavior:'smooth',block:'center'});toast('Promotions preview');return}if(tab==='invite'){toast('Invite feature needs the original backend.');return}if(tab==='wallet'){toast('Wallet is not connected in this preview.');return}}));
+form.addEventListener('submit',e=>{e.preventDefault();const phone=$('#phone').value.trim(),pass=$('#password').value,confirm=$('#confirm').value;if(!/^\d{10}$/.test(phone)){message.textContent='Enter a valid 10-digit Indian mobile number.';return}if(pass.length<6){message.textContent='Password must contain at least 6 characters.';return}if(mode==='register'&&pass!==confirm){message.textContent='Passwords do not match.';return}message.className='form-message success';message.textContent=mode==='register'?'Form looks valid. Real account creation needs a backend.':'Details look valid. Real login needs a backend.';toast(mode==='register'?'Preview registration checked':'Preview login checked')});
+})();

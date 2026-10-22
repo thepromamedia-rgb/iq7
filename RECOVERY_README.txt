@@ -1,11 +1,3 @@
-Recovered static frontend resources from a browser HAR capture
+IQ63 has been rebuilt as a clean standalone app using the recovered ZIP's project structure and visual assets as a starting point. The current entry point is index.html and the current frontend is app.js/app.css; the incomplete original compiled application is retained only as unused reference assets.
 
-This is NOT the original project ZIP. It contains only same-origin frontend files
-that were present in the captured network log (HTML, JavaScript, CSS, and static
-assets). Backend source code, database schema, server-side logic, build setup,
-environment variables, and full original source files cannot be recovered from
-this capture alone. API responses and third-party resources were intentionally
-excluded.
-
-The captured homepage title was "lottery". Confirm that this is the intended
-website before using these files as the basis for a rebuild.
+The active app includes server-backed registration/login, a virtual-credit account ledger and a playable Heads/Tails Coin Flip game. It does not connect to the original third-party API and it does not process real-money payments.

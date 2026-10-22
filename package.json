@@ -1,8 +1,12 @@
 {
-  "name": "sregrr55-recovered-frontend",
-  "version": "1.1.0",
+  "name": "iq63-coinflip-app",
+  "version": "2.0.0",
   "private": true,
-  "description": "Recovered responsive frontend preview with Node server for Render",
-  "engines": { "node": ">=18" },
-  "scripts": { "start": "node server.js" }
+  "description": "IQ63 server-backed accounts, virtual-credit wallet ledger and Coin Flip demo game",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
 }

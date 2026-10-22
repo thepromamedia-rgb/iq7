@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sregrr55-recovered-frontend
+    name: iq63
     runtime: node
     plan: free
     buildCommand: npm install
@@ -9,3 +9,5 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: SESSION_SECRET
+        generateValue: true

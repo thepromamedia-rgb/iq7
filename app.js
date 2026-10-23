@@ -1,70 +1,457 @@
-(()=>{'use strict';
-const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));const coinflipPanel=$('#coinflip-panel');let user=null,mode='login',choice='heads',busy=false,adminOn=false,toastTimer;const modal=$('#modal'),originalModal=modal.innerHTML;
-function toast(s){let t=$('#toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000)}function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function money(n){return new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Number(n)||0)+' credits'}
-async function api(url,opts={}){let r=await fetch(url,{...opts,credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})}}),d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||'Request failed.');return d}
-function setMode(m){mode=m;$$('[data-auth]').forEach(b=>b.classList.toggle('selected',b.dataset.auth===mode));$('#modal-title').textContent=mode==='login'?'Welcome back':'Create your IQ63 account';$('.modal-desc').textContent=mode==='login'?'Enter your mobile number and password.':'Add your name and create an account.';$('#auth-submit').textContent=mode==='login'?'Log in':'Create account';$('#confirm-wrap').hidden=mode!=='register';$('#confirm').required=mode==='register';$('#name-wrap').hidden=mode!=='register';$('#full-name').required=mode==='register';$('.auth-tabs').hidden=!!user;$('#form-message').textContent=''}
-function wireModal(){$$('[data-auth]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.auth)));$('#modal-close').addEventListener('click',closeModal);$('#auth-form').addEventListener('submit',handleAuth);$$('[data-eye]').forEach(b=>b.addEventListener('click',()=>{let i=$('#'+b.dataset.eye);i.type=i.type==='password'?'text':'password';b.textContent=i.type==='text'?'◎':'◉'}))}
-function openModal(m='login'){modal.innerHTML=originalModal;modal.hidden=false;document.body.style.overflow='hidden';wireModal();setMode(m);let ref=new URLSearchParams(location.search).get('ref');if(ref&&$('#auth-form'))$('#auth-form').dataset.ref=ref;setTimeout(()=>$('#'+(m==='register'?'full-name':'phone'))?.focus(),50)}function closeModal(){modal.hidden=true;document.body.style.overflow='';modal.innerHTML=originalModal}
-async function handleAuth(e){e.preventDefault();let phone=$('#phone').value.replace(/\D/g,''),password=$('#password').value,confirm=$('#confirm').value,name=$('#full-name').value.trim(),msg=$('#form-message'),btn=$('#auth-submit');const fail=s=>{msg.textContent=s;msg.className='form-message'};if(mode==='register'&&name.length<2)return fail('Please enter your name.');if(!/^\d{10}$/.test(phone))return fail('Enter a valid 10-digit mobile number.');if(password.length<8)return fail('Password must be at least 8 characters.');if(mode==='register'&&password!==confirm)return fail('Passwords do not match.');btn.disabled=true;btn.textContent='Please wait…';try{let payload={phone,password};if(mode==='register'){payload.name=name;payload.ref=$('#auth-form').dataset.ref||new URLSearchParams(location.search).get('ref')||''}let d=await api('/api/'+mode,{method:'POST',body:JSON.stringify(payload)});user=d.user;msg.textContent=d.message||'Login successful';msg.className='form-message success';setTimeout(()=>{closeModal();updateHeader();renderAccount();renderWallet();renderInvite();updateGameMessage();showPage('account');toast(mode==='register'?'Account created successfully.':'Logged in successfully.')},180)}catch(err){fail(err.message)}finally{btn.disabled=false;btn.textContent=mode==='login'?'Log in':'Create account'}}
-function updateHeader(){let box=$('#top-actions');if(!box)return;box.innerHTML=user?`<span class="user-pill">${safe(user.name)}</span><button class="btn btn-ghost" id="header-logout">Log out</button>`:`<button class="btn btn-ghost" data-page="login">Log in</button><button class="btn btn-gold" data-page="register">Register</button>`;$$('[data-page="login"],[data-page="register"]').forEach(b=>{b.hidden=!!user});$('#header-logout')?.addEventListener('click',logout);$$('#top-actions [data-page]').forEach(b=>b.addEventListener('click',()=>openModal(b.dataset.page)))}
-function renderAccount(){let p=$('#account-panel');if(!user){p.hidden=true;p.innerHTML='';return}p.hidden=false;p.innerHTML=`<div class="account-head"><div><span class="eyebrow">MY IQ63 ACCOUNT</span><h2>${safe(user.name)}</h2><p>UID: ${safe(user.uid)} · Mobile: +91 ${safe(user.phone)}</p></div><button class="btn btn-ghost" id="logout-btn">Log out</button></div><div class="wallet-card"><div><span>Available credits</span><strong>${money(user.balance)}</strong><small>Game credits only · no cash value</small></div><span class="wallet-symbol">◈</span></div><div class="account-grid"><article><span>User UID</span><strong>${safe(user.uid)}</strong><button class="mini-btn" data-copy="${safe(user.uid)}">Copy UID</button></article><article><span>Invite code</span><strong>${safe(user.inviteCode)}</strong><button class="mini-btn" data-copy="${safe(user.inviteCode)}">Copy code</button></article><article><span>Name</span><strong>${safe(user.name)}</strong><small>Profile name</small></article><article><span>Account created</span><strong>${safe(new Date(user.createdAt).toLocaleDateString('en-IN'))}</strong><small>Saved on server</small></article></div><div class="history-head"><h3>Wallet & game history</h3><button class="mini-btn" id="refresh-history">Refresh</button></div><div class="history-list">${(user.transactions||[]).length?user.transactions.slice(0,30).map(t=>`<div class="history-row"><span class="history-dot">${t.kind==='game'?'🪙':'•'}</span><div class="history-main"><strong>${safe(t.title)}</strong><small>${safe(new Date(t.at).toLocaleString('en-IN'))} ${t.detail?'· '+safe(t.detail):''}</small></div><b>${t.amount>0?'+':''}${safe(t.amount)} cr</b></div>`).join(''):'<p class="empty-history">No activity yet.</p>'}</div><p class="wallet-warning">Game credits have no cash value. Demo credit requests are processed manually by the admin; no payment is made.</p>`;$('#logout-btn').addEventListener('click',logout);$('#refresh-history').addEventListener('click',refreshMe);$$('[data-copy]').forEach(b=>b.addEventListener('click',()=>copyText(b.dataset.copy)))}
-async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copied')}catch{toast(t)}}async function refreshMe(){try{user=(await api('/api/me')).user;updateHeader();renderAccount();renderWallet();renderInvite();renderPromotionReferral()}catch{user=null;updateHeader();renderAccount()}updateGameMessage()}
-async function logout(){try{await api('/api/logout',{method:'POST',body:'{}'})}catch{}user=null;updateHeader();renderAccount();renderWallet();renderInvite();renderPromotionReferral();updateGameMessage();showPage('home');toast('Logged out')}
-function renderInvite(){let p=$('#invite-page');if(!user){p.innerHTML=`<button class="btn btn-ghost section-back" data-back>← Back</button><h2>Invite friends</h2><p>Log in to get your personal referral link and UID.</p><button class="btn btn-gold" id="invite-login">Log in / Register</button>`;$('#invite-login').onclick=()=>openModal('login');return}let link=location.origin+'/?ref='+encodeURIComponent(user.inviteCode);p.innerHTML=`<button class="btn btn-ghost section-back" data-back>← Back</button><span class="eyebrow">INVITE & EARN</span><h2>Your referral details</h2><div class="page-card-grid"><div class="page-card"><small>Your name</small><strong>${safe(user.name)}</strong></div><div class="page-card"><small>Your UID</small><strong>${safe(user.uid)}</strong><button class="mini-btn" data-copy="${safe(user.uid)}">Copy UID</button></div><div class="page-card"><small>Invite code</small><strong>${safe(user.inviteCode)}</strong><button class="mini-btn" data-copy="${safe(user.inviteCode)}">Copy code</button></div><div class="page-card"><small>Referral link</small><strong style="font-size:13px;overflow-wrap:anywhere">${safe(link)}</strong><button class="mini-btn" id="copy-ref-link">Copy referral link</button></div></div><p class="wallet-warning">Friends who register using your link are associated with your account. No cash referral reward is enabled in this demo.</p>`;$('#copy-ref-link').onclick=()=>copyText(link);$$('#invite-page [data-copy]').forEach(b=>b.onclick=()=>copyText(b.dataset.copy));p.querySelector('[data-back]').onclick=()=>showPage('home')}
-function renderWallet(){let p=$('#wallet-page');if(!user){p.innerHTML=`<button class="btn btn-ghost section-back" data-back>← Back</button><h2>Demo Wallet</h2><p>Log in to view virtual credits and submit demo requests.</p><button class="btn btn-gold" id="wallet-login">Log in / Register</button>`;$('#wallet-login').onclick=()=>openModal('login');return}p.innerHTML=`<button class="btn btn-ghost section-back" data-back>← Back</button><span class="eyebrow">VIRTUAL WALLET</span><h2>My Wallet</h2><div class="wallet-card"><div><span>Available virtual credits</span><strong>${money(user.balance)}</strong><small>Demo credits only. No payments or cash payouts.</small></div><span class="wallet-symbol">◈</span></div><div class="page-card"><strong>Request demo credits</strong><p class="muted">Send a request to the admin. This does not make a payment.</p><form id="deposit-form"><label for="deposit-amount">Virtual credits</label><input id="deposit-amount" type="number" min="1" max="100000" step="1" required placeholder="Enter credits"><button class="btn btn-gold" type="submit">Request demo credits</button><p id="deposit-message" class="form-message"></p></form></div><div class="page-card"><strong>Request demo redemption</strong><p class="muted">Virtual credits only; no cash will be paid. Admin can approve or reject.</p><form id="withdraw-form"><label for="withdraw-amount">Credits to redeem</label><input id="withdraw-amount" type="number" min="1" max="100000" step="1" required placeholder="Enter credits"><button class="btn btn-outline" type="submit">Submit demo request</button><p id="withdraw-message" class="form-message"></p></form></div><div class="page-card"><h3>Wallet history</h3><div class="history-list">${(user.transactions||[]).filter(t=>['deposit','withdrawal','admin','game'].includes(t.kind)).slice(0,30).map(t=>`<div class="history-row"><div class="history-main"><strong>${safe(t.title)}</strong><small>${safe(new Date(t.at).toLocaleString('en-IN'))} · ${safe(t.detail||'')}</small></div><b>${Number(t.amount)>0?'+':''}${Number(t.amount||0)} cr</b></div>`).join('')||'<p class="muted">No wallet activity yet.</p>'}</div></div><div class="page-card"><h3>Request history</h3><div class="history-list">${[...(user.walletRequests?.credits||[]).map(x=>({...x,kind:'Demo credits'})),...(user.walletRequests?.redemptions||[]).map(x=>({...x,kind:'Demo redemption'}))].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,30).map(x=>`<div class="history-row"><div class="history-main"><strong>${safe(x.kind)} · ${Number(x.amount)} credits</strong><small>${safe(new Date(x.createdAt).toLocaleString('en-IN'))}</small></div><em class="status-pill ${safe(x.status)}">${safe(x.status)}</em></div>`).join('')||'<p class="muted">No requests yet.</p>'}</div></div><p class="wallet-warning">Demo environment only. No real payment, cash withdrawal, or cash value is provided.</p>`;p.querySelector('[data-back]').onclick=()=>showPage('home');$('#deposit-form').addEventListener('submit',async e=>{e.preventDefault();let btn=e.submitter,msg=$('#deposit-message');btn.disabled=true;try{let d=await api('/api/wallet/deposit',{method:'POST',body:JSON.stringify({amount:Number($('#deposit-amount').value)})});msg.textContent=d.message;msg.className='form-message success';$('#deposit-form').reset();await refreshMe();renderWallet()}catch(err){msg.textContent=err.message;msg.className='form-message'}finally{btn.disabled=false}});$('#withdraw-form').addEventListener('submit',async e=>{e.preventDefault();let btn=e.submitter,msg=$('#withdraw-message');btn.disabled=true;try{let d=await api('/api/wallet/request',{method:'POST',body:JSON.stringify({amount:Number($('#withdraw-amount').value)})});msg.textContent=d.message;msg.className='form-message success';$('#withdraw-form').reset();await refreshMe();renderWallet()}catch(err){msg.textContent=err.message;msg.className='form-message'}finally{btn.disabled=false}})}
-function renderPromotionReferral(){let info=$('#promotion-referral-info'),btn=$('#promotion-referral-action');if(!info||!btn)return;if(!user){info.textContent='Log in to view your personal UID and referral link.';btn.textContent='Log in / Register';btn.onclick=()=>openModal('login');return}let link=location.origin+'/?ref='+encodeURIComponent(user.inviteCode);info.innerHTML=`Name: <b>${safe(user.name)}</b><br>UID: <b>${safe(user.uid)}</b><br>Invite code: <b>${safe(user.inviteCode)}</b><br>Referral link: <b>${safe(link)}</b>`;btn.textContent='Copy referral link';btn.onclick=()=>copyText(link)}
-function showPage(page){if(!['home','promotion','invite','wallet','account','games','admin'].includes(page))page='home';document.body.dataset.currentPage=page;const home=$('#home-content');if(home)home.hidden=page!=='home';$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===page));$('#promotion-page').hidden=page!=='promotion';$('#invite-page').hidden=page!=='invite';$('#wallet-page').hidden=page!=='wallet';$('#games-page').hidden=page!=='games';$('#admin-page').hidden=page!=='admin';if(page==='invite')renderInvite();if(page==='promotion')renderPromotionReferral();if(page==='wallet')renderWallet();if(page==='account'){if(!user)openModal('login');else renderAccount()}if(page==='admin')renderAdminShell();window.scrollTo({top:0,behavior:'smooth'})}
-function updateGameMessage(){let m=$('#game-message');if(m)m.textContent=user?`Balance: ${money(user.balance)}. Choose Heads or Tails and flip!`:'Log in to play and save your game history.'}
-function appendGameHistory(parent){let rows=(user?.transactions||[]).filter(t=>t.kind==='game').slice(0,20);let el=document.createElement('section');el.className='game-history';el.innerHTML=`<div class="game-history-head"><div><span class="eyebrow">RECENT ACTIVITY</span><h3>Game History</h3></div><button class="mini-btn" id="game-history-refresh">Refresh</button></div><div class="history-list">${rows.length?rows.map(t=>`<div class="history-row"><span class="history-dot">🪙</span><div class="history-main"><strong>${safe(t.title)}</strong><small>${safe(new Date(t.at).toLocaleString('en-IN'))}${t.detail?' · '+safe(t.detail):''}</small></div><b>${t.amount>0?'+':''}${safe(t.amount)} cr</b></div>`).join(''):'<p class="empty-history">No games played yet. Your game history will appear here.</p>'}</div>`;parent.appendChild(el);el.querySelector('#game-history-refresh').onclick=async()=>{await refreshMe();renderGame(document.body.dataset.activeGame||'coinflip')};}
-function renderGame(type){document.body.dataset.activeGame=type;let p=$('#games-page');p.innerHTML=`<div class="game-topline"><button class="btn btn-ghost section-back" id="games-back">← Game Lobby</button><div class="game-balance"><small>YOUR BALANCE</small><strong id="game-balance-value">${user?money(user.balance):'—'}</strong><span>credits</span></div></div><div class="game-page-title"><span class="eyebrow">IQ63 GAMES</span><h2>${({coinflip:'Coin Flip',dice:'Dice Roll',lucky:'Lucky Number',rps:'Rock Paper Scissors',aviator:'Aviator'})[type]||'Game'}</h2></div>`;p.querySelector('#games-back').onclick=()=>showPage('home');if(type==='coinflip'){p.appendChild(coinflipPanel);updateGameMessage();appendGameHistory(p);return}if(type==='aviator'){p.insertAdjacentHTML('beforeend',`<div class="mini-game-panel aviator-panel"><div class="aviator-stage" id="aviator-stage"><div class="aviator-sky">✦ · · · ✦</div><div class="aviator-multiplier" id="aviator-multiplier">1.00×</div><div class="aviator-plane" id="aviator-plane">✈</div><p id="aviator-status">Demo flight ready</p></div><div class="mini-game-options"><label for="aviator-bet">Bet amount (virtual credits)</label><input id="aviator-bet" type="number" min="1" max="10000" step="1" value="25"><label for="aviator-cashout">Auto cash-out multiplier</label><input id="aviator-cashout" type="number" min="1.01" max="100" step="0.01" value="2.00"><p class="muted">A short simulated flight animation. Virtual credits only; no cash value.</p><button class="btn btn-gold btn-large" id="aviator-play">Start demo flight</button><p class="form-message" id="aviator-result" aria-live="polite"></p></div></div>`);appendGameHistory(p);$('#aviator-play').onclick=async()=>{if(busy)return;if(!user){openModal('login');return}let amount=Number($('#aviator-bet').value),cashout=Number($('#aviator-cashout').value);if(!Number.isSafeInteger(amount)||amount<1||amount>10000||!Number.isFinite(cashout)||cashout<1.01||cashout>100)return toast('Check bet and cash-out multiplier.');busy=true;let btn=$('#aviator-play'),stage=$('#aviator-stage'),plane=$('#aviator-plane'),mult=$('#aviator-multiplier'),status=$('#aviator-status'),result=$('#aviator-result');btn.disabled=true;status.textContent='Plane taking off…';result.textContent='Flight running…';stage.classList.remove('crashed','cashed-out');stage.classList.add('flying');plane.style.transition='transform 1.8s cubic-bezier(.2,.65,.25,1)';plane.style.transform='translate(0,0) rotate(0deg)';mult.textContent='1.00×';let started=performance.now(),frame=0;const animate=now=>{let t=Math.min(1,(now-started)/1800),ease=1-Math.pow(1-t,2.3),shown=1+ease*2.6;mult.textContent=shown.toFixed(2)+'×';plane.style.transform='translate('+Math.round(ease*190)+'px,'+Math.round(-ease*86)+'px) rotate(-'+Math.round(ease*22)+'deg)';if(t<1)frame=requestAnimationFrame(animate)};frame=requestAnimationFrame(animate);try{let d=await api('/api/aviator',{method:'POST',body:JSON.stringify({amount,cashout})});await new Promise(r=>setTimeout(r,Math.max(0,1800-(performance.now()-started))));cancelAnimationFrame(frame);user=d.user;mult.textContent=Number(d.crash).toFixed(2)+'×';status.textContent=d.message;plane.style.transition='transform .35s ease-out';if(!d.won){plane.style.transform='translate(230px,-115px) rotate(-35deg) scale(.65)';stage.classList.add('crashed')}else{plane.style.transform='translate(190px,-86px) rotate(-22deg)';stage.classList.add('cashed-out')}result.textContent=d.message+' · '+(d.won?'+'+d.delta:'−'+amount)+' credits · Balance '+money(user.balance);result.className='form-message '+(d.won?'success':'');updateHeader();renderAccount();let old=p.querySelector('.game-history');if(old)old.remove();appendGameHistory(p);toast(d.message)}catch(e){cancelAnimationFrame(frame);result.textContent=e.message;status.textContent='Flight stopped';plane.style.transform='translate(0,0)';toast(e.message)}finally{busy=false;btn.disabled=false;stage.classList.remove('flying')}};return}let configs={dice:{label:'Choose your prediction',choices:[['low','Low (1–3)'],['high','High (4–6)']],hint:'Roll 1–6. Correct prediction pays 2× your bet.'},lucky:{label:'Pick the lucky number',choices:[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']],hint:'Pick one number from 1–6. Exact match pays 5× your bet.'},rps:{label:'Choose your move',choices:[['rock','✊ Rock'],['paper','✋ Paper'],['scissors','✌️ Scissors']],hint:'Beat the computer to receive 2× your bet. Draw returns your bet.'}};let c=configs[type];p.insertAdjacentHTML('beforeend',`<div class="mini-game-panel"><div class="mini-game-options"><label>${c.label}</label><div class="mini-game-choices">${c.choices.map((v,i)=>`<button type="button" class="mini-game-choice ${i===0?'selected':''}" data-game-choice="${v[0]}">${v[1]}</button>`).join('')}</div><label for="mini-game-bet">Bet amount (credits)</label><input id="mini-game-bet" type="number" min="1" max="10000" step="1" value="50"><p class="muted">${c.hint}</p><button class="btn btn-gold btn-large" id="mini-game-play">Play now</button><p class="form-message" id="mini-game-result" aria-live="polite"></p></div><div class="mini-game-visual" id="mini-game-visual">${type==='dice'?'🎲':type==='lucky'?'🍀':'✊'}</div></div>`);let selected=String(c.choices[0][0]);$$('[data-game-choice]').forEach(b=>b.onclick=()=>{selected=b.dataset.gameChoice;$$('[data-game-choice]').forEach(x=>x.classList.toggle('selected',x===b))});appendGameHistory(p);$('#mini-game-play').onclick=async()=>{if(busy)return;if(!user){openModal('login');return}let amount=Number($('#mini-game-bet').value);if(!Number.isSafeInteger(amount)||amount<1||amount>10000)return toast('Bet must be 1–10,000 whole credits.');busy=true;let btn=$('#mini-game-play');btn.disabled=true;$('#mini-game-result').textContent='Playing…';try{let d=await api('/api/play-game',{method:'POST',body:JSON.stringify({type,choice:selected,amount})});user=d.user;let bal=$('#game-balance-value');if(bal)bal.textContent=money(user.balance);$('#mini-game-visual').textContent=d.display;$('#mini-game-result').textContent=`${d.resultText} · ${d.won?'WIN':d.draw?'DRAW':'LOSS'} · Balance: ${money(user.balance)}`;$('#mini-game-result').className='form-message '+(d.won||d.draw?'success':'');updateHeader();renderAccount();let oldHistory=p.querySelector('.game-history');if(oldHistory)oldHistory.remove();appendGameHistory(p);toast(d.message)}catch(e){$('#mini-game-result').textContent=e.message}finally{busy=false;btn.disabled=false}}}
-$$('[data-choice]').forEach(b=>b.addEventListener('click',()=>{choice=b.dataset.choice;$$('[data-choice]').forEach(x=>x.classList.toggle('selected',x===b))}));$$('[data-bet]').forEach(b=>b.addEventListener('click',()=>$('#bet-amount').value=b.dataset.bet));$('#coinflip-form').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;if(!user){openModal('login');return}let amount=Number($('#bet-amount').value);if(!Number.isSafeInteger(amount)||amount<1||amount>10000)return toast('Bet must be 1–10,000 whole credits.');busy=true;let btn=$('#flip-button');btn.disabled=true;btn.textContent='Flipping…';$('#coin-display').classList.add('flipping');$('#flip-result').textContent='The coin is in the air…';try{let d=await api('/api/coinflip',{method:'POST',body:JSON.stringify({choice,amount})});user=d.user;let bal=$('#game-balance-value');if(bal)bal.textContent=money(user.balance);await new Promise(r=>setTimeout(r,350));$('#coin-display').classList.remove('flipping');$('#coin-display').classList.toggle('tails-face',d.result==='tails');$('#coin-display').innerHTML=`<span>${d.result==='heads'?'H':'T'}</span>`;$('#flip-result').textContent=`${d.result.toUpperCase()} — ${d.won?'YOU WIN!':'You lose this round'}`;$('#flip-result').className='flip-result '+(d.won?'win':'loss');updateHeader();renderAccount();updateGameMessage();let oldHistory=$('#games-page .game-history');if(oldHistory)oldHistory.remove();appendGameHistory($('#games-page'));toast(d.won?`Won ${amount} credits`:`Lost ${amount} credits`)}catch(err){$('#coin-display').classList.remove('flipping');$('#flip-result').textContent='Flip not completed';toast(err.message)}finally{busy=false;btn.disabled=false;btn.textContent='Flip coin'}});
-function renderAdminShell(){let p=$('#admin-page');if(!adminOn){api('/api/admin/summary').then(()=>{adminOn=true;loadAdmin()}).catch(()=>{});p.innerHTML=`<button class="btn btn-ghost section-back" data-back>← Back</button><span class="eyebrow">SECURE AREA</span><h2>IQ63 Admin Panel</h2><p>Admin access is controlled by the ADMIN_PASSWORD environment variable in Render.</p><form id="admin-login"><label for="admin-phone">Admin mobile number</label><input id="admin-phone" name="phone" inputmode="numeric" value="1234567890" readonly autocomplete="username"><label for="admin-password">Admin password</label><div class="password-wrap"><input id="admin-password" type="password" required autocomplete="current-password"><button type="button" class="eye-toggle" id="admin-eye">◉</button></div><button class="btn btn-gold" type="submit">Admin login</button><p id="admin-message" class="form-message"></p></form>`;p.querySelector('[data-back]').onclick=()=>showPage('home');$('#admin-eye').onclick=()=>$('#admin-password').type=$('#admin-password').type==='password'?'text':'password';$('#admin-login').onsubmit=async e=>{e.preventDefault();try{await api('/api/admin/login',{method:'POST',body:JSON.stringify({phone:$('#admin-phone').value,password:$('#admin-password').value})});adminOn=true;p.innerHTML=`<div class="admin-gate-success"><span class="eyebrow">SECURE AREA</span><h2>Admin login successful</h2><p>You are signed in as admin.</p><button class="btn btn-gold btn-large" id="go-admin-dashboard">Go to Admin Panel →</button></div>`;$('#go-admin-dashboard').onclick=loadAdmin;toast('Admin logged in')}catch(err){$('#admin-message').textContent=err.message}};return}loadAdmin()}
-async function loadAdmin(){
- const p=$('#admin-page');p.innerHTML='<div class="admin-loading">Loading admin dashboard…</div>';
- try{
-  let d=await api('/api/admin/summary'),tab='overview',query='';
-  const fmtDate=v=>{try{return new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}catch{return ''}};
-  const tabs=[['overview','Overview'],['users','Users'],['deposits','Demo credits'],['withdrawals','Redemptions'],['settings','Settings'],['balances','Balance control'],['activity','Activity']];
-  function render(){
-   const pending=d.deposits.filter(x=>x.status==='pending');const pendingW=(d.withdrawals||[]).filter(x=>x.status==='pending');
-   let content='';
-   if(tab==='overview'){
-    content=`<div class="admin-stats"><article class="admin-stat"><span>Total users</span><strong>${d.stats.users}</strong></article><article class="admin-stat"><span>Pending demo credit requests</span><strong>${d.stats.pending}</strong></article><article class="admin-stat"><span>Total credits</span><strong>${d.stats.credits.toLocaleString('en-IN')}</strong></article></div>
-    <div class="admin-card"><div class="admin-card-head"><div><h3>Pending demo credit requests</h3><p>Review demo credit requests; approval adds virtual credits only.</p></div><button class="admin-small-btn" data-admin-tab="deposits">View all</button></div>
-    ${pending.length?`<div class="admin-record-list">${pending.slice(0,5).map(x=>`<article class="admin-record"><div class="record-main"><b>${safe(x.name)}</b><span>${safe(x.uid)} · ${fmtDate(x.createdAt)}</span><small>Request type: demo credits</small></div><strong>${Number(x.amount).toLocaleString('en-IN')} credits</strong><div class="admin-actions"><button class="admin-small-btn primary" data-deposit="${safe(x.id)}" data-action="approve">Approve</button><button class="admin-small-btn" data-deposit="${safe(x.id)}" data-action="reject">Reject</button></div></article>`).join('')}</div>`:'<p class="admin-empty">No pending deposit requests.</p>'}</div>
-    <div class="admin-card"><h3>Quick actions</h3><div class="admin-quick-grid"><button data-admin-tab="users">Manage users <span>›</span></button><button data-admin-tab="balances">Adjust credits <span>›</span></button><button data-admin-tab="activity">View activity <span>›</span></button></div></div>`;
-   }else if(tab==='users'){
-    const rows=d.users.filter(x=>(`${x.name} ${x.uid} ${x.phone}`.toLowerCase()).includes(query.toLowerCase()));
-    content=`<div class="admin-card"><div class="admin-card-head"><div><h3>All users</h3><p>${d.users.length} registered accounts</p></div></div><input class="admin-search" id="admin-search" type="search" placeholder="Search name, UID or mobile" value="${safe(query)}"><div class="admin-list-scroll"><div class="admin-record-list">${rows.map(x=>`<article class="admin-record user-record"><div class="record-main"><b>${safe(x.name)}</b><span>UID: ${safe(x.uid)}</span><small>+91 ${safe(x.phone)} · Joined ${safe(x.createdAt.slice(0,10))}</small></div><strong>${Number(x.balance).toLocaleString('en-IN')} cr</strong><div class="admin-actions"><button class="admin-small-btn primary" data-adjust="${safe(x.uid)}" data-action="add">+ Credits</button><button class="admin-small-btn" data-adjust="${safe(x.uid)}" data-action="subtract">− Credits</button><button class="admin-small-btn danger" data-delete-user="${safe(x.uid)}">Delete</button></div></article>`).join('')||'<p class="admin-empty">No matching users.</p>'}</div></div></div>`;
-   }else if(tab==='deposits'){
-    let rows=d.deposits.filter(x=>(`${x.name} ${x.uid} ${x.phone} ${x.reference} ${x.status}`.toLowerCase()).includes(query.toLowerCase()));
-    content=`<div class="admin-card"><div class="admin-card-head"><div><h3>Deposit requests</h3><p>Approve or reject virtual-credit requests only.</p></div></div><input class="admin-search" id="admin-search" type="search" placeholder="Search user, UID, reference or status" value="${safe(query)}"><div class="admin-list-scroll"><div class="admin-record-list">${rows.map(x=>`<article class="admin-record"><div class="record-main"><b>${safe(x.name)} · ${Number(x.amount).toLocaleString('en-IN')} credits</b><span>${safe(x.uid)} · ${safe(x.phone)}</span><small>UTR: ${safe(x.reference)} · ${fmtDate(x.createdAt)}</small><em class="status-pill ${safe(x.status)}">${safe(x.status)}</em></div>${x.status==='pending'?`<div class="admin-actions"><button class="admin-small-btn primary" data-deposit="${safe(x.id)}" data-action="approve">Approve</button><button class="admin-small-btn" data-deposit="${safe(x.id)}" data-action="reject">Reject</button></div>`:''}</article>`).join('')||'<p class="admin-empty">No deposit requests found.</p>'}</div></div></div>`;
-   }else if(tab==='withdrawals'){
-    let rows=(d.withdrawals||[]).filter(x=>(`${x.name} ${x.uid} ${x.phone} ${x.status}`.toLowerCase()).includes(query.toLowerCase()));
-    content=`<div class="admin-card"><h3>Demo redemption requests</h3><p>Approving removes virtual credits only. No cash payout.</p><input class="admin-search" id="admin-search" type="search" placeholder="Search user, UID or status" value="${safe(query)}"><div class="admin-list-scroll"><div class="admin-record-list">${rows.map(x=>`<article class="admin-record"><div class="record-main"><b>${safe(x.name)} · ${Number(x.amount)} credits</b><span>${safe(x.uid)} · ${safe(x.phone)}</span><small>${fmtDate(x.createdAt)}</small><em class="status-pill ${safe(x.status)}">${safe(x.status)}</em></div>${x.status==='pending'?`<div class="admin-actions"><button class="admin-small-btn primary" data-withdrawal="${safe(x.id)}" data-action="approve">Approve</button><button class="admin-small-btn" data-withdrawal="${safe(x.id)}" data-action="reject">Reject</button></div>`:''}</article>`).join('')||'<p class="admin-empty">No redemption requests.</p>'}</div></div></div>`;
-   }else if(tab==='settings'){
-    content=`<div class="admin-card"><h3>Demo wallet settings</h3><p class="admin-muted">These settings apply to virtual-credit redemption requests only.</p><form id="demo-settings"><label>Minimum credits</label><input id="setting-min" type="number" min="1" max="100000" value="${Number(d.settings?.minWithdraw||10)}" required><label>Maximum credits</label><input id="setting-max" type="number" min="1" max="100000" value="${Number(d.settings?.maxWithdraw||10000)}" required><label>Wagering multiplier</label><input id="setting-mult" type="number" min="0" max="100" step="0.1" value="${Number(d.settings?.wagerMultiplier??1)}" required><p class="muted">Example: 1 means game activity should equal at least 1× approved demo credits.</p><button class="btn btn-gold" type="submit">Save settings</button><p id="settings-message" class="form-message"></p></form></div>`;
-   }else if(tab==='balances'){
-    const rows=d.users.filter(x=>(`${x.name} ${x.uid} ${x.phone}`.toLowerCase()).includes(query.toLowerCase()));
-    content=`<div class="admin-card"><h3>Balance control</h3><p class="admin-muted">Manage account credits. This does not transfer or withdraw cash.</p><input class="admin-search" id="admin-search" type="search" placeholder="Search user, UID or mobile" value="${safe(query)}"><div class="admin-list-scroll"><div class="admin-record-list">${rows.map(x=>`<article class="admin-record"><div class="record-main"><b>${safe(x.name)}</b><span>${safe(x.uid)} · +91 ${safe(x.phone)}</span></div><strong>${Number(x.balance).toLocaleString('en-IN')} cr</strong><div class="admin-actions"><button class="admin-small-btn primary" data-adjust="${safe(x.uid)}" data-action="add">Add</button><button class="admin-small-btn" data-adjust="${safe(x.uid)}" data-action="subtract">Remove</button></div></article>`).join('')||'<p class="admin-empty">No matching users.</p>'}</div></div></div>`;
-   }else{
-    let events=d.users.flatMap(u=>(u.transactions||[]).map(t=>({...t,uid:u.uid,name:u.name}))).sort((x,y)=>String(y.at).localeCompare(String(x.at))).filter(x=>(`${x.name} ${x.uid} ${x.title} ${x.detail} ${x.kind}`.toLowerCase()).includes(query.toLowerCase()));
-    content=`<div class="admin-card"><h3>Account activity</h3><p>Latest wallet and game entries across accounts.</p><input class="admin-search" id="admin-search" type="search" placeholder="Search user, UID or activity" value="${safe(query)}"><div class="admin-list-scroll"><div class="admin-record-list">${events.slice(0,200).map(x=>`<article class="admin-record"><div class="record-main"><b>${safe(x.title)}</b><span>${safe(x.name)} · ${safe(x.uid)}</span><small>${safe(x.detail||'')} · ${fmtDate(x.at)}</small></div><strong class="${Number(x.amount)<0?'negative':'positive'}">${Number(x.amount)>0?'+':''}${Number(x.amount||0).toLocaleString('en-IN')}</strong></article>`).join('')||'<p class="admin-empty">No activity found.</p>'}</div></div></div>`;
-   }
-   p.innerHTML=`<div class="admin-workspace"><div class="admin-back-row"><button class="admin-small-btn" id="admin-back-top">← Back to site</button><span class="admin-brand">IQ63 <small>ADMIN</small></span><button class="admin-small-btn" id="admin-logout">Log out</button></div><header class="admin-heading"><span class="eyebrow">SECURE CONTROL CENTRE</span><h2>Admin Panel</h2><p>Manage users, demo credits, redemptions and account activity.</p></header><nav class="admin-tabs" aria-label="Admin sections">${tabs.map(([id,label])=>`<button class="admin-tab ${tab===id?'active':''}" data-admin-tab="${id}">${label}${id==='deposits'&&pending.length?` <span>${pending.length}</span>`:''}</button>`).join('')}</nav><div class="admin-content">${content}</div><div class="admin-back-bottom"><button class="admin-small-btn" id="admin-back-bottom">← Back to site</button><span>IQ63 Admin</span></div></div>`;
-   $('#admin-back-top').onclick=$('#admin-back-bottom').onclick=()=>{location.href='/'};
-   $('#admin-logout').onclick=async()=>{try{await api('/api/admin/logout',{method:'POST',body:'{}'})}finally{adminOn=false;location.href='/admin'}};
-   $$('[data-admin-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.adminTab;query='';render()});
-   const search=$('#admin-search');if(search)search.oninput=e=>{let pos=e.target.selectionStart;query=e.target.value;render();const n=$('#admin-search');n.focus();n.setSelectionRange(pos,pos)};
-   $$('[data-deposit]').forEach(b=>b.onclick=async()=>{if(!confirm(`${b.dataset.action==='approve'?'Approve':'Reject'} this demo-credit request? No payment is involved.`))return;try{await api('/api/admin/deposit',{method:'POST',body:JSON.stringify({id:b.dataset.deposit,action:b.dataset.action})});d=await api('/api/admin/summary');toast('Deposit request updated');render()}catch(e){toast(e.message)}});
-   $$('[data-withdrawal]').forEach(b=>b.onclick=async()=>{if(!confirm(`${b.dataset.action==='approve'?'Approve':'Reject'} this demo-credit request? No cash is involved.`))return;try{await api('/api/admin/withdrawal',{method:'POST',body:JSON.stringify({id:b.dataset.withdrawal,action:b.dataset.action})});d=await api('/api/admin/summary');toast('Demo request updated');render()}catch(e){toast(e.message)}});
-   $('#demo-settings')?.addEventListener('submit',async e=>{e.preventDefault();try{let z=await api('/api/admin/settings',{method:'POST',body:JSON.stringify({minWithdraw:Number($('#setting-min').value),maxWithdraw:Number($('#setting-max').value),wagerMultiplier:Number($('#setting-mult').value)})});d.settings=z.settings;$('#settings-message').textContent='Settings saved';$('#settings-message').className='form-message success'}catch(e){$('#settings-message').textContent=e.message}});
-   $$('[data-adjust]').forEach(b=>b.onclick=async()=>{let amount=Number(prompt('Enter whole credit amount:'));if(!Number.isSafeInteger(amount)||amount<1)return;let note=prompt('Reason for adjustment:','Admin adjustment')||'Admin adjustment';try{await api('/api/admin/adjust',{method:'POST',body:JSON.stringify({uid:b.dataset.adjust,action:b.dataset.action,amount,note})});d=await api('/api/admin/summary');toast('Balance updated');render()}catch(e){toast(e.message)}});
-   $$('[data-delete-user]').forEach(b=>b.onclick=async()=>{if(!confirm(`Delete user ${b.dataset.deleteUser}? This cannot be undone.`))return;try{await api('/api/admin/user-delete',{method:'POST',body:JSON.stringify({uid:b.dataset.deleteUser})});d=await api('/api/admin/summary');toast('User deleted');render()}catch(e){toast(e.message)}});
-  }
-  render();
- }catch(e){p.innerHTML=`<div class="admin-workspace"><button class="admin-small-btn" onclick="location.href='/'">← Back to site</button><h2>Admin dashboard</h2><p class="admin-error">${safe(e.message)}</p><button class="btn btn-gold" id="admin-retry">Retry</button></div>`;$('#admin-retry').onclick=loadAdmin}
+'use strict';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const state = { page: 'Home', query: '', me: null, cfg: { minDeposit: 1000, minWithdraw: 300 }, prices: [], updated: 0, stale: false, priceErr: '', deposits: [], withdrawals: [], referrals: 0, authMode: 'login', coin: '', side: 'buy', fx: 0, trades: [], positions: [], chartType: 'candle', interval: '1h', kl: {}, klErr: '' };
+const colors = ['#fff0d8', '#edf0ff', '#e4f8ee', '#e9f7ff', '#fff0f4'];
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const inr = n => Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' credits';
+const qtyFmt = n => Number(n).toLocaleString('en-US', { maximumFractionDigits: 8 });
+const EYE = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.9 10.9 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>';
+const pwField = (id, ac, extra = '') => `<div class="pw-wrap"><input id="${id}" type="password" autocomplete="${ac}" ${extra}><button type="button" class="eye" data-eye="${id}" aria-label="Show password">${EYE}</button></div>`;
+const usd = n => '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: n < 1 ? 4 : 2, minimumFractionDigits: n < 1 ? 4 : 2 });
+const dt = ts => new Date(ts).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+const PROTECTED = new Set(['Assets', 'Recharge', 'Withdrawal', 'Team', 'Invite']);
+const PRACTICE_GAMES = [{id:'coin',name:'Coin Flip',icon:'🪙',desc:'Call heads or tails',tag:'QUICK PLAY'},{id:'dice',name:'Dice Roll',icon:'🎲',desc:'Pick low or high',tag:'LUCKY ROLL'},{id:'lucky',name:'Lucky Number',icon:'🍀',desc:'Choose 1 to 6',tag:'NUMBER PICK'},{id:'rps',name:'Rock Paper Scissors',icon:'✊',desc:'Beat the computer',tag:'CLASSIC'},{id:'aviator',name:'Aviator',icon:'✈️',desc:'Watch the flight multiplier',tag:'ARCADE'}];
+let practiceGame = 'coin', practiceResult = '', aviatorTimer = null;
+
+async function api(path, body) {
+  const r = await fetch('/api/' + path, body === undefined ? { credentials: 'same-origin' } : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; }
+  return j;
 }
-$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.tab)));$$('[data-page]').forEach(b=>b.addEventListener('click',()=>{let p=b.dataset.page;if(p==='help'){toast('Use Register to create an account.');return}openModal(p)}));$$('[data-game]').forEach(b=>b.addEventListener('click',()=>{renderGame(b.dataset.game);showPage('games')}));$('.close-notice')?.addEventListener('click',()=>$('.notice')?.remove());modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal()});
-(async()=>{wireModal();try{user=(await api('/api/me')).user}catch{}updateHeader();renderAccount();renderWallet();renderInvite();renderPromotionReferral();updateGameMessage();if(location.pathname==='/admin'||location.pathname==='/admin/')showPage('admin');else showPage('home')})();
+
+// ---------- prices ----------
+function coinIcon(a, i) {
+  const tone = a.symbol === 'ETH' || a.symbol === 'ADA' ? 'eth' : (a.symbol === 'ETC' || a.symbol === 'TRX' ? 'etc' : '');
+  return `<span class="coin ${tone}" style="--coin-bg:${colors[i % colors.length]}" aria-hidden="true">${esc(a.mark)}</span>`;
+}
+function sparkline(a) {
+  const s = a.spark || []; if (s.length < 2) return '';
+  const min = Math.min(...s), max = Math.max(...s), span = max - min || 1;
+  const pts = s.map((v, i) => `${(i / (s.length - 1) * 100).toFixed(1)},${(34 - (v - min) / span * 30).toFixed(1)}`).join(' ');
+  return `<svg class="sparkline" viewBox="0 0 100 38" preserveAspectRatio="none" aria-label="7-day price trend"><polyline points="${pts}" fill="none" stroke="${a.change < 0 ? '#e16b78' : '#2bb78a'}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+const changeLabel = v => `${v > 0 ? '+' : ''}${Number(v).toFixed(2)}%`;
+function assetRow(a, i) {
+  return `<div class="asset-row" data-coin="${esc(a.symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-name">${coinIcon(a, i)}<div><strong>${esc(a.symbol)}</strong><small>${esc(a.name)}</small></div></div><div class="asset-price">${usd(a.price)}</div><div class="asset-change ${a.change < 0 ? 'negative' : 'positive'}">${changeLabel(a.change)}</div>${sparkline(a)}</div>`;
+}
+const bonusCoins = () => (state.cfg && Array.isArray(state.cfg.bonusCoins) ? state.cfg.bonusCoins : ((state.cfg && state.cfg.bonusCoin && state.cfg.bonusCoin.enabled) ? [state.cfg.bonusCoin] : []));
+const bonusCfg = (symbol = state.coin) => bonusCoins().find(c => c.symbol === symbol) || (state.cfg && state.cfg.bonusCoin) || { enabled: false };
+const bonusSeconds = b => Number(b.lockSeconds ?? (Number(b.lockHours || 0) * 3600));
+const bonusWaitLabel = b => bonusSeconds(b) <= 0 ? 'Instant' : bonusSeconds(b) + ' sec';
+function bonusRow(q = '') {
+  return bonusCoins().filter(b => b.enabled && (!q || (b.symbol + ' ' + b.name).toLowerCase().includes(q))).map(b => `<div class="asset-row bonus-row" data-coin="${esc(b.symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-name"><span class="coin bonus-coin" aria-hidden="true">★</span><div><strong>${esc(b.symbol)}</strong><small>${esc(b.name)} · promotional coin</small></div></div><div class="asset-price">+${b.returnPct}% reward</div><div class="asset-change positive">${bonusWaitLabel(b)}</div></div>`).join('');
+}
+function renderAssetRows(q = '') {
+  q = q.trim().toLowerCase(); const br = bonusRow(q);
+  if (!state.prices.length) return br + `<div class="empty-state">${state.priceErr ? 'Live prices could not load. Retrying… <br><small>' + esc(state.priceErr) + '</small>' : 'Loading live prices…'}</div>`;
+  const f = state.prices.filter(a => a.symbol.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
+  return br + (f.length ? f.map(assetRow).join('') : (br ? '' : '<div class="empty-state">No assets match that search.</div>'));
+}
+const staleNote = () => state.prices.length ? `<p class="stale">${state.stale ? '⚠ Showing last known prices — live feed delayed. ' : ''}Updated ${new Date(state.updated).toLocaleTimeString('en-IN')} · ${state.source || 'live'} · refreshes every 20s</p>` : '';
+let COINS = [['BTC','Bitcoin','bitcoin','₿'],['ETH','Ethereum','ethereum','Ξ'],['ETC','Ethereum Classic','ethereum-classic','E'],['TRX','TRON','tron','T'],['DOGE','Dogecoin','dogecoin','Ð'],['BCH','Bitcoin Cash','bitcoin-cash','B'],['COMP','Compound','compound-governance-token','C'],['DASH','Dash','dash','D'],['ADA','Cardano','cardano','A'],['LINK','Chainlink','chainlink','L'],['LTC','Litecoin','litecoin','Ł'],['BNB','BNB','binancecoin','B'],['XRP','XRP','ripple','X'],['SOL','Solana','solana','S']];
+async function getJSON(url) { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }
+// Backup: browser fetches the public price APIs directly (both allow CORS) when our server can't.
+async function directPrices() {
+  const errs = [];
+  try {
+    const rows = await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=' + encodeURIComponent(JSON.stringify(COINS.map(c => c[0] + 'USDT'))));
+    return { prices: rows.map(x => { const c = COINS.find(k => k[0] + 'USDT' === x.symbol); return { symbol: c[0], name: c[1], mark: c[3], price: Number(x.lastPrice), change: Number(x.priceChangePercent), spark: [] }; }), source: 'Binance' };
+  } catch (e) { errs.push('Binance ' + e.message); }
+  try {
+    const rows = await getJSON('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' + COINS.map(c => c[2]).join(',') + '&sparkline=true');
+    return { prices: COINS.map(([symbol, name, id, mark]) => { const x = rows.find(r => r.id === id); if (!x) return null; const sp = x.sparkline_in_7d?.price || [], st = Math.max(1, Math.floor(sp.length / 28)); return { symbol, name, mark, price: x.current_price, change: x.price_change_percentage_24h || 0, spark: sp.filter((_, i) => i % st === 0) }; }).filter(Boolean), source: 'CoinGecko' };
+  } catch (e) { errs.push('CoinGecko ' + e.message); }
+  throw new Error(errs.join(' | '));
+}
+async function pullPrices() {
+  let serverErr = '';
+  try { const j = await api('prices'); state.prices = j.prices; state.updated = j.updated; state.stale = j.stale; state.source = j.source; if (j.fx) state.fx = j.fx; state.priceErr = ''; }
+  catch (e) {
+    serverErr = e.message;
+    try { const j = await directPrices(); state.prices = j.prices; state.updated = Date.now(); state.stale = false; state.source = j.source + ' (direct)'; state.priceErr = ''; }
+    catch (e2) { state.priceErr = 'Server: ' + serverErr + ' | Browser: ' + e2.message; }
+  }
+  if (state.page === 'Coin') updateCoinLive();
+  else if (['Home', 'Quotes', 'Signal'].includes(state.page) && document.activeElement !== $('#assetSearch')) refreshPriceViews();
+}
+function refreshPriceViews() {
+  const L = $('#assetList') || $('#quoteList') || $('#moverList'); if (!L) return;
+  if (state.page === 'Quotes') L.innerHTML = renderAssetRows(state.query);
+  else if (state.page === 'Home') { L.innerHTML = renderAssetRows(); const m = $('#marketCards'); if (m) m.innerHTML = marketCards(); }
+  else if (state.page === 'Signal') renderPage('Signal', true);
+  const s = $('#staleNote'); if (s) s.innerHTML = staleNote();
+}
+const marketCards = () => state.prices.slice(0, 3).map((a, i) => `<article class="market-card" data-coin="${esc(a.symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-top">${coinIcon(a, i)}<div><strong>${esc(a.name)}</strong><small>${esc(a.symbol)} / USD</small></div></div><div class="price">${usd(a.price)}</div><div class="asset-change ${a.change < 0 ? 'negative' : 'positive'}">${changeLabel(a.change)}</div>${sparkline(a)}</article>`).join('');
+
+// ---------- session ----------
+async function loadMe() {
+  try { const j = await api('me'); state.me = j.user; state.cfg = j.config; if (j.config && j.config.coins) COINS = j.config.coins; state.deposits = j.deposits; state.withdrawals = j.withdrawals; state.referrals = j.referrals; state.trades = j.trades || []; state.positions = j.positions || []; updateFooter(); }
+  catch { state.me = null; try { state.cfg = await api('config'); if (state.cfg.coins) COINS = state.cfg.coins; updateFooter(); } catch {} }
+  $('#account').textContent = state.me ? Number(state.me.balance).toLocaleString('en-IN') + ' CR' : 'Login';
+}
+const updateFooter = () => { const el = $('#siteFooter'); if (el) el.textContent = (state.cfg && state.cfg.footerText) || 'India-focused platform'; };
+const noticeBar = () => `${state.cfg.notice ? `<div class="notice-banner"><span>ⓘ</span><p>${esc(state.cfg.notice)}</p></div>` : ''}`;
+const needLogin = page => { state.after = page; renderPage('Auth'); };
+
+// ---------- pages ----------
+function renderHome() {
+  const hello = state.me ? `Welcome, ${esc(state.me.name.split(' ')[0])}` : 'Explore digital markets';
+  $('#appMain').innerHTML = `${noticeBar()}
+    <section class="welcome"><div><span class="eyebrow">YOUR MARKET AT A GLANCE</span><h1>${hello}</h1><p>Live digital asset prices, updated every 20 seconds.</p><button class="welcome-cta" data-page="${state.me ? 'Assets' : 'Auth'}">${state.me ? 'Open wallet' : 'Login / Register'} <span>↗</span></button></div><div class="coin-art" aria-hidden="true">₿</div><div class="hero-orb orb-one"></div><div class="hero-orb orb-two"></div></section>
+    <section class="actions" aria-label="Quick actions"><button data-page="Recharge"><span class="action-icon blue">＋</span><span>Get Credits</span></button><button data-page="Withdrawal"><span class="action-icon violet">⊘</span><span>No Cash-out</span></button><button data-page="Signal"><span class="action-icon mint">⌁</span><span>Movers</span></button><button data-page="Service"><span class="action-icon amber">☏</span><span>Service</span></button><button data-page="Invite"><span class="action-icon pink">♧</span><span>Invite</span></button></section>
+    <section class="promo-grid"><article class="promo"><div><span class="eyebrow">GET STARTED</span><h2>Guide</h2><p>How virtual credits and games work.</p><button class="light-btn" data-page="Guide">View guide ↗</button></div><div class="promo-icon">✦</div></article><article class="promo orange"><div><span class="eyebrow">OFFERS</span><h2>Bonus</h2><p>Current announcements and offers.</p><button class="light-btn" data-page="Bonus">View ↗</button></div><div class="promo-icon">🎁</div></article></section>
+    <section class="section-head"><div><span class="eyebrow">MARKET OVERVIEW</span><h2>Trending markets</h2></div><button class="text-btn" data-page="Quotes">See all ↗</button></section>
+    <section class="market-cards" id="marketCards">${marketCards()}</section>
+    <section class="section-head list-head"><div><span class="eyebrow">LIVE MARKET DATA</span><h2>Trending assets</h2></div></section><div id="staleNote">${staleNote()}</div>
+    <section class="asset-list" id="assetList">${renderAssetRows()}</section>`;
+}
+
+function authPage() {
+  const reg = state.authMode === 'register', ref = new URLSearchParams(location.search).get('ref') || '';
+  $('#appMain').innerHTML = `<section class="page-intro"><span class="eyebrow">ACCOUNT</span><h1>${reg ? 'Create account' : 'Login'}</h1><p>${reg ? 'Register to deposit, withdraw and track your wallet.' : 'Login to your Crypto Bridge wallet.'}</p></section>
+  <form id="authForm" class="demo-form" autocomplete="on">
+    ${reg ? '<label for="aName">Full name</label><input id="aName" autocomplete="name" required maxlength="60">' : ''}
+    <label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email" required>
+    ${reg ? '<label for="aPhone">Mobile (optional)</label><input id="aPhone" type="tel" autocomplete="tel" maxlength="20">' : ''}
+    <label for="aPass">Password ${reg ? '(min 8 characters)' : ''}</label>${pwField('aPass', reg ? 'new-password' : 'current-password', `required minlength="${reg ? 8 : 1}"`)}
+    ${reg ? `<label for="aRef">Invite code (optional)</label><input id="aRef" value="${esc(ref)}" maxlength="20">` : ''}
+    <p class="msg-err" id="authErr" role="alert"></p>
+    <button class="primary-btn" type="submit">${reg ? 'Register' : 'Login'}</button>
+    <button class="link-btn" type="button" id="swapAuth">${reg ? 'Already have an account? Login' : 'New here? Create an account'}</button>
+  </form>`;
+  $('#swapAuth').onclick = () => { state.authMode = reg ? 'login' : 'register'; authPage(); };
+  $('#authForm').onsubmit = async e => {
+    e.preventDefault(); const btn = e.submitter; btn.disabled = true; $('#authErr').textContent = '';
+    try {
+      await api(reg ? 'register' : 'login', reg ? { name: $('#aName').value, email: $('#aEmail').value, phone: $('#aPhone').value, password: $('#aPass').value, ref: $('#aRef').value } : { email: $('#aEmail').value, password: $('#aPass').value });
+      await loadMe(); const go = state.after || 'Assets'; state.after = null; showToast(reg ? 'Account created.' : 'Welcome back.'); renderPage(go);
+    } catch (err) { $('#authErr').textContent = err.message; btn.disabled = false; }
+  };
+}
+
+function txList() {
+  const bc = bonusCfg(), rows = [...state.deposits.map(d => ({ ...d, kind: 'Deposit' })), ...state.withdrawals.map(w => ({ ...w, kind: 'Withdrawal' })), ...state.trades.map(t => ({ ...t, kind: t.side === 'buy' ? 'Buy' : 'Sell' })), ...state.positions.map(p => ({ ...p, kind: 'Reward' }))].sort((a, b) => b.ts - a.ts).slice(0, 40);
+  if (!rows.length) return '<div class="empty-state">No transactions yet.</div>';
+  const icon = { Deposit: '↗', Withdrawal: '↙', Buy: '＋', Sell: '−', Reward: '★' }, plus = { Deposit: 1, Sell: 1 };
+  return `<div class="activity-list">${rows.map(r => {
+    const rw = r.kind === 'Reward', val = rw && r.status === 'Settled' ? '+' + inr(r.profit) : (plus[r.kind] ? '+' : '−') + inr(r.amount), cls = (plus[r.kind] || (rw && r.status === 'Settled')) ? 'positive' : '';
+    const sub = rw ? `${inr(r.amount)} @ +${r.returnPct}%${r.status === 'Active' ? ' · pays ' + dt(r.matureAt) : ''}` : `${r.utr ? ' · UTR ' + esc(r.utr) : ''}${r.provider === 'razorpay' ? ' · Razorpay · Fee ' + inr(r.fee || 0) + ' · Payout ' + inr(r.netAmount == null ? r.amount : r.netAmount) : ''}${r.upi ? ' · ' + esc(r.upi) : ''}${r.qty ? ' · ' + qtyFmt(r.qty) + ' @ ' + inr(r.price) : ''}`;
+    return `<div><span class="activity-icon">${icon[r.kind]}</span><span><b>${rw ? esc(r.symbol) : r.kind}${!rw && r.symbol ? ' ' + esc(r.symbol) : ''} ${r.status ? `<span class="pill ${esc(r.status)}">${esc(r.status)}</span>` : ''}</b><small>${dt(r.ts)}${rw ? ' · ' : ''}${sub}</small></span><strong class="${cls}">${val}</strong></div>`;
+  }).join('')}</div>`;
+}
+
+function holdingsList() {
+  const h = Object.entries(state.me.holdings || {}); if (!h.length) return '<div class="empty-state">No coins yet. Tap any coin in Quotes to buy.</div>';
+  return `<div class="asset-list">${h.map(([sym, q]) => {
+    const a = state.prices.find(x => x.symbol === sym), fx = Number(state.fx || 0), value = a && fx ? q * a.price * fx : null;
+    const cost = Number((state.me.cost || {})[sym] || 0), pnl = value == null ? null : value - cost;
+    const pnlText = pnl == null ? 'P/L unavailable' : `${pnl >= 0 ? '+' : '−'}${inr(Math.abs(pnl))} unrealized`;
+    const pnlClass = pnl == null ? '' : pnl >= 0 ? 'positive' : 'negative';
+    return `<div class="asset-row" data-coin="${esc(sym)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-name"><span class="coin" aria-hidden="true">${esc(a ? a.mark : sym[0])}</span><div><strong>${esc(sym)}</strong><small>${qtyFmt(q)} · Cost ${inr(cost)}</small><small class="${pnlClass}">${pnlText}</small></div></div><div class="asset-price">${value == null ? '—' : inr(value)}<small style="display:block">Market value</small></div></div>`;
+  }).join('')}</div>`;
+}
+
+function bonusBody() {
+  const b = bonusCfg(state.coin), u = state.me; if (!b.enabled) return '<div class="empty-state">This coin is not open right now.</div>';
+  const mine = state.positions.filter(p => p.status === 'Active');
+  return `<article class="balance-card"><span>${esc(b.name)} · ${esc(b.symbol)}</span><strong>+${b.returnPct}% return</strong><small>${bonusSeconds(b) ? 'Countdown: ' + bonusSeconds(b) + ' seconds' : 'Paid instantly'} · Trade ${inr(b.minAmount)} – ${inr(b.maxAmount)}</small>${u ? `<div class="stat-grid"><div><small>Wallet</small><b>${inr(u.balance)}</b></div><div><small>Active trades</small><b>${mine.length} · ${inr(mine.reduce((s, p) => s + p.amount, 0))}</b></div></div>` : ''}</article>
+  <div class="content-card"><b>Admin-configured display price: ${Number(b.startPrice || 1).toLocaleString('en-IN')}</b><p class="fine-print">Simulated bonus-coin chart · not an exchange live price. Reward is promotional and not market trading profit.</p><svg viewBox="0 0 320 70" width="100%" role="img" aria-label="Simulated bonus coin price chart"><polyline points="${Array.from({length:24},(_,i)=>`${i*13.8},${35+Math.sin(i*0.8)*12}`).join(' ')}" fill="none" stroke="#2bb78a" stroke-width="2.5"/></svg></div>${u ? `<form id="bonusForm" class="demo-form"><label for="bAmt">Credits to trade</label><input id="bAmt" type="number" inputmode="numeric" step="1" min="${b.minAmount}" max="${b.maxAmount}" required placeholder="min ${b.minAmount}"><div class="quick">${[25, 50, 100].map(p => `<button type="button" data-bpct="${p}">${p === 100 ? 'Max' : p + '%'}</button>`).join('')}</div><p class="fine-print" id="bEst"></p><p class="fine-print">Wallet: <b>${inr(u.balance)}</b> · Your amount plus the ${b.returnPct}% return is credited to your wallet ${bonusSeconds(b) ? 'after ' + bonusSeconds(b) + ' seconds' : 'immediately'}.</p><p class="msg-err" id="bErr" role="alert"></p><button class="primary-btn" type="submit">Trade ${esc(b.symbol)}</button></form>`
+  : `<div class="demo-form"><p class="fine-print">Login to trade ${esc(b.symbol)}.</p><button class="primary-btn" data-page="Auth">Login / Register</button></div>`}`;
+}
+function bindBonus() {
+  const f = $('#bonusForm'); if (!f) return; const b = bonusCfg();
+  const est = () => { const v = Number($('#bAmt').value); $('#bEst').textContent = v > 0 ? `You will receive ${inr(v + v * b.returnPct / 100)} (profit ${inr(v * b.returnPct / 100)})` : ''; };
+  $$('[data-bpct]').forEach(x => x.onclick = () => { $('#bAmt').value = Math.min(b.maxAmount, Math.floor(state.me.balance * Number(x.dataset.bpct) / 100)); est(); });
+  $('#bAmt').oninput = est;
+  f.onsubmit = async e => {
+    e.preventDefault(); $('#bErr').textContent = ''; const btn = e.submitter; btn.disabled = true;
+    try { const j = await api('bonus/trade', { symbol: b.symbol, amount: Number($('#bAmt').value) }); await loadMe(); const p = j.position; showModal('Trade placed', `${inr(p.amount)} promotional position started for ${p.symbol}. Principal + ${p.returnPct}% promotional reward is scheduled after ${p.lockSeconds} seconds.`); renderPage('Coin', true); }
+    catch (x) { $('#bErr').textContent = x.message; btn.disabled = false; }
+  };
+}
+
+// ---------- candlestick / line chart (own SVG, no libraries) ----------
+async function fetchKlines(sym, iv) {
+  try { return (await api(`klines?symbol=${sym}&interval=${iv}`)).candles; }
+  catch (e) { const rows = await getJSON(`https://api.binance.com/api/v3/klines?symbol=${sym}USDT&interval=${iv}&limit=130`); return rows.map(r => [r[0], +r[1], +r[2], +r[3], +r[4], +r[5]]); }
+}
+async function loadChart(initial) {
+  const sym = state.coin, iv = state.interval, key = sym + ':' + iv, c = state.kl[key];
+  if (initial) drawChart();
+  if (c && Date.now() - c.ts < 30e3) return;
+  try { state.kl[key] = { ts: Date.now(), candles: await fetchKlines(sym, iv) }; state.klErr = ''; } catch { if (!c) state.klErr = 'Chart data is not available right now.'; }
+  if (state.page === 'Coin' && state.coin === sym && state.interval === iv) drawChart();
+}
+const pFmt = v => v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v >= 1 ? v.toFixed(2) : v.toFixed(4);
+function maSeries(d, p) { const o = []; let s = 0; d.forEach((x, i) => { s += x[4]; if (i >= p) s -= d[i - p][4]; o.push(i >= p - 1 ? s / p : null); }); return o; }
+function drawChart() {
+  const box = $('#chartBox'); if (!box) return; const c = state.kl[state.coin + ':' + state.interval];
+  if (!c || c.candles.length < 2) { box.innerHTML = `<div class="empty-state">${state.klErr || 'Loading chart…'}</div>`; $('#chartInfo').innerHTML = ''; return; }
+  const all = c.candles, st = Math.max(0, all.length - 90), d = all.slice(st), n = d.length, candle = state.chartType === 'candle';
+  const MAS = [[5, '#f5a623'], [10, '#7b61ff'], [30, '#00a3d7']].map(([p, col]) => ({ p, col, v: maSeries(all, p).slice(st) }));
+  const W = Math.max(260, box.clientWidth || 340), L = 6, R = 56, T = 10, PH = 205, VG = 10, VH = 50, B = 22, H = T + PH + VG + VH + B, pw = W - L - R, vTop = T + PH + VG;
+  let lo = Math.min(...d.map(x => candle ? x[3] : x[4])), hi = Math.max(...d.map(x => candle ? x[2] : x[4])); const pad = (hi - lo || hi * .01) * .08; lo -= pad; hi += pad;
+  const vmax = Math.max(...d.map(x => x[5] || 0)) || 1;
+  const X = i => L + (i + .5) * pw / n, Y = v => T + (hi - v) / (hi - lo) * PH, last = d[n - 1], up = last[4] >= d[0][4], col = up ? '#2bb78a' : '#e16b78';
+  const tf = t => new Date(t).toLocaleString('en-IN', state.interval === '1d' ? { day: '2-digit', month: 'short' } : { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+  let g = '';
+  for (let k = 0; k <= 4; k++) { const v = lo + (hi - lo) * k / 4, y = Y(v); g += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="#eef1f7"/><text x="${W - R + 5}" y="${y + 3}" font-size="10" fill="#8b94a9">${pFmt(v)}</text>`; }
+  g += `<line x1="${L}" x2="${W - R}" y1="${vTop + VH}" y2="${vTop + VH}" stroke="#eef1f7"/><text x="${W - R + 5}" y="${vTop + 9}" font-size="9" fill="#8b94a9">VOL</text>`;
+  [0, Math.floor((n - 1) / 2), n - 1].forEach((i, k) => { g += `<text x="${k === 0 ? L : k === 2 ? W - R : X(i)}" y="${H - 6}" font-size="10" fill="#8b94a9" text-anchor="${k === 0 ? 'start' : k === 2 ? 'end' : 'middle'}">${tf(d[i][0])}</text>`; });
+  let body = ''; const bw = Math.max(1.5, pw / n * .68);
+  d.forEach((x, i) => { const cc = x[4] >= x[1] ? '#2bb78a' : '#e16b78', h = (x[5] || 0) / vmax * VH; body += `<rect x="${X(i) - bw / 2}" y="${vTop + VH - h}" width="${bw}" height="${h}" fill="${cc}" opacity=".55"/>`; });
+  if (candle) {
+    d.forEach((x, i) => { const cc = x[4] >= x[1] ? '#2bb78a' : '#e16b78', yt = Y(Math.max(x[1], x[4])), yb = Y(Math.min(x[1], x[4])); body += `<line x1="${X(i)}" x2="${X(i)}" y1="${Y(x[2])}" y2="${Y(x[3])}" stroke="${cc}" stroke-width="1.2"/><rect x="${X(i) - bw / 2}" y="${yt}" width="${bw}" height="${Math.max(1, yb - yt)}" fill="${cc}"/>`; });
+    MAS.forEach(m => { const pts = m.v.map((v, i) => v == null ? null : `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).filter(Boolean).join(' '); if (pts) body += `<polyline points="${pts}" fill="none" stroke="${m.col}" stroke-width="1.3" stroke-linejoin="round"/>`; });
+  } else { const pts = d.map((x, i) => `${X(i).toFixed(1)},${Y(x[4]).toFixed(1)}`).join(' '); body += `<defs><linearGradient id="lg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><polygon points="${X(0)},${T + PH} ${pts} ${X(n - 1)},${T + PH}" fill="url(#lg)"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`; }
+  const ly = Y(last[4]);
+  box.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${state.coin} ${candle ? 'candlestick' : 'line'} chart">${g}${body}<line x1="${L}" x2="${W - R}" y1="${ly}" y2="${ly}" stroke="${col}" stroke-dasharray="3 3" opacity=".7"/><rect x="${W - R + 1}" y="${ly - 8}" width="${R - 2}" height="16" rx="4" fill="${col}"/><text x="${W - R + 5}" y="${ly + 3.5}" font-size="10" font-weight="700" fill="#fff">${pFmt(last[4])}</text><line id="xh" y1="${T}" y2="${vTop + VH}" stroke="#9aa3b5" stroke-dasharray="2 3" visibility="hidden"/><rect id="ov" x="${L}" y="${T}" width="${pw}" height="${vTop + VH - T}" fill="transparent" style="touch-action:pan-y"/></svg>`;
+  const vf = v => v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(1) + 'K' : v.toFixed(1);
+  const info = i => { const x = d[i], ch = (x[4] - x[1]) / x[1] * 100, cc = ch >= 0 ? '#159d72' : '#df5b67';
+    $('#chartInfo').innerHTML = `<span>${tf(x[0])}</span>` + (candle ? `<span>O <b>${pFmt(x[1])}</b></span><span>H <b>${pFmt(x[2])}</b></span><span>L <b>${pFmt(x[3])}</b></span>` : '') + `<span>C <b>${pFmt(x[4])}</b></span><span style="color:${cc}"><b>${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%</b></span><span>Vol <b>${vf(x[5] || 0)}</b></span>` + (candle ? '<span class="ma-row">' + MAS.map(m => m.v[i] == null ? '' : `<span style="color:${m.col}">MA${m.p} <b style="color:${m.col}">${pFmt(m.v[i])}</b></span>`).join('') + '</span>' : ''); };
+  info(n - 1);
+  const xh = $('#xh'), ov = $('#ov'), at = e => { const r = ov.getBoundingClientRect(), i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n))); xh.setAttribute('x1', X(i)); xh.setAttribute('x2', X(i)); xh.setAttribute('visibility', 'visible'); info(i); };
+  ov.addEventListener('pointermove', at); ov.addEventListener('pointerdown', at); ov.addEventListener('pointerleave', () => { xh.setAttribute('visibility', 'hidden'); info(n - 1); });
+}
+function bindChart() {
+  $$('[data-ct]').forEach(b => b.onclick = () => { state.chartType = b.dataset.ct; $$('[data-ct]').forEach(x => x.classList.toggle('on', x === b)); drawChart(); });
+  $$('[data-iv]').forEach(b => b.onclick = () => { state.interval = b.dataset.iv; $$('[data-iv]').forEach(x => x.classList.toggle('on', x === b)); loadChart(true); });
+  loadChart(true);
+}
+window.addEventListener('resize', () => { if (state.page === 'Coin') drawChart(); });
+
+function coinBody() {
+  const a = state.prices.find(x => x.symbol === state.coin); if (!a) return '';
+  const hold = (state.me && state.me.holdings && state.me.holdings[a.symbol]) || 0, unit = state.fx ? a.price * state.fx : 0, c = state.cfg;
+  const buy = state.side === 'buy';
+  return `<article class="balance-card"><span>${esc(a.name)} · ${esc(a.symbol)}</span><strong id="coinPrice">${unit ? inr(unit) : usd(a.price)}</strong><small id="coinSub">${usd(a.price)} · <span class="${a.change < 0 ? 'negative' : 'positive'}" style="color:inherit">${changeLabel(a.change)} (24h)</span></small>${state.me ? `<div class="stat-grid"><div><small>You hold</small><b>${qtyFmt(hold)} ${esc(a.symbol)}</b></div><div><small>Value</small><b>${unit ? inr(hold * unit) : '—'}</b></div></div>` : ''}</article>
+  <article class="content-card chart-card"><div class="chart-bar"><div class="seg">${[['candle', 'Candles'], ['line', 'Line']].map(([k, l]) => `<button type="button" data-ct="${k}" class="${state.chartType === k ? 'on' : ''}">${l}</button>`).join('')}</div><div class="seg">${[['1m', '1m'], ['3m', '3m'], ['5m', '5m'], ['15m', '15m'], ['1h', '1H'], ['1d', '1D']].map(([k, l]) => `<button type="button" data-iv="${k}" class="${state.interval === k ? 'on' : ''}">${l}</button>`).join('')}</div></div><div class="chart-info" id="chartInfo"></div><div class="chart-box" id="chartBox"></div></article>
+  ${state.me ? `<div class="tabs2"><button type="button" data-side="buy" class="${buy ? 'on' : ''}">Buy</button><button type="button" data-side="sell" class="${buy ? '' : 'on'}">Sell</button></div>
+  <form id="tradeForm" class="demo-form"><label for="tAmt">${buy ? 'Credits to spend' : 'Quantity to sell (' + esc(a.symbol) + ')'}</label><input id="tAmt" type="number" inputmode="decimal" step="any" min="0" required placeholder="${buy ? 'min ' + c.minTrade : '0.00'}">
+  <div class="quick">${buy ? [25, 50, 100].map(p => `<button type="button" data-pct="${p}">${p}%</button>`).join('') : [25, 50, 100].map(p => `<button type="button" data-pct="${p}">${p === 100 ? 'Max' : p + '%'}</button>`).join('')}</div>
+  <p class="fine-print" id="tEst"></p><p class="fine-print">${buy ? 'Wallet' : 'Holding'}: <b>${buy ? inr(state.me.balance) : qtyFmt(hold) + ' ' + esc(a.symbol)}</b> · Price is fixed by the server at the moment you confirm. No trading fee.</p>
+  <p class="msg-err" id="tErr" role="alert"></p><button class="primary-btn" type="submit">${buy ? 'Buy' : 'Sell'} ${esc(a.symbol)}</button></form>`
+  : `<div class="demo-form"><p class="fine-print">Login to buy or sell ${esc(a.symbol)}.</p><button class="primary-btn" data-page="Auth">Login / Register</button></div>`}`;
+}
+function tradeEstimate() {
+  const a = state.prices.find(x => x.symbol === state.coin), el = $('#tEst'), v = Number($('#tAmt') && $('#tAmt').value);
+  if (!a || !el || !state.fx) return; const unit = a.price * state.fx;
+  el.textContent = v > 0 ? (state.side === 'buy' ? `You get ≈ ${qtyFmt(Math.floor(v / unit * 1e8) / 1e8)} ${a.symbol}` : `You get ≈ ${inr(v * unit)}`) : '';
+}
+function updateCoinLive() {
+  const a = state.prices.find(x => x.symbol === state.coin), p = $('#coinPrice'); if (a && !p) return renderPage('Coin', true); if (!a || !p) return;
+  p.textContent = state.fx ? inr(a.price * state.fx) : usd(a.price); $('#coinSub').innerHTML = `${usd(a.price)} · ${changeLabel(a.change)} (24h)`; tradeEstimate(); loadChart();
+}
+function bindCoin() {
+  const f = $('#tradeForm'); if (!f) return;
+  $$('[data-side]').forEach(b => b.onclick = () => { state.side = b.dataset.side; renderPage('Coin', true); });
+  const a = () => state.prices.find(x => x.symbol === state.coin);
+  $$('[data-pct]').forEach(b => b.onclick = () => {
+    const pct = Number(b.dataset.pct) / 100, c = a(); if (!c) return;
+    if (state.side === 'buy') $('#tAmt').value = Math.floor(state.me.balance * pct * 100) / 100;
+    else { const h = state.me.holdings[state.coin] || 0; $('#tAmt').value = pct === 1 ? h : Math.floor(h * pct * 1e8) / 1e8; f.dataset.all = pct === 1 ? '1' : ''; }
+    tradeEstimate();
+  });
+  $('#tAmt').oninput = () => { f.dataset.all = ''; tradeEstimate(); };
+  f.onsubmit = async e => {
+    e.preventDefault(); $('#tErr').textContent = ''; const btn = e.submitter; btn.disabled = true; const v = Number($('#tAmt').value);
+    try {
+      const j = await api('trade', state.side === 'buy' ? { symbol: state.coin, side: 'buy', amount: v } : { symbol: state.coin, side: 'sell', qty: v, all: f.dataset.all === '1' });
+      await loadMe(); const t = j.trade; showModal(t.side === 'buy' ? 'Bought' : 'Sold', `${qtyFmt(t.qty)} ${t.symbol} at ${inr(t.price)} = ${inr(t.amount)}` + (t.profit != null ? (t.profit >= 0 ? ` · Profit ${inr(t.profit)}` : ` · Loss ${inr(-t.profit)}`) : '')); renderPage('Coin', true);
+    } catch (x) { $('#tErr').textContent = x.message; btn.disabled = false; }
+  };
+}
+
+function practiceGameBody(id) {
+  if (id === 'coin') return `<div class="coin-stage"><div class="practice-coin" id="practiceCoin">?</div><div class="practice-actions"><button data-game-action="coin-heads">Heads</button><button data-game-action="coin-tails">Tails</button></div></div>`;
+  if (id === 'dice') return `<div class="dice-stage"><div class="practice-die" id="practiceDie">🎲</div><div class="practice-actions"><button data-game-action="dice-low">Low (1–3)</button><button data-game-action="dice-high">High (4–6)</button></div></div>`;
+  if (id === 'lucky') return `<div class="number-stage"><div class="number-options">${[1,2,3,4,5,6].map(n=>`<button data-game-action="lucky-${n}">${n}</button>`).join('')}</div><div class="practice-hint">Pick a number, then reveal the lucky roll.</div><div class="practice-lucky-result" id="luckyResult">?</div>`;
+  if (id === 'rps') return `<div class="rps-stage"><div class="rps-vs"><span id="rpsYou">❔<small>You</small></span><b>VS</b><span id="rpsCpu">🤖<small>Computer</small></span></div><div class="practice-actions"><button data-game-action="rps-rock">✊ Rock</button><button data-game-action="rps-paper">✋ Paper</button><button data-game-action="rps-scissors">✌️ Scissors</button></div></div>`;
+  return `<div class="aviator-stage"><div class="aviator-sky"><div class="aviator-stars">✦　·　✦　　 ·　✦</div><div class="aviator-plane" id="aviatorPlane">✈️</div><strong id="aviatorMultiplier">1.00x</strong><small id="aviatorStatus">Ready for takeoff</small></div><button class="aviator-launch" data-game-action="aviator">Start flight animation</button></div>`;
+}
+async function playPracticeAction(action) {
+  const result = $('#practiceResult'); if (!result) return;
+  if (!state.me) { result.textContent = 'Please log in to play with credits.'; return; }
+  const stake = Number($('#gameStake')?.value);
+  if (!Number.isSafeInteger(stake) || stake < 1 || stake > 1000000) { result.textContent = 'Enter a stake from 1 to 1,000,000 credits.'; return; }
+  let game = practiceGame, choice = action;
+  if (action.startsWith('coin-')) choice = action.slice(5);
+  else if (action.startsWith('dice-')) choice = action.slice(5);
+  else if (action.startsWith('lucky-')) choice = action.slice(6);
+  else if (action.startsWith('rps-')) choice = action.slice(4);
+  else if (action === 'aviator') choice = 'fly';
+  const buttons = $$('[data-game-action]'); buttons.forEach(b => b.disabled = true);
+  try {
+    // Play a short, polished reveal animation while the server settles the virtual-credit round.
+    const j = await api('game/play', { game, action: choice, stake });
+    const stage = $('#gamePlayArea');
+    if (stage) stage.classList.add('round-resolving');
+    if (game === 'coin') { const el=$('#practiceCoin'); if (el) { el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip'); } }
+    if (game === 'dice') { const el=$('#practiceDie'); if (el) { el.classList.remove('roll'); void el.offsetWidth; el.classList.add('roll'); } }
+    if (game === 'lucky') { const el=$('#luckyResult'); if (el) { el.classList.remove('number-reveal'); void el.offsetWidth; el.classList.add('number-reveal'); } }
+    if (game === 'rps') { const a=$('#rpsYou'), b=$('#rpsCpu'); [a,b].filter(Boolean).forEach(el => { el.classList.remove('rps-reveal'); void el.offsetWidth; el.classList.add('rps-reveal'); }); }
+    if (game === 'aviator') { const plane=$('#aviatorPlane'), sky=$('.aviator-sky'); if (plane) { plane.classList.remove('fly-out'); void plane.offsetWidth; plane.classList.add('fly-out'); } if (sky) sky.classList.add('sky-glow'); }
+    await new Promise(resolve => setTimeout(resolve, 620));
+    await loadMe();
+    const bet = j.bet;
+    if (game === 'coin') { const el=$('#practiceCoin'); if (el) el.textContent=bet.outcome==='heads'?'H':'T'; }
+    if (game === 'dice') { const el=$('#practiceDie'); if (el) el.textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][Number(bet.outcome)-1]; }
+    if (game === 'lucky') { const el=$('#luckyResult'); if (el) el.textContent=bet.outcome; }
+    if (game === 'rps') { const icons={rock:'✊',paper:'✋',scissors:'✌️'}; if ($('#rpsYou')) $('#rpsYou').innerHTML=(icons[bet.action]||'❔')+'<small>You</small>'; if ($('#rpsCpu')) $('#rpsCpu').innerHTML=(icons[bet.outcome]||'🤖')+'<small>Computer</small>'; }
+    if (game === 'aviator') { const m=$('#aviatorMultiplier'), st=$('#aviatorStatus'), sky=$('.aviator-sky'); if (m) m.textContent=bet.outcome; if (st) st.textContent=bet.delta>0?'Flight landed — win!':'Flight crashed — lost stake'; if (sky) sky.classList.remove('sky-glow'); }
+    if (stage) stage.classList.remove('round-resolving');
+    result.textContent = `${j.message} Outcome: ${bet.outcome}. Stake: ${bet.stake} credits · Payout: ${bet.payout} credits · Balance: ${j.balance} credits.`;
+    const account = $('#account'); if (account) account.textContent = Number(j.balance).toLocaleString('en-IN') + ' CR';
+  } catch (e) { result.textContent = e.message; }
+  finally { $$('[data-game-action]').forEach(b => b.disabled = false); }
+}
+
+function renderPage(page, quiet) {
+  if (PROTECTED.has(page) && !state.me) return needLogin(page);
+  state.page = page;
+  const route = page === 'Coin' && state.coin ? `#Coin:${encodeURIComponent(state.coin)}` : `#${encodeURIComponent(page)}`;
+  if (location.hash !== route) history.replaceState(null, '', route);
+  $$('.bottom-nav button').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  const main = $('#appMain'), c = state.cfg;
+  if (page === 'Home') renderHome();
+  else if (page === 'Coin') {
+    main.innerHTML = `<section class="page-intro"><button class="link-btn" data-page="Quotes">← Back to quotes</button></section><div id="coinWrap">${bonusCoins().some(b => b.enabled && state.coin === b.symbol) ? bonusBody() : coinBody() || '<div class="empty-state">Price not loaded yet.</div>'}</div>`;
+    if (bonusCoins().some(b => b.enabled && state.coin === b.symbol)) bindBonus(); else { bindCoin(); if ($('#chartBox')) bindChart(); }
+  }
+  else if (page === 'Auth') { if (state.me) return renderPage('Profile'); authPage(); }
+  else if (page === 'Profile') {
+    const u = state.me; if (!u) return needLogin('Profile');
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">ACCOUNT</span><h1>${esc(u.name)}</h1><p>${esc(u.email)}</p></section>
+    ${u.role === 'admin' ? '<article class="content-card"><h2>Admin</h2><p class="fine-print">You are signed in as an administrator.</p><a class="primary-btn" style="display:block;text-align:center;text-decoration:none" href="/admin">Open Admin Panel</a></article>' : ''}
+    <form id="pwForm" class="demo-form"><h2 style="margin-top:0;font-size:16px">Change password</h2><label for="pwC">Current password</label>${pwField('pwC', 'current-password', 'required')}<label for="pwN">New password (min 8)</label>${pwField('pwN', 'new-password', 'minlength="8" required')}<p class="msg-err" id="pwErr"></p><button class="primary-btn" type="submit">Update password</button></form>
+    <div class="demo-form" style="margin-top:14px"><button class="secondary-btn" id="logout" type="button">Logout</button></div>`;
+    $('#pwForm').onsubmit = async e => { e.preventDefault(); try { await api('password', { current: $('#pwC').value, password: $('#pwN').value }); e.target.reset(); showToast('Password updated.'); } catch (x) { $('#pwErr').textContent = x.message; } };
+    $('#logout').onclick = doLogout;
+  } else if (page === 'Quotes') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">MARKET EXPLORER</span><h1>Quotes</h1><p>Live crypto prices in USD with 24h change and 7-day trend.</p></section><div class="search-wrap"><span>⌕</span><input id="assetSearch" type="search" placeholder="Search by name or symbol…" value="${esc(state.query)}" aria-label="Search assets"><button id="clearSearch" type="button" aria-label="Clear search">×</button></div><div id="staleNote">${staleNote()}</div><section class="asset-list" id="quoteList">${renderAssetRows(state.query)}</section>`;
+    $('#assetSearch').addEventListener('input', e => { state.query = e.target.value; $('#quoteList').innerHTML = renderAssetRows(state.query); });
+    $('#clearSearch').addEventListener('click', () => { state.query = ''; $('#assetSearch').value = ''; $('#quoteList').innerHTML = renderAssetRows(''); $('#assetSearch').focus(); });
+  } else if (page === 'Assets') {
+    main.innerHTML = `${noticeBar()}<section class="page-intro"><span class="eyebrow">WALLET</span><h1>Assets</h1><p>Your virtual-credit balance. Credits are non-redeemable and have no cash value.</p></section><article class="balance-card"><span>Available balance</span><strong>${inr(state.me.balance)}</strong><small>Credits can only be granted by an administrator. Deposits and withdrawals are disabled.</small><div class="balance-actions"><button data-page="Quotes">Simulated Buy / Sell</button><button data-page="Games">Play games</button></div><div class="balance-actions"><button data-page="Profile">Change password</button><button id="logoutBtn" type="button">Logout</button></div></article><section class="section-head"><div><span class="eyebrow">YOUR COINS</span><h2>Holdings</h2></div></section>${holdingsList()}<section class="section-head"><div><span class="eyebrow">YOUR RECORDS</span><h2>Recent activity</h2></div></section>${txList()}`;
+    $('#logoutBtn').onclick = doLogout;
+  } else if (page === 'Team' || page === 'Invite') {
+    const code = state.me.refCode, link = location.origin + '/?ref=' + code;
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">INVITE</span><h1>${page}</h1><p>Share your invite code with friends.</p></section><article class="balance-card team-card"><span>People who joined with your code</span><strong>${state.referrals}</strong>${state.cfg.tradeRef && state.cfg.tradeRef.enabled && state.cfg.tradeRef.pct ? `<div class="stat-grid"><div><small>Your commission</small><b>${state.cfg.tradeRef.pct}% of the profit your friends make on their market trades</b></div><div><small>Total earned</small><b>${inr(state.me.refEarned)}</b></div></div>` : ''}${bonusCfg().enabled && bonusCfg().refPct ? `<div class="stat-grid"><div><small>Your commission</small><b>${bonusCfg().refPct}% of ${bonusCfg().refBase === 'amount' ? 'their ' + esc(bonusCfg().symbol) + ' trade amount' : 'their ' + esc(bonusCfg().symbol) + ' trade return'}</b></div><div><small>Total earned</small><b>${inr(state.me.refEarned)}</b></div></div>` : `<div class="stat-grid"><div><small>Total earned</small><b>${inr(state.me.refEarned)}</b></div></div>`}</article><article class="content-card"><h2>Your invite code</h2><div class="copy-row"><code>${esc(code)}</code><button class="primary-btn compact" id="copyCode" type="button">Copy link</button></div></article>`;
+    $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(link); showToast('Invite link copied.'); } catch { showToast('Your invite code: ' + code); } };
+  } else if (page === 'Games') {
+    if (c.gamesEnabled === false) { main.innerHTML = `<section class="page-intro"><span class="eyebrow">CRYPTO BRIDGE ARCADE</span><h1>Game Zone</h1><p>Games are temporarily unavailable. Please check back later.</p></section><article class="content-card"><h2>Coming back soon</h2><p class="fine-print">The administrator has temporarily disabled the Game Zone.</p></article>`; } else {
+    const game = PRACTICE_GAMES.find(g => g.id === practiceGame) || PRACTICE_GAMES[0];
+    main.innerHTML = `<section class="games-hero"><div><span class="eyebrow">CRYPTO BRIDGE ARCADE</span><h1>Game Zone</h1><p>Play mini-games with virtual credits. Credits have no cash value and cannot be withdrawn or redeemed.</p></div><div class="games-wallet"><small>YOUR CREDIT BALANCE</small><strong>${state.me ? inr(state.me.balance) : 'Login to view'} </strong><button data-page="${state.me ? 'Assets' : 'Auth'}">${state.me ? 'Open wallet ↗' : 'Login / Register ↗'}</button></div><span class="games-orb">✦</span></section>
+    <div class="practice-note"><span>ⓘ</span><div><b>Virtual credits only</b><p>Games deduct credits and award virtual-credit payouts. Credits are non-redeemable, have no cash value, and cannot be deposited or withdrawn. Only an admin can add credits.</p></div></div>
+    <section class="section-head"><div><span class="eyebrow">CHOOSE YOUR GAME</span><h2>Mini games</h2></div><span class="demo-pill">5 GAMES</span></section><div class="game-grid">${PRACTICE_GAMES.map(g => `<button class="game-tile ${g.id===game.id?'selected':''}" data-game-select="${g.id}"><span class="game-icon">${g.icon}</span><span class="game-copy"><b>${g.name}</b><small>${g.desc}</small><em>${g.tag}</em></span><span class="game-arrow">↗</span></button>`).join('')}</div>
+    <section class="game-stage"><div class="stage-head"><div><span class="eyebrow">NOW PLAYING</span><h2>${game.icon} ${game.name}</h2></div><span class="free-label">CREDIT PLAY</span></div><label class="credit-stake-label" for="gameStake">Stake (credits)</label><input class="credit-stake-input" id="gameStake" type="number" min="1" max="1000000" step="1" value="10" required><div class="game-play-area" id="gamePlayArea">${practiceGameBody(game.id)}</div><p class="practice-result" id="practiceResult" aria-live="polite">${esc(practiceResult || 'Ready when you are — make your move!')}</p></section>`;
+    }
+  } else if (page === 'Bonus') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">OFFERS</span><h1>Bonus</h1><p>Announcements from Crypto Bridge.</p></section>${c.bonus ? `<article class="content-card"><p style="white-space:pre-wrap">${esc(c.bonus)}</p></article>` : '<div class="empty-state">No active offers right now.</div>'}`;
+  } else if (page === 'Recharge') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">CREDITS</span><h1>Get credits</h1><p>Only the administrator can add virtual credits to your account. Credits have no cash value and cannot be purchased, withdrawn, or redeemed.</p></section><article class="content-card"><h2>Current balance: ${inr(state.me.balance)}</h2><p>Contact the site administrator if you need test credits.</p><button class="secondary-btn" data-page="Assets">Back to assets</button></article>`;
+    /* disabled payment flow in credits-only build */
+    return;
+    const razor = c.paymentMode === 'razorpay';
+    const pay = razor ? !!c.razorpayEnabled : !!(c.upi || c.qr);
+    const pendingDep = state.deposits.filter(d => d.status === 'Pending' && d.provider !== 'razorpay').sort((a,b) => b.ts-a.ts)[0];
+    const countdownCard = pendingDep && !razor ? `<article class="content-card"><h2>Deposit review timer</h2><p>Your QR deposit request is pending admin verification.</p><strong class="deposit-countdown" data-deposit-countdown="${Number(pendingDep.ts) + 30 * 60 * 1000}">30:00</strong><p class="fine-print">This is a review timer, not payment confirmation. Your balance is credited only after an admin verifies the payment.</p></article>` : '';
+    main.innerHTML = `${noticeBar()}<section class="page-intro"><span class="eyebrow">WALLET</span><h1>Recharge</h1><p>Minimum deposit ${inr(c.minDeposit)}. ${razor ? 'Pay securely using Razorpay. Captured payments are verified by the server.' : 'Pay by UPI QR and submit your UTR for admin verification.'}</p></section>${countdownCard}
+    ${razor ? (pay ? `<article class="content-card"><h2>Razorpay Checkout</h2><p>Your payment is verified automatically after Razorpay confirms capture. Do not close the page until Checkout reports the result.</p><p class="fine-print">Deposits are credited only after server-side payment verification.</p></article>` : `<article class="content-card warning-card"><span class="warning-icon">ⓘ</span><div><h2>Razorpay is not configured</h2><p>The administrator must configure Razorpay credentials in Render Environment.</p></div></article>`) : (pay ? `<article class="content-card"><h2>Pay to</h2>${c.qr ? `<img class="qr-img" alt="Payment QR" src="${esc(c.qr)}">` : ''}${c.upi ? `<div class="copy-row"><code>${esc(c.upi)}</code><button class="primary-btn compact" id="copyUpi" type="button">Copy</button></div>` : ''}${c.payee ? `<p class="fine-print">Payee: ${esc(c.payee)}</p>` : ''}</article>` : '<article class="content-card warning-card"><span class="warning-icon">ⓘ</span><div><h2>Deposits not open</h2><p>Payment details have not been set up yet. Please contact support.</p></div></article>')}
+    <form id="depForm" class="demo-form"><label for="dAmt">${razor ? 'Deposit amount (credits)' : 'Amount (credits)'}</label><input id="dAmt" type="number" inputmode="numeric" min="${c.minDeposit}" step="1" required placeholder="${c.minDeposit}">${razor ? '' : '<label for="dUtr">UTR / transaction reference</label><input id="dUtr" required maxlength="30" autocomplete="off" placeholder="12-digit UTR">'}<p class="msg-err" id="depErr" role="alert"></p><button class="primary-btn" type="submit" ${pay ? '' : 'disabled'}>${razor ? 'Pay securely with Razorpay' : 'Submit for verification'}</button><button class="secondary-btn" type="button" data-page="Assets">Back to assets</button></form>`;
+    const cu = $('#copyUpi'); if (cu) cu.onclick = async () => { try { await navigator.clipboard.writeText(c.upi); showToast('UPI ID copied.'); } catch { showToast(c.upi); } };
+    $('#depForm').onsubmit = async e => {
+      e.preventDefault(); $('#depErr').textContent = ''; const btn = e.submitter; btn.disabled = true;
+      try {
+        const amount = Number($('#dAmt').value);
+        if (razor) {
+          const order = await api('razorpay/order', { amount });
+          if (!window.Razorpay) await new Promise((resolve, reject) => { const script = document.createElement('script'); script.src = 'https://checkout.razorpay.com/v1/checkout.js'; script.onload = resolve; script.onerror = () => reject(new Error('Could not load Razorpay Checkout. Please retry.')); document.head.appendChild(script); });
+          await new Promise((resolve, reject) => {
+            let finished = false;
+            const checkout = new window.Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name: order.name, description: order.description, order_id: order.orderId, handler: async response => { try { await api('razorpay/verify', response); finished = true; resolve(); } catch (err) { reject(err); } }, modal: { ondismiss: () => { if (!finished) reject(new Error('Checkout closed. If you paid, your deposit will update after Razorpay webhook verification.')); } }, theme: { color: '#245ce8' } });
+            checkout.on('payment.failed', response => reject(new Error(response.error && response.error.description || 'Payment failed. Please retry.'))); checkout.open();
+          });
+          await loadMe(); showModal('Payment verified', 'Razorpay confirmed your payment and your wallet deposit was credited.'); renderPage('Assets');
+        } else {
+          await api('deposit', { amount, utr: $('#dUtr').value }); await loadMe(); showDepositCountdown(); renderPage('Assets');
+        }
+      } catch (x) { $('#depErr').textContent = x.message; btn.disabled = false; }
+    };
+  } else if (page === 'Withdrawal') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">CREDITS</span><h1>Withdrawals disabled</h1><p>Virtual credits have no cash value and cannot be withdrawn, transferred for cash, or redeemed.</p></section><article class="content-card"><h2>Current balance: ${inr(state.me.balance)}</h2><button class="secondary-btn" data-page="Assets">Back to assets</button></article>`;
+    return;
+    main.innerHTML = `${noticeBar()}<section class="page-intro"><span class="eyebrow">WALLET</span><h1>Withdrawal</h1><p>Minimum withdrawal ${inr(c.minWithdraw)}. Available: <b>${inr(state.me.balance)}</b>. ${state.me.mode === 'demo' ? 'Demo withdrawals are simulated and do not send real money.' : ''} ${c.withdrawalMode === 'profit' ? 'Profit-only policy is enabled: only recorded realized profits can be requested. Contact support to request principal release.' : 'Full-balance withdrawals are enabled, subject to admin review.'} The amount is held while your request is pending. ${state.withdrawals.some(w => w.status === 'Rejected' && Number(w.retryAt || 0) > Date.now()) ? `Retry available after ${new Date(Math.max(...state.withdrawals.filter(w => w.status === 'Rejected' && Number(w.retryAt || 0) > Date.now()).map(w => w.retryAt))).toLocaleString()}.` : ''}</p></section>
+    <form id="wdForm" class="demo-form"><label for="wAmt">Amount (credits)</label><input id="wAmt" type="number" inputmode="numeric" min="${c.minWithdraw}" max="${state.me.balance}" step="1" required placeholder="${c.minWithdraw}"><div class="content-card" style="margin:12px 0"><p>Withdrawal amount: <b id="wdGross">—</b></p><p>${esc(c.withdrawalFeeLabel || 'Platform Fee')}: <b id="wdFee">—</b></p><p>Estimated payout: <b id="wdNet">—</b></p><small class="fine-print">Fee settings are set by the administrator. The full requested amount is held; if rejected, the gross amount is refunded.</small></div><label for="wUpi">${state.me.mode === 'demo' ? 'Demo payout reference / UPI ID' : 'Your UPI ID'}</label><input id="wUpi" required maxlength="60" autocomplete="off" placeholder="name@bank"><p class="msg-err" id="wdErr" role="alert"></p><button class="primary-btn" type="submit">Request withdrawal</button><button class="secondary-btn" type="button" data-page="Assets">Back to assets</button></form>`;
+    const updateWdPreview = () => { const gross = Math.max(0, Number($('#wAmt').value) || 0); const val = Math.max(0, Number(c.withdrawalFeeValue || 0)); const fee = Math.min(gross, c.withdrawalFeeType === 'fixed' ? val : Math.round(gross * val) / 100); $('#wdGross').textContent = inr(gross); $('#wdFee').textContent = inr(fee); $('#wdNet').textContent = inr(Math.max(0, gross - fee)); }; $('#wAmt').addEventListener('input', updateWdPreview); updateWdPreview();
+    $('#wdForm').onsubmit = async e => {
+      e.preventDefault(); $('#wdErr').textContent = ''; const btn = e.submitter; btn.disabled = true;
+      try { await api('withdraw', { amount: Number($('#wAmt').value), upi: $('#wUpi').value }); await loadMe(); showModal('Requested', 'Your withdrawal request is pending. You can follow its status in Assets.'); renderPage('Assets'); }
+      catch (x) { $('#wdErr').textContent = x.message; btn.disabled = false; }
+    };
+  } else if (page === 'Signal') {
+    const sorted = [...state.prices].sort((a, b) => b.change - a.change);
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">MARKET MOVERS</span><h1>Movers</h1><p>Biggest 24h moves among tracked assets, from live data. Not financial advice.</p></section><div id="staleNote">${staleNote()}</div><section class="asset-list" id="moverList">${sorted.length ? sorted.map(assetRow).join('') : renderAssetRows()}</section>`;
+  } else if (page === 'Service') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">HELP CENTER</span><h1>Service</h1><p>Answers and support.</p></section>${c.support ? `<a class="primary-btn" style="display:block;text-align:center;text-decoration:none;margin-bottom:14px" target="_blank" rel="noopener" href="${esc(c.support)}">Contact support ↗</a>` : ''}<div class="faq-list"><details open><summary>How do I get credits?</summary><p>Only an administrator can grant virtual credits. Credits have no cash value and cannot be bought or redeemed.</p></details><details><summary>Can I withdraw credits?</summary><p>No. Credits are virtual, non-transferable for cash, and cannot be withdrawn or redeemed.</p></details><details><summary>Are prices live?</summary><p>Yes, prices come from CoinGecko and refresh about every 20 seconds. They can be slightly delayed.</p></details></div>`;
+  } else if (page === 'Guide') {
+    main.innerHTML = `<section class="page-intro"><span class="eyebrow">QUICK START</span><h1>Guide</h1><p>Get going in three steps.</p></section><div class="faq-list"><details open><summary>1. Register or login</summary><p>Create an account with your email and a password of at least 8 characters.</p></details><details open><summary>2. Recharge</summary><p>Minimum ${inr(c.minDeposit)}. ${(c.paymentMode === 'razorpay' && c.razorpayEnabled) ? 'Pay securely using Razorpay Checkout. Your wallet is credited after server-side payment verification.' : 'Pay via the displayed UPI QR/ID, submit the UTR, and wait for admin verification.'}</p></details><details open><summary>3. Withdraw</summary><p>Minimum ${inr(c.minWithdraw)}. Requests are reviewed and paid to your UPI ID. The configured ${esc(c.withdrawalFeeLabel || 'Platform Fee')} is deducted from the gross request; the net payout is shown before submission.</p></details></div>`;
+  }
+  if (!quiet) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function doLogout() { try { await api('logout', {}); } catch {} state.me = null; state.deposits = state.withdrawals = state.trades = state.positions = []; await loadMe(); showToast('Logged out.'); renderPage('Home'); }
+function showModal(title, text) { $('#modalTitle').textContent = title; $('#modalBody').innerHTML = ''; const p = document.createElement('p'); p.textContent = text; $('#modalBody').appendChild(p); $('#modal').hidden = false; $('#okModal').focus(); }
+function showDepositCountdown() {
+  $('#modalTitle').textContent = 'Deposit submitted';
+  $('#modalBody').innerHTML = '<p>Your deposit request has been received.</p><p class="fine-print">Estimated review timer</p><strong class="deposit-countdown" id="depositModalCountdown">30:00</strong><p class="fine-print">This timer does not confirm payment or guarantee automatic credit. Your balance will be credited only after an admin verifies the payment.</p>';
+  $('#modal').hidden = false; $('#okModal').focus(); updateDepositCountdowns();
+}
+function updateDepositCountdowns() {
+  const nodes = document.querySelectorAll('[data-deposit-countdown], #depositModalCountdown');
+  nodes.forEach(node => {
+    let end = Number(node.dataset.depositCountdown);
+    if (!end) { const pending = state.deposits.filter(d => d.status === 'Pending').sort((a,b) => b.ts-a.ts)[0]; end = pending ? Number(pending.ts) + 30 * 60 * 1000 : Date.now() + 30 * 60 * 1000; node.dataset.depositCountdown = String(end); }
+    const left = Math.max(0, end - Date.now()); const mins = Math.floor(left / 60000); const secs = Math.floor((left % 60000) / 1000);
+    node.textContent = left > 0 ? `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}` : 'Review time elapsed';
+  });
+}
+setInterval(updateDepositCountdowns, 1000);
+function hideModal() { $('#modal').hidden = true; }
+function showToast(m) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(showToast.t); showToast.t = setTimeout(() => { t.hidden = true; }, 2600); }
+
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-coin]')) { e.preventDefault(); e.target.click(); } });
+document.addEventListener('click', e => {
+  const gs = e.target.closest('[data-game-select]'); if (gs) { practiceGame = gs.dataset.gameSelect; practiceResult = ''; renderPage('Games'); return; }
+  const ga = e.target.closest('[data-game-action]'); if (ga) { playPracticeAction(ga.dataset.gameAction); return; }
+  const eye = e.target.closest('[data-eye]'); if (eye) { const i = document.getElementById(eye.dataset.eye), show = i.type === 'password'; i.type = show ? 'text' : 'password'; eye.innerHTML = show ? EYE_OFF : EYE; eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); return; }
+  const cn = e.target.closest('[data-coin]'); if (cn) { state.coin = cn.dataset.coin; renderPage('Coin'); return; } const b = e.target.closest('[data-page]'); if (b) { e.preventDefault(); renderPage(b.dataset.page); } });
+$('#closeModal').addEventListener('click', hideModal);
+$('#okModal').addEventListener('click', hideModal);
+$('#modal').addEventListener('click', e => { if (e.target === $('#modal')) hideModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) hideModal(); });
+$('#account').addEventListener('click', () => renderPage(state.me ? 'Profile' : 'Auth'));
+
+(async function init() {
+  const ref = new URLSearchParams(location.search).get('ref');
+  await loadMe();
+  const route = decodeURIComponent(location.hash.slice(1) || 'Home');
+  let initialPage = route.split(':')[0];
+  if (route.startsWith('Coin:')) state.coin = route.slice(5);
+  const allowedPages = new Set(['Home','Quotes','Games','Signal','Assets','Recharge','Withdrawal','Team','Invite','Bonus','Service','Guide','Coin','Auth','Profile']);
+  if (!allowedPages.has(initialPage)) initialPage = 'Home';
+  if (ref && !state.me) initialPage = 'Auth';
+  renderPage(initialPage);
+  if (ref && !state.me) { state.authMode = 'register'; authPage(); }
+  window.addEventListener('hashchange', async () => {
+    const next = decodeURIComponent(location.hash.slice(1) || 'Home');
+    const page = next.split(':')[0];
+    if (next.startsWith('Coin:')) state.coin = next.slice(5);
+    if (allowedPages.has(page) && page !== state.page) { await loadMe(); renderPage(page); }
+  });
+  pullPrices(); setInterval(pullPrices, 20000);
 })();

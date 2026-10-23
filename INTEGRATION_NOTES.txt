@@ -1,0 +1,7 @@
+CREDITS-ONLY GAME ZONE
+
+This build uses virtual, non-redeemable credits. Credits have no cash value. There are no deposits, withdrawals, cash prizes, or cash-outs. Server endpoints for Razorpay/UPI deposits and withdrawals return 403 by default. Only an authenticated admin can add credits from Admin > Users > Add Credit; each credit requires a reason and is audited.
+
+Games: Coin Flip, Dice Roll, Lucky Number, Rock Paper Scissors, and Aviator-style multiplier game. Stakes and outcomes are validated/settled on the server. Game results are logged. Outcomes are for entertainment/testing only and should not be described as real-money gambling.
+
+For local run: npm start. For tests: npm test. Set CREDITS_ONLY=false only in an isolated legacy test environment; do not use it in a public deployment.

@@ -1,12 +1,13 @@
 {
-  "name": "iq63-coinflip-app",
-  "version": "2.0.0",
+  "name": "crypto-bridge",
+  "version": "3.0.0",
   "private": true,
-  "description": "IQ63 server-backed accounts, virtual-credit wallet ledger and Coin Flip demo game",
+  "description": "Crypto Bridge \u2014 isolated demo account management, multi bonus coins, configurable rewards and admin controls",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-server.js && node test-credits.js"
+  },
   "engines": {
     "node": ">=18"
-  },
-  "scripts": {
-    "start": "node server.js"
   }
 }

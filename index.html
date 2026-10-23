@@ -1,31 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#9e101b"><title>IQ63 — Virtual Games</title>
-<link rel="stylesheet" href="/app.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142a54">
+  <meta name="description" content="Crypto Bridge — live digital asset prices, wallet deposits and withdrawals.">
+  <title>Crypto Bridge</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-<header class="topbar"><div class="brand"><span class="brand-mark">IQ63</span><span>IQ63</span></div><div class="top-actions" id="top-actions"><button class="btn btn-ghost" data-page="login">Log in</button><button class="btn btn-gold" data-page="register">Register</button></div></header>
-<main id="home-content" class="home-content">
-<section class="hero" aria-label="Welcome to IQ63"><div class="hero-copy"><span class="eyebrow"><span class="live-dot"></span> WELCOME TO IQ63</span><h1>Play. Enjoy.<br><em>Win together.</em></h1><p>Create your account, play games with virtual credits, and track your wallet activity.</p><div class="hero-actions"><button class="btn btn-gold btn-large" data-page="register">Create account <span>›</span></button><button class="btn btn-outline btn-large" data-page="login">Log in</button></div><div class="trust-line"><span>✓ Easy access</span><span>✓ Mobile friendly</span><span>✓ Account dashboard</span></div></div><div class="hero-art" aria-hidden="true"><div class="glow"></div><div class="hero-card"><div class="card-top">IQ63</div><div class="card-star">✦</div><div class="card-bottom">YOUR LUCKY PLACE</div></div><div class="coin coin-one">H</div><div class="coin coin-two">T</div></div></section>
-<section class="section-heading lobby-heading" id="lobby-heading"><div><span class="eyebrow">IQ63 GAMES</span><h2>Game Lobby</h2></div><span class="muted">Choose a game</span></section>
-<section class="game-grid" aria-label="Available games">
-<button class="game-card coinflip-launch" data-game="coinflip"><span class="game-icon gold">🪙</span><span class="game-name">Coin Flip</span><span class="game-sub">Heads or Tails</span><span class="arrow">›</span></button>
-<button class="game-card" data-game="dice"><span class="game-icon purple">🎲</span><span class="game-name">Dice Roll</span><span class="game-sub">High or Low</span><span class="arrow">›</span></button>
-<button class="game-card" data-game="lucky"><span class="game-icon blue">🍀</span><span class="game-name">Lucky Number</span><span class="game-sub">Pick 1–6</span><span class="arrow">›</span></button>
-<button class="game-card" data-game="rps"><span class="game-icon green">✊</span><span class="game-name">Rock Paper Scissors</span><span class="game-sub">Choose your move</span><span class="arrow">›</span></button>
-<button class="game-card" data-game="aviator"><span class="game-icon blue">✈️</span><span class="game-name">Aviator</span><span class="game-sub">Multiplier demo</span><span class="arrow">›</span></button>
-</section>
-</main>
-<div id="game-template-bank" hidden><section class="coinflip-panel" id="coinflip-panel">
-  <div class="coinflip-intro"><span class="eyebrow">IQ63 MINI GAME</span><h2>Coin Flip</h2><p>Pick Heads or Tails, set your credit amount, and flip the coin. A win returns 2× your bet. Virtual credits only — no deposits or cash withdrawals.</p></div>
-  <div class="coinflip-play"><div class="coin-display" id="coin-display" aria-live="polite"><span>IQ</span></div><div class="flip-result" id="flip-result">Choose a side to play</div><div class="coin-choices"><button type="button" class="coin-choice selected" data-choice="heads">◉ Heads</button><button type="button" class="coin-choice" data-choice="tails">✦ Tails</button></div><form id="coinflip-form"><label for="bet-amount">Bet amount (credits)</label><div class="bet-row"><input id="bet-amount" type="number" min="1" max="10000" step="1" value="50" required><button type="button" class="bet-preset" data-bet="10">10</button><button type="button" class="bet-preset" data-bet="50">50</button><button type="button" class="bet-preset" data-bet="100">100</button></div><button class="btn btn-gold btn-large flip-button" type="submit" id="flip-button">Flip coin</button></form><p class="game-message" id="game-message" aria-live="polite">Log in to play and save your game history.</p></div>
-</section></div>
-<nav class="bottom-nav"><button class="active" data-tab="home"><span>⌂</span>Home</button><button data-tab="promotion"><span>🎁</span>Promotion</button><button data-tab="invite"><span>♧</span>Invite</button><button data-tab="wallet"><span>◈</span>Wallet</button><button data-tab="account"><span>♙</span>Account</button></nav>
-<div class="modal-backdrop" id="modal" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" id="modal-close" aria-label="Close">×</button><div class="modal-logo"><span class="brand-mark">IQ</span></div><div class="auth-tabs"><button class="auth-tab selected" data-auth="login">Log in</button><button class="auth-tab" data-auth="register">Register</button></div><h2 id="modal-title">Welcome back</h2><p class="modal-desc">Enter your details to continue.</p><form id="auth-form"><div id="name-wrap" hidden><label for="full-name">Your name</label><input id="full-name" name="name" autocomplete="name" maxlength="40" placeholder="Enter your name"></div><label for="phone">Mobile number</label><div class="phone-input"><span>+91</span><input id="phone" name="phone" autocomplete="tel-national" type="tel" inputmode="numeric" minlength="10" maxlength="10" placeholder="Enter 10-digit number" required></div><label for="password">Password</label><div class="password-wrap"><input id="password" name="password" autocomplete="current-password" type="password" minlength="8" placeholder="At least 8 characters" required><button type="button" class="eye-toggle" data-eye="password" aria-label="Show password">◉</button></div><div id="confirm-wrap" hidden><label for="confirm">Confirm password</label><div class="password-wrap"><input id="confirm" name="confirm" autocomplete="new-password" type="password" minlength="8" placeholder="Re-enter password"><button type="button" class="eye-toggle" data-eye="confirm" aria-label="Show confirm password">◉</button></div></div><p id="form-message" class="form-message" aria-live="polite"></p><button class="btn btn-gold btn-full" type="submit" id="auth-submit">Log in</button></form><p class="preview-note">Your account is stored on this website server. Use a unique password. Game credits have no cash value. Real-money gambling and cash withdrawals are not enabled.</p></section></div>
-<section id="account-panel" class="standalone-page" hidden aria-live="polite"></section><section id="promotion-page" class="standalone-page" hidden><span class="eyebrow">PROMOTION</span><h2>Invite friends</h2><p>Share your personal invite link with friends.</p><p id="promotion-referral-info">Log in to view your UID and referral link.</p><button class="btn btn-gold" id="promotion-referral-action">Log in / Register</button></section><section id="invite-page" class="standalone-page" hidden></section><section id="wallet-page" class="standalone-page" hidden></section><section id="games-page" class="standalone-page" hidden></section><section id="admin-page" class="standalone-page" hidden></section><div class="toast" id="toast" role="status" aria-live="polite"></div>
-</div>
-<script src="/app.js" defer></script>
-</body></html>
+  <header class="topbar">
+    <button class="brand brand-button" data-page="Home" aria-label="Crypto Bridge home"><span class="brandmark">B</span><span><b>Crypto Bridge</b><small>Digital asset dashboard</small></span></button>
+    <div class="topbar-right"><span class="demo-tag live"><i></i> LIVE PRICES</span><button class="language" id="account" type="button">Login</button></div>
+  </header>
+  <main id="appMain" tabindex="-1"></main>
+  <nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-page="Home"><span>⌂</span>Home</button><button data-page="Quotes"><span>⌁</span>Quotes</button><button data-page="Games"><span>🎮</span>Games</button><button data-page="Team"><span>♙</span>Team</button><button data-page="Bonus"><span>✦</span>Bonus</button><button data-page="Assets"><span>▣</span>Assets</button></nav>
+  <div class="modal-backdrop" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><button class="close" id="closeModal" aria-label="Close dialog">×</button><div class="modal-symbol" id="modalSymbol">i</div><h2 id="modalTitle">Notice</h2><div id="modalBody"></div><button class="primary-btn" id="okModal" type="button">OK</button></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <footer id="siteFooter">India-focused platform</footer>
+  <script src="app.js" defer></script>
+</body>
+</html>

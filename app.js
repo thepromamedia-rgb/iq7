@@ -17,7 +17,18 @@ const PRACTICE_GAMES = [{id:'coin',name:'Coin Flip',icon:'🪙',desc:'Call heads
 let practiceGame = 'coin', practiceResult = '', aviatorTimer = null;
 
 async function api(path, body) {
-  const r = await fetch('/api/' + path, body === undefined ? { credentials: 'same-origin' } : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  // Never let a sleeping/slow host leave the entire interface waiting forever.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 7000);
+  let r;
+  try {
+    r = await fetch('/api/' + path, body === undefined
+      ? { credentials: 'same-origin', signal: controller.signal }
+      : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Server response timed out. Please retry in a moment.');
+    throw e;
+  } finally { clearTimeout(timeout); }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) { const e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; }
   return j;
@@ -47,7 +58,12 @@ function bonusRow(q = '') {
 }
 function renderAssetRows(q = '') {
   q = q.trim().toLowerCase(); const br = bonusRow(q);
-  if (!state.prices.length) return br + `<div class="empty-state">${state.priceErr ? 'Live prices could not load. Retrying… <br><small>' + esc(state.priceErr) + '</small>' : 'Loading live prices…'}</div>`;
+  if (!state.prices.length) {
+    // Keep the full coin catalogue visible and clickable even if a public price API is down.
+    const available = COINS.filter(c => (c[0] + ' ' + c[1]).toLowerCase().includes(q));
+    const fallback = available.map(([symbol, name, , mark], i) => `<div class="asset-row" data-coin="${esc(symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-name"><span class="coin" style="--coin-bg:${colors[i % colors.length]}" aria-hidden="true">${esc(mark)}</span><div><strong>${esc(symbol)}</strong><small>${esc(name)}</small></div></div><div class="asset-price">—</div><div class="asset-change">Price unavailable</div></div>`).join('');
+    return br + fallback + `<div class="empty-state">${state.priceErr ? 'Live prices are temporarily unavailable. Coins remain visible; retrying automatically. <br><small>' + esc(state.priceErr) + '</small>' : 'Connecting to live price feeds…'}</div>`;
+  }
   const f = state.prices.filter(a => a.symbol.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
   return br + (f.length ? f.map(assetRow).join('') : (br ? '' : '<div class="empty-state">No assets match that search.</div>'));
 }
@@ -85,7 +101,9 @@ function refreshPriceViews() {
   else if (state.page === 'Signal') renderPage('Signal', true);
   const s = $('#staleNote'); if (s) s.innerHTML = staleNote();
 }
-const marketCards = () => state.prices.slice(0, 3).map((a, i) => `<article class="market-card" data-coin="${esc(a.symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-top">${coinIcon(a, i)}<div><strong>${esc(a.name)}</strong><small>${esc(a.symbol)} / USD</small></div></div><div class="price">${usd(a.price)}</div><div class="asset-change ${a.change < 0 ? 'negative' : 'positive'}">${changeLabel(a.change)}</div>${sparkline(a)}</article>`).join('');
+const marketCards = () => state.prices.length
+  ? state.prices.slice(0, 3).map((a, i) => `<article class="market-card" data-coin="${esc(a.symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-top">${coinIcon(a, i)}<div><strong>${esc(a.name)}</strong><small>${esc(a.symbol)} / USD</small></div></div><div class="price">${usd(a.price)}</div><div class="asset-change ${a.change < 0 ? 'negative' : 'positive'}">${changeLabel(a.change)}</div>${sparkline(a)}</article>`).join('')
+  : COINS.slice(0, 3).map(([symbol, name, , mark], i) => `<article class="market-card" data-coin="${esc(symbol)}" role="button" tabindex="0" style="cursor:pointer"><div class="asset-top"><span class="coin" style="--coin-bg:${colors[i % colors.length]}">${esc(mark)}</span><div><strong>${esc(name)}</strong><small>${esc(symbol)} / USD</small></div></div><div class="price">—</div><div class="asset-change">Price unavailable</div></article>`).join('');
 
 // ---------- session ----------
 async function loadMe() {
@@ -442,21 +460,29 @@ if (location.protocol === 'file:') {
 } else {
   (async function init() {
     const ref = new URLSearchParams(location.search).get('ref');
-    await loadMe();
-    const route = decodeURIComponent(location.hash.slice(1) || 'Home');
-    let initialPage = route.split(':')[0];
-    if (route.startsWith('Coin:')) state.coin = route.slice(5);
+    const safeRoute = () => { try { return decodeURIComponent(location.hash.slice(1) || 'Home'); } catch { return 'Home'; } };
     const allowedPages = new Set(['Home','Quotes','Games','Signal','Assets','Recharge','Withdrawal','Team','Invite','Bonus','Service','Guide','Coin','Auth','Profile']);
+    const route = safeRoute();
+    let initialPage = route.split(':')[0];
     if (!allowedPages.has(initialPage)) initialPage = 'Home';
+    if (route.startsWith('Coin:')) state.coin = route.slice(5);
+
+    // Render immediately: a cold-starting API must never leave users staring at a white page.
+    renderPage('Home');
+    await loadMe();
     if (ref && !state.me) initialPage = 'Auth';
-    renderPage(initialPage);
-    if (ref && !state.me) { state.authMode = 'register'; authPage(); }
+    if (state.page === 'Home') renderPage(initialPage); // don't override a page the user already clicked
+    if (ref && !state.me && state.page === 'Auth') { state.authMode = 'register'; authPage(); }
     window.addEventListener('hashchange', async () => {
-      const next = decodeURIComponent(location.hash.slice(1) || 'Home');
+      const next = safeRoute();
       const page = next.split(':')[0];
       if (next.startsWith('Coin:')) state.coin = next.slice(5);
       if (allowedPages.has(page) && page !== state.page) { await loadMe(); renderPage(page); }
     });
     pullPrices(); setInterval(pullPrices, 20000);
-  })();
+  })().catch(err => {
+    console.error('Crypto Bridge startup failed:', err);
+    const main = $('#appMain');
+    if (main && !main.innerHTML.trim()) main.innerHTML = `<section class="page-intro"><h1>Crypto Bridge</h1><p>The app hit a startup error. Refresh the page to try again.</p><small>${esc(err && err.message || 'Unknown error')}</small></section>`;
+  });
 }

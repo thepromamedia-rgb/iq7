@@ -1,0 +1,26 @@
+IQ63 UPDATED DEMO BUILD — CHANGE / TEST REPORT
+
+Implemented:
+- Added Aviator demo game card and animated plane/multiplier UI.
+- Added server-side Aviator round endpoint with virtual-credit accounting and game-history entry.
+- Replaced payment/UPI deposit flow with demo-credit request flow; no real payment details or payment processing.
+- Added virtual-credit redemption requests and request history.
+- Added admin approval/rejection of demo-credit and redemption requests.
+- Added admin min/max redemption settings and configurable wagering multiplier.
+- Kept account login/register, existing games, user search, balance adjustment, deletion and activity sections.
+
+Checks run:
+- node --check server.js: PASS
+- node --check app.js: PASS
+- Local HTTP /healthz: PASS
+- Registration and session cookie: PASS
+- Demo-credit request and admin approval: PASS
+- Aviator API round and virtual balance response: PASS
+- Admin settings save: PASS
+- Redemption request and admin approval: PASS
+- Home page Aviator card served: PASS
+
+Limitations:
+- Automated local API smoke tests were run; no full browser/device QA was available.
+- This is a virtual-credit demo only. Credits have no cash value and no cash payout is provided.
+- Configure ADMIN_PASSWORD and SESSION_SECRET in hosting environment. Configure persistent storage for the data directory if users/credits must survive redeploys.

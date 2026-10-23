@@ -124,3 +124,23 @@ body[data-current-page="admin"] #admin-page{display:block!important;visibility:v
  .admin-quick-grid{grid-template-columns:1fr}
  .admin-back-row .admin-small-btn{padding:7px 8px;font-size:11px}
 }
+
+
+/* IQ63 landing and game layout refresh */
+.hero{max-width:none;margin:0;min-height:390px;padding:62px max(calc((100vw - 1120px)/2),22px) 54px}
+.home-content{padding-bottom:20px}
+#lobby-heading{margin-top:30px}
+#games-page{max-width:980px;margin:18px auto 36px;padding:0 22px 30px;overflow:visible}
+.game-topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.game-balance{margin-left:auto;text-align:right;border:1px solid #f0d7a0;background:linear-gradient(135deg,#fff8e8,#fff);border-radius:13px;padding:9px 14px;min-width:130px;box-shadow:0 5px 16px #5b1a0808}
+.game-balance small,.game-balance span{display:block;color:#8c6c39;font-size:9px;font-weight:800;letter-spacing:.8px}
+.game-balance strong{display:block;color:#8e111c;font-size:21px;line-height:1.35}
+.game-balance span{font-size:10px;letter-spacing:0}
+.game-history{margin-top:22px;padding-bottom:20px}
+.game-history-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.game-history-head h3{margin:5px 0 0;font-size:19px}
+body[data-current-page="games"]{overflow-y:auto}
+body[data-current-page="games"] #games-page{height:auto;max-height:none;overflow:visible}
+@media(max-width:700px){.hero{grid-template-columns:1fr;min-height:0;padding:35px 22px 30px;gap:0}.hero h1{font-size:43px}.hero-copy>p{font-size:14px}.hero-art{height:205px;margin-top:12px}.hero-card{width:150px;height:180px;border-radius:18px;padding:14px}.card-star{font-size:66px}.coin-one{right:17%;top:5px}.coin-two{left:15%;bottom:4px}.hero-actions{margin-top:20px}.trust-line{margin-top:18px;gap:12px}#lobby-heading{margin-top:23px}#games-page{margin:12px auto 28px;padding:0 13px 30px}.game-topline{align-items:flex-start}.game-balance{padding:8px 10px;min-width:112px}.game-balance strong{font-size:18px}.game-page-title{margin-bottom:12px}}
+/* Aviator demo game */
+.aviator-panel{grid-template-columns:minmax(0,1.3fr) minmax(250px,1fr)}.aviator-stage{position:relative;min-height:290px;overflow:hidden;border-radius:18px;padding:22px;background:radial-gradient(ellipse at 80% 20%,#263d70 0,#111a35 48%,#080d1d 100%);color:#fff}.aviator-sky{opacity:.7;letter-spacing:18px}.aviator-multiplier{position:absolute;top:38%;left:0;right:0;text-align:center;font-size:clamp(2rem,5vw,3.4rem);font-weight:800;color:#ffd16a;text-shadow:0 0 22px #f90}.aviator-plane{position:absolute;left:22px;bottom:56px;font-size:2.5rem;transition:transform .15s linear;filter:drop-shadow(0 4px 8px #0008)}#aviator-status{position:absolute;left:20px;bottom:10px;color:#dce7ff}.aviator-stage.flying .aviator-plane{animation:plane-bob .55s ease-in-out infinite alternate}@keyframes plane-bob{from{margin-bottom:0}to{margin-bottom:7px}}.aviator-panel .mini-game-options{min-width:0}@media(max-width:650px){.aviator-panel{grid-template-columns:1fr}.aviator-stage{min-height:230px}}

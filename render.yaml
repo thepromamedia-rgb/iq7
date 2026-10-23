@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: iq63
+    name: crypto-bridge-credits
     runtime: node
     plan: free
     buildCommand: npm install
@@ -9,11 +9,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: SESSION_SECRET
-        generateValue: true
+      - key: CREDITS_ONLY
+        value: "true"
+      - key: ADMIN_EMAIL
+        sync: false
       - key: ADMIN_PASSWORD
         sync: false
-      - key: PAYMENT_UPI_ID
+      - key: UPSTASH_REDIS_REST_URL
         sync: false
-      - key: PAYMENT_NAME
-        value: IQ63
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false

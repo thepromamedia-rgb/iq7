@@ -436,22 +436,27 @@ $('#modal').addEventListener('click', e => { if (e.target === $('#modal')) hideM
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) hideModal(); });
 $('#account').addEventListener('click', () => renderPage(state.me ? 'Profile' : 'Auth'));
 
-(async function init() {
-  const ref = new URLSearchParams(location.search).get('ref');
-  await loadMe();
-  const route = decodeURIComponent(location.hash.slice(1) || 'Home');
-  let initialPage = route.split(':')[0];
-  if (route.startsWith('Coin:')) state.coin = route.slice(5);
-  const allowedPages = new Set(['Home','Quotes','Games','Signal','Assets','Recharge','Withdrawal','Team','Invite','Bonus','Service','Guide','Coin','Auth','Profile']);
-  if (!allowedPages.has(initialPage)) initialPage = 'Home';
-  if (ref && !state.me) initialPage = 'Auth';
-  renderPage(initialPage);
-  if (ref && !state.me) { state.authMode = 'register'; authPage(); }
-  window.addEventListener('hashchange', async () => {
-    const next = decodeURIComponent(location.hash.slice(1) || 'Home');
-    const page = next.split(':')[0];
-    if (next.startsWith('Coin:')) state.coin = next.slice(5);
-    if (allowedPages.has(page) && page !== state.page) { await loadMe(); renderPage(page); }
-  });
-  pullPrices(); setInterval(pullPrices, 20000);
-})();
+if (location.protocol === 'file:') {
+  // Opening index.html directly bypasses the API server and previously left the app blank.
+  $('#appMain').innerHTML = `<section class="page-intro"><span class="eyebrow">SETUP REQUIRED</span><h1>Start Crypto Bridge first</h1><p>This website needs its local Node.js server. Opening index.html directly will not connect login, wallet, credits, games, or admin APIs.</p></section><article class="content-card"><h2>Windows</h2><ol><li>Extract the entire ZIP into a normal folder.</li><li>Install Node.js 18 or newer.</li><li>Double-click <b>start.bat</b>.</li><li>Open <a href="http://localhost:3000">http://localhost:3000</a>.</li></ol><h2>Mac / Linux</h2><p>Open Terminal in the extracted folder and run <code>./start.sh</code>, then visit <a href="http://localhost:3000">http://localhost:3000</a>.</p></article>`;
+} else {
+  (async function init() {
+    const ref = new URLSearchParams(location.search).get('ref');
+    await loadMe();
+    const route = decodeURIComponent(location.hash.slice(1) || 'Home');
+    let initialPage = route.split(':')[0];
+    if (route.startsWith('Coin:')) state.coin = route.slice(5);
+    const allowedPages = new Set(['Home','Quotes','Games','Signal','Assets','Recharge','Withdrawal','Team','Invite','Bonus','Service','Guide','Coin','Auth','Profile']);
+    if (!allowedPages.has(initialPage)) initialPage = 'Home';
+    if (ref && !state.me) initialPage = 'Auth';
+    renderPage(initialPage);
+    if (ref && !state.me) { state.authMode = 'register'; authPage(); }
+    window.addEventListener('hashchange', async () => {
+      const next = decodeURIComponent(location.hash.slice(1) || 'Home');
+      const page = next.split(':')[0];
+      if (next.startsWith('Coin:')) state.coin = next.slice(5);
+      if (allowedPages.has(page) && page !== state.page) { await loadMe(); renderPage(page); }
+    });
+    pullPrices(); setInterval(pullPrices, 20000);
+  })();
+}

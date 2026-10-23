@@ -1,33 +1,38 @@
 IQ63 WEBSITE — GITHUB / RENDER
 
-Included:
-- Separate Home, Promotion, Invite, Wallet, Account pages
-- Server-side registration/login with scrypt password hashing
-- Name, unique UID, invite code and referral link
-- Password show/hide controls
-- Coin Flip heads/tails game using server-side random result and balance ledger
-- Wallet history and deposit request queue
-- Admin panel: user list, pending deposit review, add/subtract demo credits
+What is included:
+- Home shows ONLY the Game Lobby. No promotional sections or extra content below it.
+- Separate Promotion, Invite, Wallet, Account and Games pages.
+- Registration/login with name, mobile number, unique UID, invite code and referral link.
+- Password show/hide eye controls; after login, Login/Register buttons are replaced by Logout.
+- Four separate playable games: Coin Flip (Heads/Tails), Dice Roll, Lucky Number and Rock Paper Scissors.
+- Server-side game outcomes and account-credit ledger.
+- Compact Admin Panel with Overview, Users, Deposits, Balance Control and Activity tabs.
+- Admin controls: user search, deposit request review, add/remove account credits, delete user.
+- No seeded demo accounts and no automatic starter credit balance.
 
-IMPORTANT SETUP
-1. Upload the EXTRACTED files to your GitHub repository (not the ZIP itself).
+Deploy:
+1. Extract the ZIP and upload the extracted files to GitHub.
 2. Render Build Command: npm install
 3. Render Start Command: npm start
 4. Health Check Path: /healthz
-5. In Render -> Environment, set:
-   ADMIN_PASSWORD = a strong private password of your own
-   SESSION_SECRET = a long random secret string
-   DATA_DIR = /var/data (only if you attach a persistent disk mounted at /var/data)
-6. For permanent users and balances, add a Render persistent disk mounted at /var/data and set DATA_DIR=/var/data. Without persistent storage, local JSON data may be lost during redeploy/restart.
-7. Open the website, scroll to footer, select Admin, and log in with ADMIN_PASSWORD.
+5. Render Environment variables:
+   ADMIN_PASSWORD = your strong private admin password
+   SESSION_SECRET = long random secret
+   PAYMENT_UPI_ID = optional payment details shown to users
+   PAYMENT_NAME = optional payee name
+   DATA_DIR = /var/data only if a persistent disk is attached and mounted at /var/data
+6. Open https://YOUR-RENDER-SERVICE.onrender.com/admin.
+   Admin mobile number is 1234567890. Enter the ADMIN_PASSWORD configured in Render.
+   No Admin link is displayed to normal users.
+7. For persistent users and balances, attach persistent storage or connect a managed database. Render's ephemeral filesystem may lose JSON data on restart/redeploy.
 
-WALLET/PAYMENT LIMITATIONS
-- Deposit form creates a pending request after user enters amount and a payment UTR/reference. It does not process payment, create a UPI intent, or charge money. Admin must independently verify actual payment before approving.
-- Only approve a request after checking the payment in your own payment account. Approval adds virtual credits equal to the requested rupee amount; these are demo credits, not a cash balance.
-- No payment gateway, automatic deposit verification, or cash withdrawal is integrated. Do not represent this demo as real-money gambling or a live payment service.
-- Admin balance controls are for virtual demo credits.
+Important payment limits:
+- Deposit form submits a request and payment reference; it does not process payments or automatically verify a UPI transfer.
+- Only approve after independently checking the payment in your payment account.
+- Approved requests add account credits. These credits are not a cash balance, and cash withdrawal/payment gateway integration is not included.
+- Games use account credits only; no real-money betting or cash payouts are enabled.
 
-Security notes: Use a strong ADMIN_PASSWORD and SESSION_SECRET, do not share them, and use persistent storage for production. This has been syntax/API smoke-tested, but no software can be guaranteed bug-free.
-
-
-LATEST UI UPDATE: Home contains only the Game Lobby. Open a game card to enter its separate game page. Included games: Coin Flip, Dice Roll, Lucky Number, and Rock Paper Scissors (virtual demo credits only). Promotion, Invite, Wallet, Account and Admin are separate views. Admin login URL: /admin.
+Security:
+- Never share ADMIN_PASSWORD or SESSION_SECRET.
+- This build has basic syntax and API smoke tests, but no build can be guaranteed bug-free. Review security and persistence before public production use.

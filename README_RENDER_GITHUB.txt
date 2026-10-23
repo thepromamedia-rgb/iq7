@@ -5,9 +5,10 @@ Included:
 - Server-side registration/login with scrypt password hashing
 - Name, unique UID, invite code and referral link
 - Password show/hide controls
-- Coin Flip heads/tails game using server-side random result and balance ledger
+- Home shows only the Game Lobby; Promotion, Invite, Wallet, Account and Games open separately
+- Four demo games: Coin Flip, Dice Roll, Lucky Number and Rock Paper Scissors, with server-side random results and credit ledger
 - Wallet history and deposit request queue
-- Admin panel: user list, pending deposit review, add/subtract demo credits
+- Private Admin Panel at /admin: user search, user list, pending deposit review, add/subtract demo credits
 
 IMPORTANT SETUP
 1. Upload the EXTRACTED files to your GitHub repository (not the ZIP itself).
@@ -19,7 +20,7 @@ IMPORTANT SETUP
    SESSION_SECRET = a long random secret string
    DATA_DIR = /var/data (only if you attach a persistent disk mounted at /var/data)
 6. For permanent users and balances, add a Render persistent disk mounted at /var/data and set DATA_DIR=/var/data. Without persistent storage, local JSON data may be lost during redeploy/restart.
-7. Open the website, scroll to footer, select Admin, and log in with ADMIN_PASSWORD.
+7. Open https://YOUR-RENDER-SERVICE.onrender.com/admin directly and log in with ADMIN_PASSWORD. The Admin option is not shown to normal users.
 
 WALLET/PAYMENT LIMITATIONS
 - Deposit form creates a pending request after user enters amount and a payment UTR/reference. It does not process payment, create a UPI intent, or charge money. Admin must independently verify actual payment before approving.

@@ -28,3 +28,6 @@ WALLET/PAYMENT LIMITATIONS
 - Admin balance controls are for virtual demo credits.
 
 Security notes: Use a strong ADMIN_PASSWORD and SESSION_SECRET, do not share them, and use persistent storage for production. This has been syntax/API smoke-tested, but no software can be guaranteed bug-free.
+
+
+LATEST UI UPDATE: Home contains only the Game Lobby. Open a game card to enter its separate game page. Included games: Coin Flip, Dice Roll, Lucky Number, and Rock Paper Scissors (virtual demo credits only). Promotion, Invite, Wallet, Account and Admin are separate views. Admin login URL: /admin.

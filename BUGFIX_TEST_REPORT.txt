@@ -1,26 +1,26 @@
 IQ63 UPDATED DEMO BUILD — CHANGE / TEST REPORT
 
-Implemented:
-- Added Aviator demo game card and animated plane/multiplier UI.
-- Added server-side Aviator round endpoint with virtual-credit accounting and game-history entry.
-- Replaced payment/UPI deposit flow with demo-credit request flow; no real payment details or payment processing.
-- Added virtual-credit redemption requests and request history.
-- Added admin approval/rejection of demo-credit and redemption requests.
-- Added admin min/max redemption settings and configurable wagering multiplier.
-- Kept account login/register, existing games, user search, balance adjustment, deletion and activity sections.
+New fixes in this build:
+- Added smooth entrance/hover motion to the home-screen game cards.
+- Added gentle floating animation to the hero card and coins.
+- Reworked Aviator flight animation to use a smooth requestAnimationFrame progression, wait for the flight animation to finish, then show the server result; crash/cash-out states are visually distinct.
+- Fixed wallet request history refresh so newly submitted demo-credit/redemption requests are reloaded and visible immediately.
+- Included game transactions in Wallet history alongside deposit/redemption/admin ledger activity.
+- Game History continues to list recent game rounds, including Aviator results.
+- Respects reduced-motion accessibility preferences.
 
 Checks run:
 - node --check server.js: PASS
 - node --check app.js: PASS
 - Local HTTP /healthz: PASS
-- Registration and session cookie: PASS
+- Home page served and Aviator card present: PASS
+- Registration/session cookie: PASS
 - Demo-credit request and admin approval: PASS
-- Aviator API round and virtual balance response: PASS
-- Admin settings save: PASS
-- Redemption request and admin approval: PASS
-- Home page Aviator card served: PASS
+- Aviator API round returned result, updated balance, and wrote a game-history record: PASS
+- User API returned game history: PASS
+- ZIP integrity checked after packaging: PASS
 
 Limitations:
-- Automated local API smoke tests were run; no full browser/device QA was available.
+- Automated local API/syntax checks were run; no full real-device/browser QA was available.
 - This is a virtual-credit demo only. Credits have no cash value and no cash payout is provided.
 - Configure ADMIN_PASSWORD and SESSION_SECRET in hosting environment. Configure persistent storage for the data directory if users/credits must survive redeploys.

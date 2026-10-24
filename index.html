@@ -1,23 +1,760 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#142a54">
-  <meta name="description" content="Crypto Bridge — live digital asset prices, wallet deposits and withdrawals.">
-  <title>Crypto Bridge</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="topbar">
-    <button class="brand brand-button" data-page="Home" aria-label="Crypto Bridge home"><span class="brandmark">B</span><span><b>Crypto Bridge</b><small>Digital asset dashboard</small></span></button>
-    <div class="topbar-right"><span class="demo-tag live"><i></i> LIVE PRICES</span><button class="language" id="account" type="button">Login</button></div>
-  </header>
-  <main id="appMain" tabindex="-1"><section class="page-intro"><span class="eyebrow">CRYPTO BRIDGE</span><h1>Loading your market dashboard…</h1><p>Connecting to the app. If this screen stays here, refresh once or check that the Render service is running.</p></section></main>
-  <nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-page="Home"><span>⌂</span>Home</button><button data-page="Quotes"><span>⌁</span>Quotes</button><button data-page="Games"><span>🎮</span>Games</button><button data-page="Team"><span>♙</span>Team</button><button data-page="Bonus"><span>✦</span>Bonus</button><button data-page="Assets"><span>▣</span>Assets</button></nav>
-  <div class="modal-backdrop" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><button class="close" id="closeModal" aria-label="Close dialog">×</button><div class="modal-symbol" id="modalSymbol">i</div><h2 id="modalTitle">Notice</h2><div id="modalBody"></div><button class="primary-btn" id="okModal" type="button">OK</button></div></div>
-  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-  <footer id="siteFooter">India-focused platform</footer>
-  <script src="app.js" defer></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="color-scheme" content="light"><meta name="theme-color" content="#f97316"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/icon-192.png"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Refer Karo</title>
+<style>
+:root{color-scheme:light;--o:#f97316;--o2:#ea580c;--bg:#fff;--c:#fff;--t:#1c1917;--m:#78716c;--b:#fed7aa;--ok:#16a34a;--er:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+main{max-width:520px;margin:auto;padding:14px}
+h1,h2,h3{margin:.2em 0 .4em}h1{font-size:22px}h2{font-size:18px}h3{font-size:15px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:14px;margin:0 0 12px}
+.hero{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:0}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:13px;font:600 15px inherit;background:var(--o);color:#fff;cursor:pointer;text-align:center;text-decoration:none}
+.btn:disabled{opacity:.6}.btn.s{background:transparent;color:var(--o2);border:1px solid var(--o)}.btn.w{background:#fff;color:var(--o2)}.btn.sm{display:inline-block;width:auto;padding:7px 12px;font-size:13px;margin:2px}
+.btn.d{background:var(--er)}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--b);border-radius:10px;background:var(--c);color:var(--t);font:inherit;margin:4px 0 10px}
+label{font-size:13px;color:var(--m)}.pw{position:relative}.pw button{position:absolute;right:6px;top:8px;border:0;background:none;color:var(--o2);font-weight:600;padding:8px}
+.old{text-decoration:line-through;opacity:.8}.big{font-size:34px;font-weight:800}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0}.row.t{border-top:1px solid var(--b);font-weight:700;font-size:17px}
+.row .pill{align-self:flex-start;white-space:nowrap;height:fit-content}.pill{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--b);font-weight:600}
+.pill.Verified,.pill.Completed{background:#dcfce7;color:#166534}.pill.Rejected{background:#fee2e2;color:#991b1b}
+.m{color:var(--m);font-size:13px}.link{color:var(--o2);text-decoration:underline;cursor:pointer;background:none;border:0;font:inherit;padding:0}
+nav{position:fixed;bottom:48px;left:10px;right:10px;max-width:500px;margin:auto;display:flex;background:var(--c);border:1px solid var(--b);border-radius:16px;box-shadow:0 4px 14px #0002;z-index:5}
+nav button{flex:1;border:0;background:none;color:var(--m);padding:8px 0;font:600 11px inherit;cursor:pointer}
+nav button.on{color:var(--t)}nav svg{display:block;margin:0 auto 2px;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:#292524;color:#fff;padding:11px 16px;border-radius:12px;z-index:20;transition:.3s;max-width:90%}
+.toast.show{transform:translate(-50%,0)}.toast.er{background:var(--er)}.toast.ok{background:var(--ok)}
+.fade{animation:f .15s}@keyframes f{from{opacity:0;transform:translateY(8px)}}
+details{border-bottom:1px solid var(--b);padding:8px 0}summary{font-weight:600;cursor:pointer}
+.bar{height:8px;background:var(--b);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--o)}
+.modal{position:fixed;inset:0;background:#0008;z-index:15;display:flex;align-items:flex-end}
+.modal>div{background:var(--c);width:100%;max-width:520px;margin:auto;max-height:85%;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+footer{text-align:center;margin:18px 0;font-size:12px}footer .link{margin:0 6px}
+.cert{border:6px double var(--o);padding:24px;text-align:center;background:#fff;color:#1c1917}
+.warn{background:#fef3c7;color:#78350f;border-radius:10px;padding:8px 10px;font-size:12px}
+.home-slider{position:relative;touch-action:pan-y;user-select:none;-webkit-user-select:none}.home-slider img{transition:opacity .28s ease,transform .42s cubic-bezier(.22,.61,.36,1);will-change:opacity,transform}.home-slider img.slide-out{opacity:.25;transform:translateX(-14px)}.slide-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:50%;background:#ffffffdf;color:#292524;font-size:23px;line-height:1;cursor:pointer;box-shadow:0 2px 8px #0002}.slide-arrow.prev{left:8px}.slide-arrow.next{right:8px}.slide-dot{width:7px;height:7px;border:0;border-radius:50%;padding:0;cursor:pointer}.slide-dot:focus-visible,.slide-arrow:focus-visible{outline:2px solid var(--o2);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.home-slider img{transition:none!important}}
+
+/* High-impact featured offer banner */
+.offer-spotlight{position:relative;isolation:isolate;overflow:hidden;margin:0 0 14px;padding:0;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 8%,#fff85a 0,transparent 24%),linear-gradient(125deg,#701a75 0%,#c026d3 42%,#f97316 100%);box-shadow:0 12px 28px #9d174d40;border:1px solid #f0abfc}
+.offer-spotlight:before{content:"";position:absolute;z-index:-1;width:180px;height:180px;border:22px solid #ffffff20;border-radius:50%;right:-54px;bottom:-85px}
+.offer-spotlight:after{content:"✦";position:absolute;right:18px;top:12px;font-size:30px;color:#fff8;transform:rotate(15deg)}
+.offer-topline{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase}
+.offer-live-dot{width:8px;height:8px;border-radius:50%;background:#86efac;box-shadow:0 0 0 4px #86efac30;animation:offerPulse 1.3s infinite}
+.offer-spotlight h2{font-size:25px;line-height:1.12;margin:10px 36px 7px 0;color:#fff;text-shadow:0 2px 8px #4a044e55}
+.offer-spotlight p{margin:0;color:#fff;font-size:14px;max-width:95%;white-space:pre-wrap}
+.offer-count-label{font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#fffde7;margin:17px 0 7px}
+.offer-countdown{display:flex;gap:7px;max-width:330px}
+.offer-time{flex:1;min-width:0;text-align:center;background:#350b4c55;border:1px solid #ffffff45;border-radius:11px;padding:8px 3px 6px;backdrop-filter:blur(5px)}
+.offer-time b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums;color:#fff}
+.offer-time span{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#fce7f3}
+.offer-cta{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:10px 15px;border-radius:999px;background:#fff;color:#86198f;font-weight:900;text-decoration:none;box-shadow:0 4px 0 #4a044e45}
+.offer-until{display:block;margin-top:9px;font-size:11px;color:#fffde7}
+@keyframes offerPulse{50%{opacity:.45;box-shadow:0 0 0 7px #86efac10}}
+@media(prefers-reduced-motion:reduce){.offer-live-dot{animation:none}}
+
+.x{overflow-x:auto}
+/* Admin workspace: compact layout with its own scroll container */
+body.admin-mode{height:100dvh;overflow:hidden;padding-bottom:0;overscroll-behavior:none}
+body.admin-mode #app{height:100dvh;max-height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
+body.admin-mode main{max-width:1180px;padding:12px 16px 86px}
+body.admin-mode #nav{display:none}body.admin-mode #app>.fade{max-width:100%;min-width:0}
+body.admin-mode .admin-tabs{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:3px 1px 8px;margin:0 0 8px;scrollbar-width:thin;white-space:nowrap;max-width:100%}
+body.admin-mode .admin-tabs .btn{flex:0 0 auto;width:auto;min-width:max-content;margin:0;padding:7px 10px;font-size:12px}
+body.admin-mode #al{min-width:0}body.admin-mode #al .card{overflow-wrap:anywhere}
+body.admin-mode .admin-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}body.admin-mode .admin-actions .btn{width:auto;max-width:100%}
+body.admin-mode .admin-user-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px;align-items:start}
+body.admin-mode .admin-user-grid>.card{margin:0}body.admin-mode #al>.card{padding:10px;margin-bottom:8px}
+body.admin-mode input,body.admin-mode textarea,body.admin-mode select{max-width:100%;padding:9px 10px;margin:3px 0 7px}
+body.admin-mode h1{font-size:20px;margin:0 0 3px}body.admin-mode h2{font-size:16px}body.admin-mode h3{font-size:14px}
+body.admin-mode .admin-section-title{font-size:17px;margin:3px 0 8px}
+body.admin-mode .admin-back-top{display:flex;justify-content:flex-start;margin:0 0 8px}
+body.admin-mode .admin-back-bottom{position:fixed;z-index:8;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:12px;right:12px;width:auto;max-width:1150px;margin:0 auto;box-shadow:0 3px 12px #0001;padding:9px 12px}
+@media(max-width:600px){body.admin-mode main{padding:9px 9px calc(68px + env(safe-area-inset-bottom,0px))}body.admin-mode .admin-tabs{gap:5px}body.admin-mode .admin-tabs .btn{padding:6px 9px;font-size:11px}body.admin-mode .admin-user-grid{grid-template-columns:minmax(0,1fr);gap:7px}body.admin-mode #al>.card,body.admin-mode .admin-user-grid>.card{padding:9px;border-radius:10px}body.admin-mode .admin-actions .btn{font-size:10px;padding:5px 6px}body.admin-mode #al .card button.btn{font-size:10px;padding:5px 7px;min-height:28px}body.admin-mode #al .card{overflow-wrap:anywhere}body.admin-mode .btn.sm{padding:6px 8px;font-size:11px}body.admin-mode .admin-back-bottom{left:9px;right:9px}body.admin-mode .m{font-size:12px}}
+
+@media print{body>*:not(#md){display:none!important}#md .modal{position:static;background:none;display:block}#md .modal>div{max-height:none;overflow:visible;box-shadow:none}#md button{display:none}}
+
+.user-admin-actions{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:thin;white-space:nowrap;margin-top:10px;padding:2px 1px 6px;max-width:100%}
+.user-admin-actions .btn{flex:0 0 auto;width:auto;min-width:max-content;padding:6px 10px;font-size:11px;white-space:nowrap;border-radius:999px}
+.user-admin-card{padding:12px}
+@media(max-width:520px){.user-admin-actions{gap:5px}.user-admin-actions .btn{font-size:10px;padding:6px 9px}.user-admin-card .row{gap:8px}}
+</style>
+<style>
+/* Task page: prevent visual blink/flicker while live countdown continues */
+#taskPage, #task, .task-page, .task-container {
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform:translateZ(0);
+}
+</style>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head><body>
+<main id="app"><p class="m" style="text-align:center;margin-top:40vh">Loading…</p></main><div id="nav"></div><div class="toast" id="toast"></div><div id="md"></div>
+<script>
+/* ===== CONFIG: replace placeholders before launch ===== */
+const CFG={brand:'Refer Karo',gstin:'',gstRate:18,price:299,disc:0,fee:1,offerEnd:'2000-01-01',minWd:500,minDirectRefs:3,withdrawalDay:0,commission:100,level2:10,level3:2,dailyReward:40,taskReferral:5,taskReferralLevel2:2,
+ telegramJoin:'https://t.me/movie_box00',telegramSupport:'https://t.me/movie_box00',authSupport:'https://t.me/movie_box00',upiOpenApp:true,upi:'shivam-9323@ptyes',payee:'SHIVAM',
+ course:'Refer Karo',refundDays:7};
+const offerOn=()=>false;
+let DB={users:[],pays:[],wd:[],tix:[]},ME=null;
+const calc=()=>{const base=offerOn()?CFG.price-CFG.disc:CFG.price;const cut=ME&&ME.refBy&&CFG.referralDiscountEnabled!==false?Math.round(base*Math.max(0,Math.min(100,Number(CFG.referralDiscountPct)||0)))/100:0;return Math.max(0,Math.round((base-cut+CFG.fee)*100)/100)};let total=calc();
+const DEFAULT_QR='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAHgAQAAAABVr4M4AAAFOUlEQVR42u1cQZKqSBB9CUTgDm5Q7OYYeDPwZINHmBN83Pz4i1mUO4wpebOoArVFG/XPdLQkiw6BepRWvc7KfJmFEM8eLpHnwUD0Arb+sp4V/G3AfAUsOtoKVrCCFaxgBStYwQr+v8Fb8UeCzXqfQKQ4RsAuBzZrf38FbMZG0z33qIeADQA6jOc62grOSJIdAGQOZAuKFIcE2OZHCY0MSdLO7bnX0X5TcD3/4aebBxEpAFTNPgG2BYRs03+EtDGBbB+FRmsdbQW/Ykk2kh8DjTbFYVgQsc/6h7mtU7UU8GPeUEkHNv5z2nvGobSHSEd7oeDRzCAlgAMAHFaQcpsdBaYFxfyVEkDshkb7ez13l6fFx250qpYK3ouIyAoAEIcMWLXNKdXGHCJszT4CdiIiks/sOYSD1NF+c2f9/sGro8lIlOyENQCEcwu5aqmjreDPGXfiS4+KnZANYrIxHQBDB5QWYJN1QrYA/P1ZDIt0qjQcHBjWmE5YGzIwjG3aA6aL6VfN0qahJUp7xTB7q+f6P/rH0Hn+EnD+weXJISfXm5/ZMN9OSI4MYouxKCnrxDc6u69T9Tbg2ctNPZCp/2AMVsDq7Iq9smHwImkP0gJsDHtUbepAhqVSWCMdbZyukstZ6E7g+Cgw+wjYGgep2mNMKRATuzw+PYIilb0GJx+WJTd8aAGZ/iY6VcsAD1pTyUME7P5w/gK3RdsDpgU2f+5WHbaGFAAxZZvHN3qeDEydjvaiwaMrZdMeVQshSgsMqWaSKIMK0aMie0w56zMPtWHfUzO4GZTZaXA0GQ4i5eBK+dyNZxw8owB/ngbJS511BfvgbrYN84zykpavofECwyhpIe0BpO4RG6bO+tuB5cJc5ZcuUHOXYRkHG9ZkDkGWNww2zQsOtekeEk11qt4QbOtzqZJYF977iYZrf/9MLmh4zrDaDHWAKNkBlZewSAaGIXUAlGEvg/NXwPbLet6tINxmDLrnRrIe2GUOsgbAGulRgjiauusB472Hr8+urZQky5K0Lpx1b55OzjlMF4/5aIb71Xxnvb8Xc+hUvQu4mw+u2pQEsoOwwSFmvcsBYJ8AwCEanPVdoqO9cHB9xzm/JThkDJJWcJ0MgwVig5hA1iHko0vNDip4+sjvrpKAp1VYFdtRRMVZ1VbqNP/8luDokXqS/lTfKafza0fogmGDLA8vYaFsU/qqrCDLewZ2oS5QGbYk8EUpX4j0MhJAStahlO9MWb+re0aPfDOdqmUxrDFOWJtBWfe2h23WozorvCIdqgnd07obYUKt4aAybFjoAG+oznI58BJnsGFkfZI8nxQcdKq+Ndi+YsOChCVDRYPPR2PIFjaZFy5i3VKh4In7xW3LcrUTB6UXHDohfbGoBUiO5chaLKrgwdtJALT3NzZcCg4Y9341o6QV3hpiIazHLRZqwxbprHshwApJ9sIf7VD24p3zJuyKiAnTXpHE610+8ddztHoTUkeR/5b1Wef5GzLMASh9OMggMJQ+l+OlqbuulAPQXj54raO9HPCchS7kZoQ1zvPNMc/e+VG1lzHhZzuvNf+s4AmGDTbM0ypoEaTfnap7B5cNTqZur2aC4yFXAxzFp2kqWmAjOSBi9hE2ha+AcL/Deuo8f1fwqWZmlgt9IxxkC6AKuyvicSePCg76Vr7rytMIKJAMrncx/gmM0tFWsIIVrGAFK1jBCl4WOP5Uk70Tnnzhb26+qOc+ar+oZxfZ58Fd1L3ytd3zWPvKb24Fz0coEj30Ss5LakNgnp3pwyrCr2d7/oWXjn8BIImiq63k1NQAAAAASUVORK5CYII=';
+const MODS=[{t:'Module 1: Marketing Foundations',l:['What is digital marketing','Funnels & audiences','Setting goals & KPIs']},
+{t:'Module 2: Social Media & Content',l:['Content strategy','Instagram & YouTube basics','Writing copy that sells']},
+{t:'Module 3: Ads & SEO',l:['SEO fundamentals','Meta & Google ads intro','Email marketing & analytics']}];
+const LESSONS=MODS.flatMap((m,i)=>m.l.map((l,j)=>({id:i+'-'+j,t:l,m:i,video:'',notes:'Notes for "'+l+'" will appear here once the owner adds them.'})));
+const FAQ=[['How do I get access?','Pay ₹'+total+' using the payment method shown at checkout. Task access unlocks after payment is confirmed.'],['How long does verification take?','Razorpay payments unlock automatically after capture. QR/UTR payments unlock after admin verification.'],['Can I get a refund?','See the Refund Policy — shown before every payment.'],['Is the joining fee added to my wallet?','No. The joining fee pays for task access and is not added to your wallet.']];
+const LEGAL={terms:['Terms & Conditions','Task access is personal and non-transferable. Access unlocks only after payment verification. Content may not be copied or resold. [Replace with your final legal text.]'],
+privacy:['Privacy Policy','We store your name, email and payment reference to run your account. Passwords are stored hashed. You can request account deletion from Profile. [Replace with your final legal text.]'],
+refund:['Refund Policy','Refund requests within '+CFG.refundDays+' days of verified payment, if less than 20% of the task is completed. Contact support with your payment reference. [Edit to match your policy.]'],
+get ref(){const wd=CFG.withdrawalDay??0,day=wd==='any'?'any day':['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(wd)]||'Sunday';return ['Referral & Withdrawal Rules','• Level 1 (Direct): ₹'+CFG.commission+' after the directly referred user makes a verified payment.\n• Level 2: ₹'+CFG.level2+' after a Level 2 referral makes a verified payment.\n• Level 3: ₹'+CFG.level3+' after a Level 3 referral makes a verified payment.\n• Daily Task: ₹'+CFG.dailyReward+' once per day after all today’s task requirements are complete.\n• Direct referral task completion: ₹'+CFG.taskReferral+' once per referred user.\n• Level 2 referral task completion: ₹'+CFG.taskReferralLevel2+' once per referred user.\n• No earning for self-referrals or rejected payments.\n• Minimum withdrawal ₹'+CFG.minWd+' and at least '+Number(CFG.minDirectRefs??3)+' verified direct referrals are required. Withdrawal requests are accepted on '+day+' (India time). Statuses: Pending → Processing → Completed or Rejected.\n• Fraudulent referrals void commission.']}};
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rid=()=>crypto.randomUUID().slice(0,8),fd=t=>new Date(t).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+const inr=n=>'₹'+n,EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+let tt;function toast(m,k=''){const t=$('#toast');t.textContent=m;t.className='toast show '+k;clearTimeout(tt);tt=setTimeout(()=>t.className='toast',3200)}
+/* ===== data layer: talks to server.js ===== */
+const me=()=>ME,isAdmin=u=>!!(u&&u.admin);
+async function api(p,b){const r=await fetch('/api/'+p,{method:b?'POST':'GET',headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});let j={};try{j=await r.json()}catch{}if(!r.ok)throw new Error(j.error||'Something went wrong');return j}
+let TB=Date.now();
+async function sync(){const j=await api('state');TB=Date.now();ME=j.me;DB=j.db;if(j.cfg){Object.assign(CFG,j.cfg);total=calc()}}
+const myPays=u=>DB.pays.filter(p=>p.uid===u.id).sort((a,b)=>b.ts-a.ts);
+const unlocked=u=>!!u.admin||!!(u&&!u.taskLocked&&(u.managedAccount||u.demo||u.adminVerified||DB.pays.some(p=>p.uid===u.id&&p.status==='Verified')));
+const refs=u=>u&&u.admin&&CFG.adminDemo?Array.from({length:Math.min(1000,+CFG.adminDemo.referrals||0)},(_,i)=>({id:'demo-ref-'+i,name:'Referral '+(i+1),created:Date.now(),demo:true})):u&&u.managedAccount?Array.from({length:Math.min(1000,+((u.demoStats||{}).referrals)||0)},(_,i)=>({id:'demo-ref-'+u.id+'-'+i,name:'Referral '+(i+1),created:u.created,demo:true})):DB.users.filter(x=>x.refBy===u.id);
+const walletOf=u=>u.wallet||{entries:[],earned:0,balance:0};
+const commOf=id=>{const p=DB.pays.find(x=>x.uid===id&&x.status==='Verified');return p&&p.comm!=null?p.comm:100};
+const commissions=u=>walletOf(u).entries.filter(x=>x.kind==='referral');
+const balance=u=>walletOf(u).balance;
+const dailyEntries=u=>walletOf(u).entries.filter(x=>x.kind==='daily');
+/* ===== UI state ===== */
+let tab='home',view=null,mode='login',busy=false,homeSlide=0,homeSlideTimer=null,homeTouchX=null;
+function goHomeSlide(index){const imgs=Array.isArray(CFG.homeImages)?CFG.homeImages:[];if(!imgs.length)return;homeSlide=((index%imgs.length)+imgs.length)%imgs.length;const im=$('#homeSlideImg');if(im){im.classList.add('slide-out');const next=imgs[homeSlide];setTimeout(()=>{if(!im.isConnected)return;im.src=next;im.onload=()=>{im.classList.remove('slide-out');im.onload=null};if(im.complete)im.classList.remove('slide-out')},90)}const d=$('#homeSlideDots');if(d)d.innerHTML=imgs.map((_,i)=>`<button class="slide-dot" aria-label="Go to image ${i+1}" onclick="goHomeSlide(${i})" style="background:${i===homeSlide?'var(--o)':'var(--b)'}"></button>`).join('');}
+function startHomeSlider(){if(homeSlideTimer)clearInterval(homeSlideTimer);homeSlideTimer=setInterval(()=>{const imgs=Array.isArray(CFG.homeImages)?CFG.homeImages:[];if(tab==='home'&&imgs.length>1)goHomeSlide(homeSlide+1)},8000)}
+startHomeSlider();
+const params=new URLSearchParams(location.search);let refCode=params.get('ref')||'';if(refCode)mode='register';
+try{if(refCode)sessionStorage.setItem('ref',refCode);else refCode=sessionStorage.getItem('ref')||''}catch{}
+function go(t,v){tab=t;view=v||null;render();scrollTo(0,0)}
+function modal(h){$('#md').innerHTML=h?`<div class="modal" onclick="if(event.target===this)modal('')"><div class="fade">${h}<button class="btn s" onclick="modal('')" style="margin-top:10px">Close</button></div></div>`:''}
+function legal(k){const[t,b]=LEGAL[k];modal(`<h2>${t}</h2><p style="white-space:pre-line">${esc(b)}</p>`)}
+const foot=()=>`<footer class="m">${Object.keys(LEGAL).map(k=>`<button class="link" onclick="legal('${k}')">${LEGAL[k][0].split(' &')[0]}</button>`).join('·')}</footer>`;
+const faq=()=>FAQ.map(f=>`<details><summary>${f[0]}</summary><p class="m">${f[1]}</p></details>`).join('');
+const priceBox=()=>`<div class="card"><div class="row"><span>Task price</span><span>${inr(CFG.price)}</span></div>${offerOn()?`<div class="row"><span>Welcome Offer discount</span><span style="color:var(--ok)">-${inr(CFG.disc)}</span></div><div class="row"><span>Price after offer</span><span>${inr(CFG.price-CFG.disc)}</span></div>`:''}<div class="row"><span>Service fee</span><span>${inr(CFG.fee)}</span></div><div class="row t"><span>Total</span><span>${inr(total)}</span></div><p class="m" style="margin:0">${CFG.gstin?'Total is inclusive of GST. ':''}${offerOn()?'Offer ends '+fd(CFG.offerEnd)+'. ':''}No other fees.</p></div>`;
+/* ===== screens ===== */
+/* Real advertisers only: add {name,text,link,img} (img = data: URI). Use brands that have agreed to advertise with you. */
+const ADS=[{name:'iPhone',text:'Learn more on apple.com',link:'https://www.apple.com/in/iphone/'},{name:'MacBook',text:'Learn more on apple.com',link:'https://www.apple.com/in/mac/'}];
+function adsHtml(){const L=ADS.length?ADS.map(a=>`<a class="card" style="display:flex;gap:10px;align-items:center;color:inherit;text-decoration:none" href="${esc(a.link)}" target="_blank" rel="sponsored noopener">${a.img?`<img src="${esc(a.img)}" alt="" width="64" height="64" style="border-radius:10px;object-fit:cover">`:''}<span><span class="pill">Sponsored</span><br><b>${esc(a.name)}</b><br><span class="m">${esc(a.text)}</span></span></a>`):
+ [1,2,3].map(()=>`<a class="card" style="display:block;border-style:dashed;text-align:center;color:inherit;text-decoration:none" href="${esc(CFG.telegramJoin||CFG.telegramSupport||'https://t.me/')}" target="_blank" rel="noopener"><span class="pill">Ad space</span><br><b>Your brand here</b><br><span class="m">Advertise with us. Contact on Telegram.</span></a>`);return L.join('')}
+
+function authView(){const reg=mode==='register';return`<div class="fade"><div class="card hero"><h1>${CFG.course}</h1><div>${reg?'Create your account':'Welcome back'}</div></div>
+<div class="card"><label>${reg?'Email':'Email or mobile number'}</label><input id="em" type="text" autocomplete="${reg?'email':'username'}" inputmode="${reg?'email':'text'}" placeholder="${reg?'you@example.com':'Email or 10-digit mobile number'}">
+${reg?`<label>Name</label><input id="nm" autocomplete="name"><label>Mobile number</label><input id="ph" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="10-digit mobile number"><label>Referral code (optional)</label><input id="rc" value="${esc(refCode)}">`:''}
+<label>Password${reg?' (min 8 chars)':''}</label><div class="pw"><input id="pw" type="password" autocomplete="${reg?'new':'current'}-password"><button type="button" onclick="const p=$('#pw');p.type=p.type=='password'?'text':'password'">Show/Hide</button></div>
+${reg?`<label style="display:flex;gap:8px;align-items:flex-start"><input id="ag" type="checkbox" style="width:auto;margin:3px 0"><span>I agree to the <button class="link" onclick="legal('terms')">Terms</button>, <button class="link" onclick="legal('privacy')">Privacy Policy</button> and <button class="link" onclick="legal('refund')">Refund Policy</button>.</span></label>`:''}
+<button class="btn" id="sub" onclick="${reg?'doReg()':'doLogin()'}">${reg?'Create account':'Login'}</button>
+<p class="m" style="text-align:center">${reg?'Have an account?':'New here?'} <button class="link" onclick="mode='${reg?'login':'register'}';render()">${reg?'Login':'Register'}</button>${reg?'':' · <button class="link" onclick="forgot()">Forgot password?</button>'}</p><a class="btn s" style="display:block;text-align:center;margin-top:10px" href="${esc(CFG.authSupport||CFG.telegramSupport||CFG.telegramJoin||'https://t.me/')}" target="_blank" rel="noopener noreferrer">Customer Support</a></div>${foot()}</div>`}
+function activeOffers(){const now=new Date(),today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');return (CFG.offers||[]).filter(o=>o.active!==false&&(!o.start||o.start<=today)&&(!o.end||o.end>=today)&&(!o.end||new Date(o.end+'T23:59:59').getTime()>=Date.now()));}
+function offerDeadline(o){return o.end?new Date(o.end+'T23:59:59').getTime():0;}
+function featuredOffer(o){const deadline=offerDeadline(o);return `<section class="offer-spotlight" style="padding:18px 17px 16px"><div class="offer-topline"><i class="offer-live-dot"></i> LIMITED TIME · SPECIAL OFFER</div><h2>🎉 ${esc(o.title)}</h2><p>${esc(o.description||'Aapke liye special offer live hai!')}</p>${deadline?`<div class="offer-count-label">⏳ Offer khatam hone mein</div><div class="offer-countdown" data-offer-deadline="${deadline}"><div class="offer-time"><b data-unit="d">00</b><span>Days</span></div><div class="offer-time"><b data-unit="h">00</b><span>Hours</span></div><div class="offer-time"><b data-unit="m">00</b><span>Minutes</span></div><div class="offer-time"><b data-unit="s">00</b><span>Seconds</span></div></div><small class="offer-until">Offer valid till ${esc(fd(o.end))} · Countdown live rehta hai</small>`:`<div class="offer-count-label">✨ OFFER IS LIVE NOW</div>`}<a class="offer-cta" href="#home" onclick="event.preventDefault();go('home')">🔥 Check Offer <span>→</span></a></section>`}
+function updateOfferCountdowns(){let expired=false;document.querySelectorAll('[data-offer-deadline]').forEach(el=>{const left=Number(el.dataset.offerDeadline)-Date.now();if(left<=0){expired=true;return}const sec=Math.floor(left/1000),vals={d:Math.floor(sec/86400),h:Math.floor(sec%86400/3600),m:Math.floor(sec%3600/60),s:sec%60};Object.entries(vals).forEach(([k,v])=>{const n=el.querySelector('[data-unit="'+k+'"]');if(n)n.textContent=String(v).padStart(2,'0')})});if(expired&&!window.__offerExpiryRefresh){window.__offerExpiryRefresh=true;setTimeout(()=>{render();window.__offerExpiryRefresh=false},100)}}
+if(!window.__offerCountdownTimer)window.__offerCountdownTimer=setInterval(updateOfferCountdowns,1000);
+function rewardCards(u){const bonuses=(u&&u.bonuses||[]).filter(x=>x.status==='Pending');const d=u&&u.dailyReferral;return `${bonuses.map(b=>`<div class="card" style="border:1px solid var(--ok)"><div class="row" style="padding:0"><span><b>🎁 ${esc(b.reason||'Special Bonus')}</b><br><span class="m">Admin bonus</span></span><b style="font-size:20px;color:var(--ok)">${inr(b.amount)}</b></div><button class="btn" style="margin-top:10px" onclick="claimBonus('${esc(b.id)}')">Claim Bonus</button></div>`).join('')}`}
+async function claimBonus(id){try{await api('bonus/claim',{id});await sync();render();toast('Bonus wallet mein add ho gaya','ok')}catch(e){fail(e)}}
+async function claimDailyReferral(id){try{await api('daily-referral/claim',{targetId:id});await sync();render();toast('Daily referral reward wallet mein add ho gaya','ok')}catch(e){fail(e)}}
+function home(u){return`<div class="fade">${activeOffers().map(featuredOffer).join('')}<div class="card hero"><span class="pill" style="color:#9a3412">${CFG.course}</span><h1>Refer Karo</h1>
+${offerOn()?`<div><span class="old">${inr(CFG.price)}</span> Welcome Offer <b>-${inr(CFG.disc)}</b></div><div class="big">${inr(CFG.price-CFG.disc)}</div><div style="font-size:13px">Offer ends ${fd(CFG.offerEnd)}</div>`:`<div class="big">${inr(CFG.price-CFG.disc)}</div><div style="font-size:13px">₹${CFG.price-CFG.disc} joining fee · ₹${CFG.fee} service fee added at payment</div>`}<button class="btn w" style="margin-top:10px" onclick="buy()">${u&&unlocked(u)?'Go to Task':'Unlock Task'}</button></div>${rewardCards(u)}
+${ADS.length?'<h2>Sponsored</h2>'+adsHtml():''}
+${Array.isArray(CFG.homeImages)&&CFG.homeImages.length?`<div class="card" style="padding:8px;overflow:hidden"><div class="home-slider" id="homeSlider" ontouchstart="homeTouchX=event.changedTouches[0].clientX" ontouchend="if(homeTouchX!==null){const dx=event.changedTouches[0].clientX-homeTouchX;if(Math.abs(dx)>35)goHomeSlide(homeSlide+(dx<0?1:-1));homeTouchX=null}" onpointerdown="if(event.pointerType==='mouse')homeTouchX=event.clientX" onpointerup="if(event.pointerType==='mouse'&&homeTouchX!==null){const dx=event.clientX-homeTouchX;if(Math.abs(dx)>45)goHomeSlide(homeSlide+(dx<0?1:-1));homeTouchX=null}"><img id="homeSlideImg" draggable="false" src="${esc(CFG.homeImages[Math.min(homeSlide,CFG.homeImages.length-1)]||CFG.homeImages[0])}" alt="Featured" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px">${CFG.homeImages.length>1?`<button class="slide-arrow prev" aria-label="Previous image" onclick="goHomeSlide(homeSlide-1)">‹</button><button class="slide-arrow next" aria-label="Next image" onclick="goHomeSlide(homeSlide+1)">›</button>`:''}</div><div id="homeSlideDots" style="display:flex;justify-content:center;gap:6px;padding:8px 0 0">${CFG.homeImages.map((_,i)=>`<button class="slide-dot" aria-label="Go to image ${i+1}" onclick="goHomeSlide(${i})" style="background:${i===homeSlide?'var(--o)':'var(--b)'}"></button>`).join('')}</div></div>`:''}
+<div class="card"><h2>How it works</h2><div class="row"><span><b>1. Create your account</b><br><span class="m">Register with your email and keep your login details safe.</span></span></div><div class="row"><span><b>2. Review the offer and rules</b><br><span class="m">Check the price, refund policy and task requirements before paying.</span></span></div><div class="row"><span><b>3. Unlock and complete tasks</b><br><span class="m">After confirmed payment, your task access updates automatically.</span></span></div><div class="row"><span><b>4. Track your wallet</b><br><span class="m">Check rewards, referrals and withdrawal eligibility in your account.</span></span></div></div>
+<div class="card"><h2>FAQ</h2>${faq()}</div>
+<div class="card"><h3>Telegram</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn s" style="flex:1" href="${esc(CFG.telegramJoin||'https://t.me/')}" target="_blank" rel="noopener noreferrer">${TG} Join Telegram</a><a class="btn s" style="flex:1" href="${esc(CFG.telegramSupport||CFG.telegramJoin||'https://t.me/')}" target="_blank" rel="noopener noreferrer">${TG} Support</a></div></div>${foot()}</div>`}
+let qrTimer=null,rzpWatch=null;
+function startRazorpayWatch(){
+ if(rzpWatch)return;
+ rzpWatch=setInterval(async()=>{
+  try{
+   const u=me();
+   if(u){const pending=myPays(u).find(x=>x.razorpayOrderId&&['Pending Verification','Cancelled','Failed'].includes(x.status));if(pending){try{await api('razorpay/status',{razorpay_order_id:pending.razorpayOrderId})}catch(e){}}}
+   await sync();
+   if(!u||unlocked(me())){clearInterval(rzpWatch);rzpWatch=null;if(tab==='course')render();}
+   else if(tab==='course'&&pending&&['Cancelled','Failed'].includes(pending.status)){clearInterval(rzpWatch);rzpWatch=null;render();}
+  }catch(e){}
+ },2500);
+ setTimeout(()=>{if(rzpWatch){clearInterval(rzpWatch);rzpWatch=null}},120000);
+}
+function buy(){const u=me();if(!u){mode='register';return go('auth')}if(unlocked(u))return go('course');
+ const p=myPays(u)[0];if(p&&p.status==='Pending Verification'){startRazorpayWatch();return go('course')}go('checkout')}
+function checkout(u){
+ const ready=!!CFG.razorpayEnabled&&!!CFG.razorpayKeyId,qrMode=CFG.paymentMode==='qr';
+ let paymentUI='';
+ if(qrMode){
+  paymentUI=CFG.qr&&CFG.upi?`<p class="m">Scan this QR and pay exactly ${inr(total)}. Enter the UTR/reference number from your payment app below. Task unlocks after admin verifies the payment.</p><div style="text-align:center;margin:12px 0"><img src="${esc(CFG.qr)}" alt="Payment QR code" style="width:220px;height:220px;max-width:100%;object-fit:contain;border:1px solid var(--b);border-radius:12px;background:#fff;padding:6px"><div><b>${esc(CFG.payee||'')}</b></div><div class="m">UPI ID: ${esc(CFG.upi)}</div>${CFG.upiOpenApp!==false?`<a class="btn" style="display:inline-flex;justify-content:center;margin-top:10px" href="upi://pay?pa=${encodeURIComponent(CFG.upi)}&pn=${encodeURIComponent(CFG.payee||'Refer Karo')}&am=${encodeURIComponent(Number(total).toFixed(2))}&cu=INR&tn=${encodeURIComponent('Refer Karo Task Unlock')}" rel="noopener">Pay via UPI</a>`:''}</div><label>UTR / UPI reference number</label><input id="utr" maxlength="40" autocomplete="off" placeholder="Enter 6–40 letters or digits"><label style="display:flex;gap:8px"><input id="ag" type="checkbox" style="width:auto;margin:3px 0"><span>I have read the <button class="link" onclick="legal('refund')">Refund Policy</button> and <button class="link" onclick="legal('terms')">Terms</button>.</span></label><button class="btn" id="sub" onclick="doQrPay()">Submit UTR for verification</button><p class="m">Your task remains locked until payment is verified by the admin. Do not submit a fake or reused UTR.</p>`:`<div class="warn">QR/UTR mode is ON, but no valid QR has been saved. Please contact support or ask the admin to add a QR in Admin Panel → Payment QR.</div>`;
+ }else{
+  paymentUI=ready?`<p class="m">Secure payment powered by Razorpay. You can pay by UPI, card, netbanking and other available methods.</p><label style="display:flex;gap:8px"><input id="ag" type="checkbox" style="width:auto;margin:3px 0"><span>I have read the <button class="link" onclick="legal('refund')">Refund Policy</button> and <button class="link" onclick="legal('terms')">Terms</button>.</span></label><button class="btn" id="sub" onclick="doPay()">Pay ${inr(total)} with Razorpay</button><p class="m">After successful captured payment, your Task unlocks automatically. No manual UTR verification is required.</p>`:`<div class="warn">Razorpay is not configured on the server yet. Add the Razorpay environment variables and refresh.</div><p class="m">Required: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET and RAZORPAY_WEBHOOK_SECRET.</p>`;
+ }
+ return`<div class="fade"><h1>Checkout</h1>${priceBox()}<div class="card" id="paybox"><h2>Pay ${inr(total)} securely</h2>${paymentUI}</div>${foot()}</div>`
+}
+const fmt=n=>Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');
+let AIH=[],aiT=null;
+const AI_LINKS=[['Claude','https://claude.ai'],['ChatGPT','https://chatgpt.com'],['Gemini','https://gemini.google.com']];
+let aiBase={s:0,t:0,r:false,g:600};
+const aiNow=()=>aiBase.r?Math.min(aiBase.g,aiBase.s+(Date.now()-aiBase.t)/1000):aiBase.s;
+const aiLabel=()=>aiNow()>=aiBase.g?'Today\'s practice complete':aiBase.r?'Time left':'Not started today';
+function aiCard(u){const a=u.ai||{secs:0,done:0,on:false,running:false,goal:600};aiBase={s:a.secs,t:Date.now(),r:a.running,g:a.goal||600};const n=aiNow();
+ return`<div class="card"><h3>Daily AI practice</h3><p class="m" style="margin:0 0 8px">Tap any AI below. Your ${Math.round(aiBase.g/60)} minute timer starts as soon as you tap. Practice marketing questions, ad ideas and captions, then come back after the timer ends.</p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap">${AI_LINKS.map(l=>`<a class="btn s sm" style="flex:1" href="${l[1]}" target="_blank" rel="noopener noreferrer" onclick="aiStart()">${l[0]}</a>`).join('')}</div>
+ <div class="row" style="margin-top:10px"><span id="ail">${aiLabel()}</span><b id="aitm">${n>=aiBase.g?'Done':fmt(aiBase.r?aiBase.g-n:aiBase.g)}</b></div><div class="bar"><i id="aibar" style="width:${Math.min(100,n/aiBase.g*100)}%"></i></div><p class="m" style="margin:6px 0 0">Days completed: ${a.done}</p>${a.on?`<button class="btn" style="margin-top:10px" onclick="openAI()">Practice in-app</button>`:''}</div>`}
+async function aiStart(){try{const j=await api('ai/tick',{});ME.ai=ME.ai||{};Object.assign(ME.ai,{secs:j.secs,goal:j.goal,running:j.running,done:j.done})}catch(e){}if(tab==='course'&&!$('#aic'))render()}
+async function aiTickUI(){const t=$('#aitm');if(!t)return;const n=aiNow();
+ if(aiBase.r&&n>=aiBase.g){aiBase.r=false;try{await sync()}catch{}toast('Today\'s practice complete','ok');if(tab==='course'&&!$('#aic'))render();return}
+ if(aiBase.r){t.textContent=fmt(aiBase.g-n);$('#aibar').style.width=Math.min(100,n/aiBase.g*100)+'%'}}
+setInterval(tkTick,1000);
+function nextMid(){const n=Date.now();return (Math.floor((n+19800000)/864e5)+1)*864e5-19800000-n}
+function midReset(){setTimeout(async()=>{try{if(ME){await sync();if(!$('#aic'))render()}}catch{}midReset()},nextMid()+1500)}midReset();
+document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&ME&&tab==='course'&&!$('#aic')){try{await sync();render()}catch{}}});
+async function tick(){try{const j=await api('ai/tick',{});ME.ai=ME.ai||{};ME.ai.secs=j.secs;ME.ai.done=j.done;const t=$('#ait');if(t)t.textContent=fmt(j.secs)}catch(e){}}
+function openAI(){AIH=[];modal(`<h2>AI tutor</h2><p class="m" style="margin:0 0 8px">Powered by Claude. Answers can be wrong, so double-check important things. Ask about marketing, ads, content or SEO.</p><div class="m" style="margin-bottom:6px">Time today: <b id="ait">${fmt((me().ai||{}).secs||0)}</b> / 10:00</div><div id="aic" style="max-height:38vh;overflow:auto;margin-bottom:8px"></div><textarea id="aiq" rows="2" placeholder="Ask something…"></textarea><button class="btn" id="aib" onclick="sendAI()">Send</button>`);
+ tick();clearInterval(aiT);aiT=setInterval(()=>{if(!$('#aic')){clearInterval(aiT);return}if(!document.hidden)tick()},30000)}
+async function sendAI(){const q=$('#aiq').value.trim();if(!q)return;const c=$('#aic'),b=$('#aib');
+ c.insertAdjacentHTML('beforeend',`<div style="background:var(--b);border-radius:12px;padding:8px 10px;margin:4px 0 4px 20%;white-space:pre-wrap">${esc(q)}</div>`);$('#aiq').value='';b.disabled=true;b.textContent='Thinking…';
+ try{const j=await api('ai',{message:q,history:AIH});AIH.push({role:'user',content:q},{role:'assistant',content:j.reply});c.insertAdjacentHTML('beforeend',`<div class="card" style="white-space:pre-wrap;margin:4px 20% 4px 0">${esc(j.reply)}</div>`)}
+ catch(e){c.insertAdjacentHTML('beforeend',`<div class="m" style="color:var(--er);margin:4px 0">${esc(e.message)}</div>`)}
+ b.disabled=false;b.textContent='Send';c.scrollTop=c.scrollHeight}
+function course(u){if(!unlocked(u)){const p=myPays(u)[0];return`<div class="fade card" style="text-align:center"><div style="font-size:40px">🔒</div><h2>Task locked</h2>${p&&p.status==='Pending Verification'?(p.paymentMethod==='qr'||p.utr?`<p>Your UTR has been submitted and is waiting for admin verification. <span class="pill">Pending Verification</span></p><p class="m">Your task will unlock after the admin verifies your payment.</p><button class="btn s" onclick="sync().then(render)">Refresh payment status</button>`:`<p>Your Razorpay payment status is being checked by the server. <span class="pill">Pending Verification</span></p><p class="m">Successful captured payment unlocks your task automatically. If Razorpay confirms failure/cancellation, you can pay again. Browser close/callback alone is not treated as proof of failure.</p><button class="btn s" onclick="startRazorpayWatch();api('razorpay/status',{razorpay_order_id:'${esc(p.razorpayOrderId||'')}'}).then(()=>sync()).then(render).catch(e=>{toast(e.message,'er');sync().then(render)})">Check payment status</button>`):`<p>${p&&['Rejected','Cancelled','Failed'].includes(p.status)?'Your last payment '+p.status.toLowerCase()+' ho gayi. Aap dobara payment kar sakte hain.':'Unlock Task to get access to all lessons.'}</p><button class="btn" onclick="go('checkout')">${p&&['Rejected','Cancelled','Failed'].includes(p.status)?'Try Payment Again':'Unlock Task'} · ${inr(total)}</button>`}</div>`}
+ const T=u.task;
+ if(!T||!T.mods.length)return`<div class="card fade"><h2>Today's Task</h2><p class="m">Daily task content will be added soon.</p></div>`;
+ return`<div class="fade"><h1>Today's Task</h1><div class="card"><div class="row" style="padding:0"><span>Days completed</span><b>${T.days}</b></div>${T.failed?"<div class='warn' style='margin-top:8px'>Today's task is incomplete because you answered a question incorrectly. Your task will renew tomorrow.</div>":T.today?'<p style="margin:6px 0 0"><span class="pill Verified">Today complete</span></p>':''}</div>${T.mods.map((m,i)=>modCard(m,i)).join('')}</div>`}
+const tL=(st,l)=>st===2?'<span class="pill Verified">Done</span>':st===1?`<b data-l="${l}">${fmt(l)}</b>`:'';
+function modCard(m,mi){return`<div class="card"><h3>${esc(m.title)}</h3><div class="row" style="padding-top:0"><span>Today's progress</span><b>${m.pct}%</b></div><div class="bar"><i style="width:${m.pct}%"></i></div>
+ <h3 style="margin-top:14px">Links <span class="m">(50%)</span></h3>${m.videos.length?m.videos.map((v,i)=>`<div style="margin:10px 0 16px;padding:12px;border:1px solid var(--b);border-radius:12px"><b style="display:block;margin-bottom:8px">${esc(v.title)}</b>${v.url?`<a class="btn" style="display:inline-block" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer" onclick="tkLink(${mi},${i})">${esc(v.title)}</a>`:'<p class="m">Link not added.</p>'}<div class="row" style="margin-top:8px"><span class="m">${v.st===2?'Link completed.':'Open this link and wait '+(v.secs||10)+' seconds.'}</span>${tL(v.st,v.left)}</div></div>`).join(''):'<p class="m">No links today.</p>'}
+ ${v_note(m)}
+ <h3 style="margin-top:14px">Questions <span class="m">(50%)</span></h3>${m.qs.length?m.qs.map((q,qi)=>`<div style="margin:6px 0"><div><b>Q${qi+1}.</b> ${esc(q.q)}</div>${q.state==='wrong'?'<div class="m" style="color:var(--er)">Not correct. Try again.</div>':''}${q.options.map((o,oi)=>q.state==='right'?`<div style="padding:6px 10px;margin:4px 0;border-radius:10px;border:1px solid var(--b);${oi===q.answer?'background:#dcfce7;color:#166534':q.wrongs.includes(oi)?'background:#fee2e2;color:#991b1b':''}">${esc(o)}${oi===q.answer?' ✓':q.wrongs.includes(oi)?' ✗':''}</div>`:q.wrongs.includes(oi)?`<div style="padding:6px 10px;margin:4px 0;border-radius:10px;background:#fee2e2;color:#991b1b">${esc(o)} ✗</div>`:`<button class="btn s" style="text-align:left;margin:4px 0" onclick="tkAns(${mi},${qi},${oi})">${esc(o)}</button>`).join('')}</div>`).join(''):'<p class="m">No questions today.</p>'}
+ <h3 style="margin-top:14px">AI practice <span class="m">(Optional)</span></h3><p class="m" style="margin:0 0 6px">AI practice is optional and does not block daily task completion.</p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${m.ai.st<2?AI_LINKS.map(l=>`<a class="btn s sm" style="flex:1" href="${l[1]}" target="_blank" rel="noopener noreferrer" onclick="tkStart(${mi},'a',0)">${l[0]}</a>`).join(''):''}${tL(m.ai.st,m.ai.left)}</div></div>`}
+const v_note=()=>'';
+async function tkStart(m,kind,i){try{await api('task/start',{m,kind,i});if(kind==='a'){await sync();render()}}catch(e){fail(e)}}
+async function tkLink(m,i){try{await api('task/start',{m,kind:'v',i});setTimeout(async()=>{try{await api('task/videoDone',{m,i});await sync();render();toast('Link completed','ok')}catch(e){}},10500);await sync();render()}catch(e){fail(e)}}
+async function tkVideoDone(m,i){try{await api('task/videoDone',{m,i});await sync();render();toast('Link completed','ok')}catch(e){fail(e)}}
+function videoGuard(v){const mx=+(v.dataset.max||0);if(v.currentTime>mx)v.dataset.max=v.currentTime}
+function videoSeekGuard(v){const mx=+(v.dataset.max||0);if(v.currentTime>mx+0.35)v.currentTime=mx}
+async function tkAns(m,i,a){try{const j=await api('task/answer',{m,i,a});await sync();render();if(j&&j.failed)modal(`<h2>Today's Task Stopped</h2><p>Your tasks stopped today because of a wrong answer. Please complete your tasks again tomorrow.</p>`)}catch(e){fail(e)}}
+/* Countdown updates must only change the timer text. The previous implementation
+   fetched state and re-rendered the whole task page every second once any timer
+   reached zero. That caused severe flicker, especially after a wrong answer when
+   the task remains stopped for the rest of the day. Link completion is handled by
+   tkLink()/tkVideoDone(), so no polling or full-page render is needed here. */
+function tkTick(){document.querySelectorAll('[data-l]').forEach(el=>{const l=Math.max(0,+el.dataset.l-(Date.now()-TB)/1000);el.textContent=fmt(l)})}
+function lesson(id){const l=LESSONS.find(x=>x.id===id),u=me(),d=u.progress?.[id];
+ modal(`<h2>${l.t}</h2>${l.video?`<video src="${esc(l.video)}" controls playsinline style="width:100%;border-radius:10px"></video>`:`<div class="card m" style="text-align:center">Video not added yet (set <code>video</code> URL in LESSONS).</div>`}<h3>Notes</h3><p>${esc(l.notes)}</p>
+ <button class="btn" onclick="mark('${id}')">${d?'Mark as not done':'Mark as complete'}</button>`)}
+function cert(){const u=me();modal(`<div class="cert"><div style="font-size:12px;letter-spacing:2px">CERTIFICATE OF COMPLETION</div><h2 style="margin:14px 0">${esc(u.name)}</h2><div>has completed the</div><h3>${CFG.course}</h3><div class="m">${fd(Date.now())} · ID ${u.id}</div></div><button class="btn s" style="margin-top:10px" onclick="print()">Print / Save PDF</button>`)}
+function wallet(u){const bal=balance(u),realW=DB.wd.filter(x=>x.uid===u.id).sort((a,b)=>b.ts-a.ts),demoW=u&&u.admin&&CFG.adminDemo?Array.from({length:Math.min(1000,+CFG.adminDemo.withdrawals||0)},(_,i)=>({id:'demo-wd-'+i,amt:0,upi:'Admin demo entry',status:'Demo',ts:Date.now()-i*86400000,demo:true})):[],w=demoW.concat(realW),e=walletOf(u).entries,direct=refs(u).filter(x=>unlocked(x)).length,withdrawalDay=CFG.withdrawalDay??0,isWithdrawalDay=withdrawalDay==='any'||new Date(Date.now()+19800000).getUTCDay()===Number(withdrawalDay),dayLabel=withdrawalDay==='any'?'any day':['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(withdrawalDay)]||'Sunday',minRefs=Number(CFG.minDirectRefs??3),demo=!!(u&&u.managedAccount),canWd=bal>=CFG.minWd&&(demo||(direct>=minRefs&&isWithdrawalDay));
+ return`<div class="fade"><h1>Wallet</h1><div class="card hero"><div>Wallet balance</div><div class="big">${inr(bal)}</div><div style="font-size:12px">Referral commission + ₹40 daily task reward + ₹5 for each direct referral task completion and ₹2 for Level 2 task completion (once per referred user).</div></div>
+ <div class="card"><h3>Withdraw</h3><p class="m">Minimum ${inr(CFG.minWd)}${demo?' · Demo account withdrawals are available any day.':' · minimum <b>'+minRefs+' verified direct referrals</b>. Withdrawal requests are accepted on '+dayLabel+' (India time).'} · <button class="link" onclick="legal('ref')">Rules</button></p><p class="m">Your direct referrals: <b>${direct}/${minRefs}</b></p>
+ <label>UPI ID</label><input id="wu" placeholder="name@bank"><label>Amount (₹)</label><input id="wa" type="number" inputmode="numeric" min="${CFG.minWd}">
+ <button class="btn" onclick="doWd()" ${canWd?'':'disabled'}>Request withdrawal</button>${!canWd?`<p class="m">${!demo&&!isWithdrawalDay?'Withdrawal requests open on '+dayLabel+' (India time). ':''}${!demo&&direct<minRefs?'You need at least '+minRefs+' verified direct referrals. ':''}${bal<CFG.minWd?'You need at least '+inr(CFG.minWd)+' balance.':''}</p>`:''}</div>
+ <div class="card"><h3>Earnings</h3><div style="max-height:260px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px">${e.length?e.map(x=>`<div class="row"><span>${fd(x.ts)} · ${esc(x.kind==='daily'?'Daily Task':x.kind==='taskref'?'Direct referral task':x.kind==='taskref2'?'Level 2 referral task':x.kind==='bonus'?'Admin Bonus':x.kind==='dailyReferral'?'Daily referral target reward':'Referral · Level '+x.level)}<br><span class="m">${esc(x.who||'')}</span></span><b style="color:var(--ok)">+${inr(x.amt)}</b></div>`).join(''):'<p class="m">No earnings yet.</p>'}</div></div>
+ <div class="card"><h3>Withdrawal history</h3>${w.length?w.map(x=>`<div class="row"><span>${fd(x.ts)} · ${inr(x.amt)}<br><span class="m">${esc(x.upi)}</span></span><span class="pill ${x.status}">${x.status}</span></div>`).join(''):'<p class="m">No withdrawals yet.</p>'}</div></div>`}
+
+async function checkReferralTaskStatus(){const el=$('#refStatusResult'),uid=($('#refStatusUid')?.value||'').trim();if(!uid){el.innerHTML='<p class="m">Pehle UID enter karein.</p>';return}el.innerHTML='<p class="m">Checking…</p>';try{const j=await api('referral/status',{uid});el.innerHTML=`<div class="row"><span><b>${esc(j.name||'Referral user')}</b><br><span class="m">UID: ${esc(j.uid)} · Level ${j.level}</span></span><span class="pill ${j.taskUnlocked?'Verified':'Pending'}">${j.taskUnlocked?'Task Unlocked':'Task Locked'}</span></div><p class="m">Payment status: ${esc(j.paymentStatus||'Not verified')}</p>`}catch(e){el.innerHTML=`<p class="m" style="color:var(--danger)">${esc(e.message||'Status check nahi ho saka.')}</p>`}}
+function referralUrl(u=me()){return u?location.origin+location.pathname+'?ref='+encodeURIComponent(u.ref):location.origin+location.pathname}
+async function copyReferralLink(){const u=me();if(!u)return;const link=referralUrl(u);try{await navigator.clipboard.writeText(link);toast('Referral link copied','ok')}catch(e){const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();const ok=document.execCommand('copy');el.remove();toast(ok?'Referral link copied':'Please copy the link manually',ok?'ok':'error')}}
+function shareReferralWhatsApp(){const u=me();if(!u)return;const link=referralUrl(u);const msg='Join me on Refer Karo. Check the offer, task requirements and terms here: '+link;window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
+function refer(u){const r=refs(u),ok=r.filter(x=>unlocked(x)),link=location.origin+location.pathname+'?ref='+u.ref;
+ return`<div class="fade"><h1>Refer & Earn</h1>${u.dailyReferral&&u.dailyReferral.targets&&u.dailyReferral.targets.length?`<div class="card"><h3>Daily Referral Targets</h3><p class="m">Aaj ke eligible naye users jinhone task unlock kiya: <b>${u.dailyReferral.count}</b>. Har target cumulative hai; naya din aate hi count reset ho jayega.</p>${u.dailyReferral.targets.map(t=>`<div style="border:1px solid var(--b);border-radius:10px;padding:10px;margin-top:8px"><div class="row" style="padding:0"><span><b>${t.target} registrations</b><br><span class="m">Reward ${inr(t.amount)}</span></span><span class="pill ${t.claimed?'Verified':t.completed?'Verified':''}">${t.claimed?'Claimed':t.completed?'Completed':'In progress'}</span></div><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,Math.round(u.dailyReferral.count/Math.max(1,t.target)*100))}%"></i></div>${t.completed&&!t.claimed?`<button class="btn" style="margin-top:8px" onclick="claimDailyReferral('${esc(t.id)}')">Claim ${inr(t.amount)}</button>`:''}</div>`).join('')}</div>`:''}${CFG.referralDiscountEnabled!==false&&Number(CFG.myReferralDiscountPct??CFG.referralDiscountPct)>0?`<div class="card" style="border:1px solid var(--o);background:color-mix(in srgb,var(--o) 8%,var(--card))"><h3 style="margin:0 0 6px">🎁 Referral Discount</h3><p style="margin:0 0 6px">Aapke link se register karne wale naye user ko task unlock payment par <b>${Number(CFG.myReferralDiscountPct??CFG.referralDiscountPct)}% OFF</b> milega.</p></div>`:''}<div class="card"><p class="m" style="margin:0;white-space:pre-line">${esc(CFG.referContent?.intro||`Earn ₹${CFG.commission} for a direct referral payment, ₹${CFG.taskReferral} for a direct referral task, and ₹${CFG.taskReferralLevel2} for a Level 2 referral task.`)}</p></div><div class="card"><p>Your code: <b>${u.ref}</b></p><input readonly value="${esc(link)}" onclick="this.select()"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn" onclick="copyReferralLink()">Copy link</button><button class="btn s" style="background:#128c7e;color:white" onclick="shareReferralWhatsApp()">Share on WhatsApp</button></div><p class="m" style="white-space:pre-line">${esc(CFG.referContent?.shareHint||'Share only with people who may genuinely be interested. Referral rewards apply only when the published conditions are met.')}</p></div>
+ <div class="card"><div class="row"><span>Total direct referrals</span><b>${r.length}</b></div><div class="row"><span>Successful direct referrals</span><b>${ok.length}</b></div><div class="row"><span>Referral earnings (all levels)</span><b>${inr(commissions(u).reduce((s,c)=>s+c.amt,0))}</b></div></div>
+ <div class="card"><h3>${esc(CFG.referContent?.levelsTitle||'Referral earning levels')}</h3><p style="white-space:pre-line;margin:0">Level 1 (Direct): <b>₹${CFG.commission}</b> per referred user after payment is verified.
+Level 2: <b>₹${CFG.level2}</b> when your direct referral's referral makes a verified payment.
+Level 3: <b>₹${CFG.level3}</b> when Level 2's referral makes a verified payment.
+Direct referral task completion: <b>₹${CFG.taskReferral}</b> once per referred user.
+Level 2 referral task completion: <b>₹${CFG.taskReferralLevel2}</b> once per referred user.
+Daily Task: <b>₹${CFG.dailyReward}</b> once per day after today's task requirements are complete.</p></div>
+ <div class="card"><h3>${esc(CFG.referContent?.rulesTitle||'Referral rules')}</h3><p class="m" style="white-space:pre-line">${esc(CFG.referContent?.rules||LEGAL.ref[1])}</p></div>
+ <div class="card"><h3>${esc(CFG.referContent?.historyTitle||'Referral history')}</h3><p class="m">History ko isi box ke andar scroll karein.</p><div style="max-height:300px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;border:1px solid var(--b);border-radius:10px;padding:8px">${r.length?r.map(x=>`<div class="row"><span>${esc(x.name)}<br><span class="m">UID: ${esc(x.id)} · Joined ${fd(x.created)}</span></span><span class="pill ${unlocked(x)?'Verified':''}">${unlocked(x)?'Task unlocked':'Task locked'}</span></div>`).join(''):'<p class="m">No referrals yet.</p>'}</div><div style="margin-top:14px"><h4>Referral Task Status Check</h4><p class="m">Apne referral tree (Level 1–3) ke user ki UID daalkar check karein ki task unlock hai ya nahi.</p><label for="refStatusUid">Referral user UID</label><input id="refStatusUid" maxlength=40 placeholder="User UID enter karein"><button class="btn s" style="margin-top:8px" onclick="checkReferralTaskStatus()">Check Task Status</button><div id="refStatusResult" aria-live="polite" style="margin-top:10px"></div></div></div></div>`}
+function txns(u){const p=myPays(u),c=commissions(u),d=dailyEntries(u),w=DB.wd.filter(x=>x.uid===u.id);
+ return`<div class="fade"><h1>Transactions</h1><div class="card"><h3>Payments</h3>${p.length?p.map(x=>`<div class="row"><span>${fd(x.ts)} · ${inr(x.amt)}<br><span class="m">UTR ${esc(x.utr)}</span> · <button class="link" onclick="bill('${x.id}')">View bill</button></span><span class="pill ${x.status.split(' ')[0]}">${x.status}</span></div>`).join(''):'<p class="m">None.</p>'}</div>
+ <div class="card"><h3>Referral earnings</h3>${c.length?c.map(x=>`<div class="row"><span>${fd(x.ts)} · Level ${x.level} · ${esc(x.who)}</span><b style="color:var(--ok)">+${inr(x.amt)}</b></div>`).join(''):'<p class="m">None.</p>'}</div>
+ <div class="card"><h3>Daily task rewards</h3>${d.length?d.map(x=>`<div class="row"><span>${fd(x.ts)} · Daily Task complete</span><b style="color:var(--ok)">+${inr(x.amt)}</b></div>`).join(''):'<p class="m">None.</p>'}</div>
+ <div class="card"><h3>Withdrawals</h3>${w.length?w.map(x=>`<div class="row"><span>${fd(x.ts)} · -${inr(x.amt)}</span><span class="pill ${x.status}">${x.status}</span></div>`).join(''):'<p class="m">None.</p>'}</div><button class="btn s" onclick="go('profile')">Back</button></div>`}
+const TG='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#2AABEE"/><path fill="#fff" d="M5.4 11.9l11.3-4.4c.5-.2 1 .1.8.9l-1.9 9c-.1.6-.5.8-1 .5l-2.9-2.1-1.4 1.4c-.2.2-.3.3-.6.3l.2-3 5.4-4.9c.2-.2 0-.3-.4-.1l-6.7 4.2-2.9-.9c-.6-.2-.6-.6.1-.9z"/></svg>';
+function support(){const u=me(),L=DB.tix.slice().sort((a,b)=>b.ts-a.ts);return`<div class="fade"><h1>Support</h1><div class="card"><a class="btn" style="display:flex;align-items:center;justify-content:center;gap:8px" href="${esc(CFG.telegramSupport||CFG.telegramJoin||'https://t.me/')}" target="_blank" rel="noopener noreferrer">${TG}Chat on Telegram</a></div>
+ <div class="card"><h3>Contact us</h3><p class="m" style="margin:0 0 8px">Your UID: <b>#${esc(u.id)}</b> (sent to support automatically)</p><select id="tp"><option>General question</option><option>Payment issue</option><option>Withdrawal issue</option></select><textarea id="tm" rows="4" placeholder="Describe your issue"></textarea><button class="btn" onclick="doTix()">Send</button></div>
+ <div class="card"><h3>My complaints</h3>${L.length?L.map(t=>`<div style="border-top:1px solid var(--b);padding:8px 0"><div class="row" style="padding:0"><span><b>#T-${esc(t.id)}</b> · ${esc(t.type)}<br><span class="m">${fd(t.ts)}</span></span><span class="pill ${t.status==='Resolved'?'Verified':''}">${esc(t.status)}</span></div><p style="margin:4px 0;white-space:pre-wrap">${esc(t.msg)}</p>${t.reply?`<div class="warn" style="background:#ffedd5;color:#7c2d12"><b>Support reply:</b> ${esc(t.reply)}</div>`:''}</div>`).join(''):'<p class="m">No complaints yet.</p>'}</div>
+ <div class="card"><h3>FAQ</h3>${faq()}</div><button class="btn s" onclick="go('profile')">Back</button></div>`}
+const IC={tx:'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6',wd:'M12 19V5M5 12l7-7 7 7',sup:'M12 21a9 9 0 100-18 9 9 0 000 18zM9.5 9a2.5 2.5 0 114 2c-1 .7-1.5 1-1.5 2M12 17h.01',pw:'M6 11h12v9H6zM8 11V8a4 4 0 018 0v3',adm:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',del:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',out:'M10 4H5v16h5M15 8l4 4-4 4M19 12H9',cp:'M9 9h11v11H9zM5 15V4h11'};
+const svg=p=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg>`;
+const mi=(ic,t,fn,red)=>`<button onclick="${fn}" style="display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid var(--b);background:none;color:var(--t);padding:12px 2px;font:inherit;cursor:pointer;text-align:left"><span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:${red?'#fee2e2':'#ffedd5'};color:${red?'var(--er)':'var(--o2)'}">${svg(IC[ic])}</span><span style="flex:1;${red?'color:var(--er)':''}">${t}</span><span class="m">›</span></button>`;
+const maskE=e=>{const[a,d]=e.split('@');return a.slice(0,3)+'****@'+d};
+function bill(id){const p=DB.pays.find(x=>x.id===id),u=me();if(!p||!u)return;const paid=p.status==='Verified',no='RK-'+new Date(p.ts).toISOString().slice(0,10).replace(/-/g,'')+'-'+String(p.id).toUpperCase();
+ const disc=Math.max(0,CFG.price-p.amt),gb=p.amt*100/(100+CFG.gstRate);
+ modal(`<div><h2 style="margin:0">${esc(CFG.brand)}</h2>${CFG.gstin?`<div class="m">GSTIN: ${esc(CFG.gstin)}</div>`:''}<h3>${paid?'Payment Receipt':'Payment Receipt (pending verification)'}</h3>
+ <div class="row"><span class="m">Bill no.</span><b>${no}</b></div><div class="row"><span class="m">Date</span><span>${fd(p.ts)}</span></div>
+ <div class="row"><span class="m">Billed to</span><span style="text-align:right">${esc(u.name)}<br>UID #${esc(u.id)}<br>${esc(u.email)}</span></div><div class="row"><span class="m">UTR</span><b>${esc(p.utr)}</b></div>
+ <div style="border-top:1px solid var(--b);margin:6px 0"></div>
+ ${p.amt===CFG.price-CFG.disc+CFG.fee?`<div class="row"><span>Task price</span><span>${inr(CFG.price)}</span></div><div class="row"><span>Welcome Offer discount</span><span>-${inr(CFG.disc)}</span></div><div class="row"><span>Service fee</span><span>${inr(CFG.fee)}</span></div>`:p.amt===CFG.price+CFG.fee?`<div class="row"><span>Task price</span><span>${inr(CFG.price)}</span></div><div class="row"><span>Service fee</span><span>${inr(CFG.fee)}</span></div>`:`<div class="row"><span>Unlock Task (digital access)</span><span>${inr(p.amt)}</span></div>`}
+ <div class="row t"><span>Total paid</span><span>${inr(p.amt)}</span></div>${CFG.gstin?`<p class="m" style="margin:4px 0">Includes GST ${CFG.gstRate}%: ${inr((p.amt-gb).toFixed(2))} (taxable value ${inr(gb.toFixed(2))})</p>`:''}
+ <p style="margin:8px 0"><span class="pill ${paid?'Verified':''}">${paid?'PAID':'Pending verification'}</span></p><p class="m">Digital access. Refund Policy applies. This is a computer generated receipt.</p></div><button class="btn" onclick="print()">Print / Save PDF</button>`)}
+function copyId(t){navigator.clipboard?.writeText(t).then(()=>toast('Copied','ok'),()=>toast('Copy failed','er'))}
+function profile(u){return`<div class="fade"><div class="card hero" style="padding:16px"><div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:56px;border-radius:50%;background:#fff;color:var(--o2);display:grid;place-items:center;font:800 24px inherit">${esc(u.name.trim()[0]||'U').toUpperCase()}</div>
+<div style="min-width:0"><b style="font-size:17px">${esc(u.name)}</b><div style="font-size:13px;opacity:.95">${esc(maskE(u.email))}</div>
+<div style="font-size:13px;display:flex;align-items:center;gap:6px">ID: ${u.id}<button onclick="copyId('${u.id}')" style="border:0;background:#fff3;color:#fff;border-radius:6px;padding:3px 5px;display:grid;place-items:center">${svg(IC.cp).replace('20','14').replace('20','14')}</button></div></div></div></div>
+<div class="card" style="display:flex;text-align:center;padding:14px 0"><div style="flex:1;border-right:1px solid var(--b)"><div style="font:800 22px inherit;color:var(--o2)">${inr(balance(u))}</div><div class="m">Wallet balance</div></div><div style="flex:1"><div style="font:800 22px inherit;color:var(--o2)">${refs(u).filter(unlocked).length}</div><div class="m">Verified referrals</div></div></div>
+<div class="card" style="padding:4px 14px">${mi('tx','Transactions',"go('profile','txns')")}${mi('wd','Withdrawal History',"go('wallet')")}${mi('sup','Support Center',"go('profile','support')")}${mi('pw','Change Password','chPw()')}${isAdmin(u)?mi('adm','Admin Panel',"go('profile','admin')"):''}${mi('del',u.delReq?'Deletion requested':'Request account deletion','delReq()',1)}${mi('out','Logout','logout()',1)}</div>${foot()}</div>`}
+function chPw(){modal(`<h2>Change password</h2><label>Current password</label><input id="cp" type="password" autocomplete="current-password"><label>New password (min 8)</label><input id="np2" type="password" autocomplete="new-password"><button class="btn" onclick="doChPw()">Update password</button>`)}
+let at='over',aq='',af='All',targetHistoryUid='';
+// Keep the last admin section selected across renders and reloads.
+try{at=sessionStorage.getItem('referkaro_admin_tab')||'over';af=sessionStorage.getItem('referkaro_admin_filter')||'All'}catch{}
+const A_U=id=>DB.users.find(u=>u.id===id)||{};
+const uidChip=id=>`<button class="link" style="text-decoration:none;font-weight:700" onclick="copyId('${id}')">#${esc(id)}</button>`;
+const stat=(l,v,hl)=>`<div class="card" style="margin:0;${hl?'border-color:var(--o)':''}"><div class="m">${l}</div><div style="font:800 22px inherit;color:var(--o2)">${v}</div></div>`;
+const chips=(a,cur,fn)=>`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">${a.map(x=>`<button class="btn sm ${cur==x[0]?'':'s'}" style="white-space:nowrap" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join('')}</div>`;
+const customers=()=>DB.users.filter(u=>!u.admin&&!u.managedAccount);
+const wdSum=u=>DB.wd.filter(w=>w.uid===u.id&&w.status!=='Rejected').reduce((s,w)=>s+w.amt,0);
+async function adminUser(id,a){const t=A_U(id);const m={delete:'Delete this account permanently?',block:'Block this account? The user will not be able to login.',unblock:'Unblock this account?',tasklock:'Lock this user’s tasks? They will see the ₹300 unlock payment screen.',taskunlock:'Unlock this user’s tasks without a payment?'}[a]||'Continue?';
+ if(!confirm(m+'\n#'+id+' '+(t.email||'')))return;try{await api('admin/user',{id,action:a});await sync();render();toast(({delete:'Account deleted',block:'Account blocked',unblock:'Account unblocked',tasklock:'Tasks locked',taskunlock:'Tasks unlocked'})[a]||'Saved','ok')}catch(e){fail(e)}}
+async function adminVerifyUser(id){const t=A_U(id);if(t.adminVerified||DB.pays.some(p=>p.uid===id&&p.status==='Verified'))return toast('User already verified','ok');if(!confirm('Verify '+(t.name||t.email||id)+' and unlock tasks without adding a payment or revenue?'))return;try{await api('admin/user',{id,action:'verify'});await sync();render();toast('User verified; tasks unlocked. No payment added to overview.','ok')}catch(e){fail(e)}}
+async function adminSetUserDiscount(id){const t=A_U(id);const current=t.referralDiscountPct===null||t.referralDiscountPct===undefined?Number(CFG.referralDiscountPct)||0:Number(t.referralDiscountPct);const p=prompt('Set discount for people who register through '+(t.name||t.email||id)+' referral link (0–100%).\nLeave blank is not supported; use Reset to global default instead.',String(current));if(p===null)return;if(p.trim()===''||!Number.isFinite(Number(p))||Number(p)<0||Number(p)>100)return toast('Discount 0 se 100% ke beech number hona chahiye','er');if(!confirm((Number(p))+'% discount is user ke referral link se aane wale naye users ko milega. Save karein?'))return;try{await api('admin/user',{id,action:'setdiscount',percent:Number(p)});await sync();render();toast('User referral discount saved','ok')}catch(e){fail(e)}}
+async function adminResetUserDiscount(id){const t=A_U(id);if(!confirm('Is user ka personal discount hata kar global default ('+(Number(CFG.referralDiscountPct)||0)+'%) use karna hai?'))return;try{await api('admin/user',{id,action:'resetdiscount'});await sync();render();toast('User now uses global default discount','ok')}catch(e){fail(e)}}
+async function adminSetPassword(id){const t=A_U(id);const p=prompt('Set new password for #'+id+' '+(t.email||'')+'\nMinimum 8 characters:');if(p===null)return;if(p.length<8)return toast('Password must be at least 8 characters','er');if(!confirm('Set this new password for '+(t.email||id)+'?'))return;try{await api('admin/user',{id,action:'setpassword',password:p});toast('New password set','ok')}catch(e){fail(e)}}
+async function adRestore(inp){const f=inp.files[0];if(!f)return;if(!confirm('Restore this backup? Current data will be replaced and everyone will be logged out.')){inp.value='';return}
+ try{const data=JSON.parse(await f.text());await api('admin/restore',{data});ME=null;DB={users:[],pays:[],wd:[],tix:[]};mode='login';render();toast('Backup restored. Please login again.','ok')}catch(e){fail(e);inp.value=''}}
+let adQr='',adSlot=0;
+const DEF={upi:CFG.upi,payee:CFG.payee};
+function qrCard(){const ps=DB.pay||{slots:[]};const slots=Array.isArray(ps.slots)?ps.slots:[],sd=slots[adSlot]||{},img=adQr||sd.qr||(adSlot===0?DEFAULT_QR:''),up=sd.upi||(adSlot===0?DEF.upi:''),pn=sd.payee||(adSlot===0?DEF.payee:'');
+ return`<div class="card"><h3>Payment QR · ${slots.length} Slots</h3><p class="m" style="margin:0 0 8px">Users ko refresh par configured QR accounts mein se random QR milega. 2, 5, 10 ya jitne chaho QR save kar sakte ho. QR delete hone ke baad bhi uski payment history aur amount yahan safe rahega.</p>
+ <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${slots.map((x,i)=>`<button class="btn sm ${adSlot===i?'':'s'}" onclick="adSlot=${i};adQr='';render()">QR ${i+1}${x.upi&&x.qr?' ✓':''}</button>`).join('')}<button type="button" class="btn sm" onclick="adSlot=((DB.pay&&DB.pay.slots)||[]).length;adQr='';render()">+ Add QR</button></div>
+ ${slots.length?`<div class="m" style="margin-bottom:4px">Editing QR ${adSlot+1}</div><div style="text-align:center">${img?`<img id="qrprev" src="${img}" alt="QR" width="150" height="150" style="border:1px solid var(--b);border-radius:10px">`:'<div id="qrprev" class="m">No QR saved yet</div>'}</div>`:'<p class="m">No QR configured yet. Add your first QR.</p>'}
+ <label>UPI ID</label><input id="pqu" value="${esc(up)}"><label>Account holder name</label><input id="pqn" value="${esc(pn)}"><button class="btn s" onclick="$('#qrf').click()">Choose QR image</button><input id="qrf" type="file" accept="image/*" style="display:none" onchange="adQrPick(this)"><button class="btn" style="margin-top:8px" onclick="adQrSave()">Save QR ${adSlot+1}</button>${slots.length?`<button class="btn d" style="margin-top:8px" onclick="adQrDelete(${adSlot})">Delete QR ${adSlot+1}</button>`:''}
+ <div class="row" style="margin-top:10px"><span class="m">This QR · People</span><b>${((DB.qrStats&&DB.qrStats.slots||[])[adSlot]||{}).stats?.people||0}</b></div><div class="row"><span class="m">This QR · Payments</span><b>${((DB.qrStats&&DB.qrStats.slots||[])[adSlot]||{}).stats?.submitted||0}</b></div><div class="row"><span class="m">This QR · Amount received</span><b>${inr(((DB.qrStats&&DB.qrStats.slots||[])[adSlot]||{}).stats?.amount||0)}</b></div><div class="row"><span class="m">This QR · Verified amount</span><b>${inr(((DB.qrStats&&DB.qrStats.slots||[])[adSlot]||{}).stats?.verifiedAmount||0)}</b></div><div class="row"><span class="m">Admin active slot</span><b>${slots.length?(ps.active||0)+1:'None'}</b></div>${slots.length?`<button class="btn s" onclick="adActive(${adSlot})">Make QR ${adSlot+1} active</button>`:''}</div>`}
+async function adActive(i){try{await api('admin/payactive',{active:i});await sync();render();toast('QR '+(i+1)+' is now active','ok')}catch(e){fail(e)}}
+async function adQrDelete(i){if(!confirm('Delete QR '+(i+1)+'?'))return;try{await api('admin/paydelete',{slot:i});adSlot=Math.max(0,Math.min(i,((DB.pay&&DB.pay.slots)||[]).length-2));adQr='';await sync();render();toast('QR deleted','ok')}catch(e){fail(e)}}
+
+function adQrPrev(){const e=$('#qrprev');if(!e)return;if(e.tagName==='IMG')e.src=adQr;else e.outerHTML='<img id="qrprev" src="'+adQr+'" alt="QR" width="150" height="150" style="border:1px solid var(--b);border-radius:10px">'}
+function adQrPick(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,420/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);adQr=c.toDataURL('image/png');adQrPrev()};im.onerror=()=>toast('Could not read this image','er');im.src=r.result};r.readAsDataURL(f)}
+async function adQrSave(){const ps=DB.pay||{slots:[]},sd=(ps.slots||[])[adSlot]||{},upi=$('#pqu').value.trim();
+ if(!adQr&&!sd.qr&&!(adSlot===0&&upi===DEF.upi))return toast('Upload the QR image for this UPI ID','er');
+ try{await api('admin/payment',{slot:adSlot,qr:adQr||undefined,upi,payee:$('#pqn').value.trim()});adQr='';await sync();render();toast('QR '+(adSlot+1)+' saved','ok')}catch(e){fail(e)}}
+async function adTicket(id,st){try{await api('admin/ticket',{id,status:st,reply:$('#tr_'+id).value});await sync();render();toast('Updated','ok')}catch(e){fail(e)}}
+async function createDemoAccount(){try{const name=$('#newDemoName').value.trim(),email=$('#newDemoEmail').value.trim(),password=$('#newDemoPassword').value;await api('admin/demo-create',{name,email,password,balance:$('#newDemoBalance').value,earned:$('#newDemoEarned').value,referrals:$('#newDemoRefs').value,withdrawals:$('#newDemoWds').value});await sync();render();toast('Demo account created','ok')}catch(e){fail(e)}}
+async function saveHomeImages(){try{const input=$('#homeImageFiles'),files=[...(input.files||[])];let imgs=[...(CFG.homeImages||[])];for(const f of files){if(!/^image\/(png|jpeg|webp|gif)$/.test(f.type)||f.size>500*1024)throw new Error('Choose PNG/JPG/WEBP/GIF images under 500 KB each');imgs.push(await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Could not read image'));r.readAsDataURL(f)}))}if(imgs.length>30)throw new Error('Maximum 30 images allowed');await api('admin/home-images',{images:imgs});await sync();homeSlide=0;render();toast('Home images saved','ok')}catch(e){fail(e)}}
+async function removeHomeImage(i){const current=[...(CFG.homeImages||[])],target=current[i];if(!target)return;const imgs=current.filter(im=>im!==target);try{await api('admin/home-images',{images:imgs});await sync();homeSlide=Math.max(0,Math.min(homeSlide,imgs.length-1));render();toast('Image permanently removed from active app storage','ok')}catch(e){fail(e)}}
+async function clearHomeImages(){if(!confirm('Remove all home page slider images?'))return;try{await api('admin/home-images',{images:[]});await sync();homeSlide=0;render();toast('All images removed','ok')}catch(e){fail(e)}}
+async function saveManagedDemo(id){try{await api('admin/demo-user',{id,name:$('#dname_'+id).value,email:$('#demail_'+id).value,balance:$('#dbal_'+id).value,earned:$('#dern_'+id).value,referrals:$('#dref_'+id).value,withdrawals:$('#dwd_'+id).value});await sync();render();toast('Managed account values saved','ok')}catch(e){fail(e)}}
+async function saveAdminDemo(){try{await api('admin/demo',{balance:$('#demoBal').value,earned:$('#demoEarned').value,referrals:$('#demoRefs').value,withdrawals:$('#demoWds').value});await sync();render();toast('Admin demo values saved','ok')}catch(e){fail(e)}}
+async function saveReferContent(){try{const data={};for(const k of ['intro','shareHint','levelsTitle','rulesTitle','rules','historyTitle'])data[k]=$('#refer_'+k).value;await api('admin/refer-content',data);await sync();render();toast('Refer page content saved','ok')}catch(e){fail(e)}}
+async function saveReferralDiscount(){try{const percent=Number($('#refDiscountPct').value);if(!Number.isFinite(percent)||percent<0||percent>100)throw new Error('Discount 0 se 100 percent ke beech hona chahiye');await api('admin/referral-discount',{percent,enabled:$('#refDiscountEnabled').checked});await sync();render();toast('Referral discount settings saved','ok')}catch(e){fail(e)}}
+async function saveBusinessConfig(){try{const data={minWd:Number($('#biz_minWd').value),minDirectRefs:Number($('#biz_minDirectRefs').value),withdrawalDay:$('#biz_withdrawalDay').value,price:Number($('#biz_price').value),fee:Number($('#biz_fee').value)};if(Object.values(data).some(v=>typeof v==='number'&&(!Number.isFinite(v)||v<0)))throw new Error('Please enter valid non-negative amounts');if(!Number.isInteger(data.minDirectRefs))throw new Error('Verified direct referrals must be a whole number');await api('admin/business-config',data);await sync();render();toast('Withdrawal and task unlock settings saved','ok')}catch(e){fail(e)}}
+async function saveRewards(){try{const keys=['commission','level2','level3','dailyReward','taskReferral','taskReferralLevel2'];const data={};for(const k of keys)data[k]=Number($('#reward_'+k).value);await api('admin/rewards',data);await sync();render();toast('Reward amounts saved','ok')}catch(e){fail(e)}}
+async function saveOffers(){try{const title=$('#offerTitle').value.trim();if(!title)throw new Error('Offer title required');const offers=[...(CFG.offers||[]),{id:'offer-'+Date.now(),title,description:$('#offerDesc').value.trim(),start:$('#offerStart').value,end:$('#offerEndDate').value,active:$('#offerActive').checked}];await api('admin/offers',{offers});await sync();render();toast('Offer added','ok')}catch(e){fail(e)}}
+async function removeOffer(id){try{await api('admin/offers',{offers:(CFG.offers||[]).filter(o=>o.id!==id)});await sync();render();toast('Offer removed','ok')}catch(e){fail(e)}}
+async function adminGiveBonus(uid){const amount=prompt('Bonus amount in ₹ (e.g. 500)');if(amount===null)return;const n=Number(amount);if(!Number.isFinite(n)||n<=0)return toast('Enter a valid bonus amount','er');const reason=prompt('Why is this bonus being given?','Special Reward');if(reason===null)return;if(!reason.trim())return toast('Bonus reason is required','er');try{await api('admin/user-bonus',{uid,amount:n,reason:reason.trim()});await sync();render();toast('Bonus created for user','ok')}catch(e){fail(e)}}
+async function adminCancelBonus(uid,id){const b=(DB.users.find(x=>x.id===uid)?.bonuses||[]).find(x=>x.id===id);if(!b)return;if(!confirm(b.status==='Claimed'?'Revoke this claimed bonus? The bonus credit will be removed from wallet/earned totals.':'Cancel this pending bonus?'))return;try{await api('admin/user-bonus-cancel',{uid,id});await sync();render();toast(b.status==='Claimed'?'Bonus revoked':'Bonus cancelled','ok')}catch(e){fail(e)}}
+async function adminDailyTarget(uid){const u=(DB.users||[]).find(x=>x.id===uid);const target=prompt('Daily cumulative target: total eligible registrations (e.g. 3, 5, 10)');if(target===null)return;const count=Number(target);if(!Number.isInteger(count)||count<1)return toast('Enter a positive whole-number target','er');const amount=prompt('Reward amount in ₹', '100');if(amount===null)return;const reward=Number(amount);if(!Number.isFinite(reward)||reward<0)return toast('Enter a valid reward amount','er');const targets=[...(u?.dailyReferralTargets||[]),{id:'dt-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),target:count,amount:reward,active:true}];try{await api('admin/daily-targets',{uid,targets});await sync();render();toast('Daily target added','ok')}catch(e){fail(e)}}
+async function adminDailyTargetAll(){const users=(DB.users||[]).filter(u=>!u.admin);if(!users.length)return toast('No users found','er');const target=prompt('Apply daily target to ALL users: eligible registrations count (e.g. 3, 5, 10)');if(target===null)return;const count=Number(target);if(!Number.isInteger(count)||count<1)return toast('Enter a positive whole-number target','er');const amount=prompt('Reward amount in ₹ for this target','100');if(amount===null)return;const reward=Number(amount);if(!Number.isFinite(reward)||reward<0)return toast('Enter a valid reward amount','er');if(!confirm('Add this daily target to '+users.length+' users? Existing targets will remain unchanged.'))return;try{for(const u of users){const targets=[...(u.dailyReferralTargets||[]),{id:'dt-'+Date.now()+'-'+Math.random().toString(36).slice(2,9),target:count,amount:reward,active:true}];await api('admin/daily-targets',{uid:u.id,targets})}await sync();render();toast('Daily target added for all '+users.length+' users','ok')}catch(e){fail(e)}}
+function adminShowBonusHistory(uid){const u=(DB.users||[]).find(x=>x.id===uid);if(!u)return;at='bonuses';aq=u.email||u.name||uid;af='All';try{sessionStorage.setItem('referkaro_admin_tab',at)}catch{}render()}
+function adminShowTargetHistory(uid){const u=(DB.users||[]).find(x=>x.id===uid);if(!u)return;targetHistoryUid=uid;at='targethistory';aq='';try{sessionStorage.setItem('referkaro_admin_tab',at)}catch{}render()}
+function adminUserHistory(uid){const choice=prompt('History dekhne ke liye number chunein:\n1. Bonus History\n2. Daily Target History','1');if(choice==='1')adminShowBonusHistory(uid);else if(choice==='2')adminShowTargetHistory(uid)}
+function adminUserMore(uid){const u=A_U(uid);if(!u)return;const choice=prompt('More options — number chunein:\n1. Block / Unblock\n2. Set Password\n3. Lock / Unlock Tasks\n4. Verify & Unlock\n5. Set Referral Discount\n6. Delete Account','1');if(choice==='1')adminUser(uid,u.blocked?'unblock':'block');else if(choice==='2')adminSetPassword(uid);else if(choice==='3')adminUser(uid,u.taskLocked?'taskunlock':'tasklock');else if(choice==='4')adminVerifyUser(uid);else if(choice==='5')adminSetUserDiscount(uid);else if(choice==='6'&&confirm('Account permanently delete karein?'))adminUser(uid,'delete')}
+
+async function adminDeleteDailyTarget(uid,id){const u=(DB.users||[]).find(x=>x.id===uid);if(!u)return;try{await api('admin/daily-targets',{uid,targets:(u.dailyReferralTargets||[]).filter(t=>t.id!==id)});await sync();render();toast('Daily target removed','ok')}catch(e){fail(e)}}
+async function saveTelegram(){try{await api('admin/settings',{telegramJoin:$('#tgJoin').value.trim(),telegramSupport:$('#tgSupport').value.trim(),authSupport:$('#authSupport').value.trim(),upiOpenApp:$('#upiOpenApp').checked,paymentMode:$('#qrMode').checked?'qr':'razorpay'});await sync();render();toast('Telegram links saved','ok')}catch(e){fail(e)}}
+function setAT(t){at=t;aq='';af='All';try{sessionStorage.setItem('referkaro_admin_tab',at);sessionStorage.setItem('referkaro_admin_filter',af)}catch{};render()}
+function setAF(f){af=f;try{sessionStorage.setItem('referkaro_admin_filter',af)}catch{};render()}
+function csv(name,rows){const q=c=>{c=String(c??'');if(/^[=+\-@]/.test(c))c="'"+c;return '"'+c.replace(/"/g,'""')+'"'};
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));a.download=name;a.click()}
+function exportCsv(){const d=new Date().toISOString().slice(0,10);
+ if(at==='pay')csv('payments-'+d+'.csv',[['UID','Email','UTR','Amount','Status','Date'],...DB.pays.map(p=>[p.uid,A_U(p.uid).email,p.utr,p.amt,p.status,new Date(p.ts).toISOString()])]);
+ else if(at==='wd')csv('withdrawals-'+d+'.csv',[['UID','Email','UPI','Amount','Status','Date'],...DB.wd.map(w=>[w.uid,A_U(w.uid).email,w.upi,w.amt,w.status,new Date(w.ts).toISOString()])]);
+ else csv('users-'+d+'.csv',[['UID','Name','Email','Joined','Task unlocked','Referrals','Earned','Withdrawn or requested','Available balance'],...customers().map(u=>[u.id,u.name,u.email,new Date(u.created).toISOString(),unlocked(u)?'Yes':'No',refs(u).length,commissions(u).reduce((s,c)=>s+c.amt,0),wdSum(u),balance(u)])])}
+let adDate='';
+const istD=o=>new Date(Date.now()+19800000+(o||0)*864e5).toISOString().slice(0,10);
+function adGo(d){adDate=d;$('#al').innerHTML=adminList()}
+function dailyForm(){const dt=adDate||istD(),dl=DB.daily||{},e=dl[dt]||null;
+ const V=i=>{const v=e?e.videos[i]:null;return`<div class="card" style="margin-bottom:8px"><b>Link ${i+1}</b><label>Text shown above / on link</label><input id="v${i}t" placeholder="Join Now / Watch Now" value="${esc(v?v.title:'')}"><label>Task link</label><input id="v${i}u" placeholder="https://..." inputmode="url" value="${esc(v&&/^https?:\/\//.test(v.url||'')?v.url:'')}"><p class="m" style="margin:4px 0 0">User ko ye link open karna hoga. Link 10 seconds ke baad complete hoga.</p></div>`};
+ const gkBank=[
+  {q:"भारत की राजधानी कौन-सी है?",options:["नई दिल्ली", "मुंबई", "जयपुर"],answer:0},
+  {q:"पृथ्वी का प्राकृतिक उपग्रह कौन-सा है?",options:["मंगल", "चंद्रमा", "सूर्य"],answer:1},
+  {q:"भारत का राष्ट्रीय पशु कौन-सा है?",options:["शेर", "हाथी", "बाघ"],answer:2},
+  {q:"ताजमहल किस शहर में स्थित है?",options:["आगरा", "दिल्ली", "लखनऊ"],answer:0},
+  {q:"भारत का संविधान कब लागू हुआ?",options:["15 अगस्त 1947", "26 जनवरी 1950", "2 अक्टूबर 1949"],answer:1},
+  {q:"सौरमंडल का सबसे बड़ा ग्रह कौन-सा है?",options:["पृथ्वी", "मंगल", "बृहस्पति"],answer:2},
+  {q:"भारत का राष्ट्रीय फूल कौन-सा है?",options:["कमल", "गुलाब", "सूरजमुखी"],answer:0},
+  {q:"कंप्यूटर का मस्तिष्क किसे कहा जाता है?",options:["माउस", "CPU", "मॉनिटर"],answer:1},
+  {q:"पानी का रासायनिक सूत्र क्या है?",options:["CO2", "O2", "H2O"],answer:2},
+  {q:"भारत में स्वतंत्रता दिवस कब मनाया जाता है?",options:["15 अगस्त", "26 जनवरी", "2 अक्टूबर"],answer:0},
+  {q:"विश्व पर्यावरण दिवस कब मनाया जाता है?",options:["1 मई", "5 जून", "10 दिसंबर"],answer:1},
+  {q:"लाल किला किस शहर में है?",options:["जयपुर", "भोपाल", "नई दिल्ली"],answer:2},
+  {q:"मानव शरीर में रक्त पंप करने वाला अंग कौन-सा है?",options:["हृदय", "फेफड़ा", "यकृत"],answer:0},
+  {q:"भारत का राष्ट्रीय पक्षी कौन-सा है?",options:["तोता", "मोर", "कबूतर"],answer:1},
+  {q:"एक सप्ताह में कितने दिन होते हैं?",options:["5", "10", "7"],answer:2},
+  {q:"किस ग्रह को लाल ग्रह कहा जाता है?",options:["मंगल", "शुक्र", "शनि"],answer:0},
+  {q:"भारत की मुद्रा क्या है?",options:["टका", "रुपया", "दीनार"],answer:1},
+  {q:"महात्मा गांधी का जन्मदिन कब है?",options:["14 नवंबर", "5 सितंबर", "2 अक्टूबर"],answer:2},
+  {q:"पौधे अपना भोजन मुख्यतः किस प्रक्रिया से बनाते हैं?",options:["प्रकाश संश्लेषण", "वाष्पीकरण", "पाचन"],answer:0},
+  {q:"दुनिया का सबसे बड़ा महासागर कौन-सा है?",options:["हिंद महासागर", "प्रशांत महासागर", "अटलांटिक महासागर"],answer:1},
+  {q:"जापान की राजधानी क्या है?",options:["बीजिंग", "सियोल", "टोक्यो"],answer:2},
+  {q:"नेपाल की राजधानी क्या है?",options:["काठमांडू", "थिम्फू", "ढाका"],answer:0},
+  {q:"बांग्लादेश की राजधानी क्या है?",options:["कराची", "ढाका", "काठमांडू"],answer:1},
+  {q:"ऑस्ट्रेलिया की राजधानी क्या है?",options:["सिडनी", "मेलबर्न", "कैनबरा"],answer:2},
+  {q:"फ्रांस की राजधानी क्या है?",options:["पेरिस", "रोम", "बर्लिन"],answer:0},
+  {q:"ब्रिटेन की राजधानी क्या है?",options:["डबलिन", "लंदन", "एडिनबरा"],answer:1},
+  {q:"कनाडा की राजधानी क्या है?",options:["टोरंटो", "वैंकूवर", "ओटावा"],answer:2},
+  {q:"चीन की राजधानी क्या है?",options:["बीजिंग", "शंघाई", "वुहान"],answer:0},
+  {q:"दक्षिण कोरिया की राजधानी क्या है?",options:["टोक्यो", "सियोल", "ताइपे"],answer:1},
+  {q:"थाईलैंड की राजधानी क्या है?",options:["हनोई", "जकार्ता", "बैंकॉक"],answer:2},
+  {q:"इंडोनेशिया की राजधानी क्या है?",options:["जकार्ता", "मनीला", "कुआलालंपुर"],answer:0},
+  {q:"न्यूजीलैंड की राजधानी क्या है?",options:["ऑकलैंड", "वेलिंगटन", "क्राइस्टचर्च"],answer:1},
+  {q:"ब्राजील की राजधानी क्या है?",options:["रियो डी जेनेरियो", "साओ पाउलो", "ब्रासीलिया"],answer:2},
+  {q:"अर्जेंटीना की राजधानी क्या है?",options:["ब्यूनस आयर्स", "लीमा", "सैंटियागो"],answer:0},
+  {q:"तुर्की की राजधानी क्या है?",options:["इस्तांबुल", "अंकारा", "इज़मिर"],answer:1},
+  {q:"सऊदी अरब की राजधानी क्या है?",options:["जेद्दा", "मदीना", "रियाद"],answer:2},
+  {q:"कतर की राजधानी क्या है?",options:["दोहा", "मनामा", "मस्कट"],answer:0},
+  {q:"ईरान की राजधानी क्या है?",options:["बगदाद", "तेहरान", "काबुल"],answer:1},
+  {q:"इराक की राजधानी क्या है?",options:["दमिश्क", "अम्मान", "बगदाद"],answer:2},
+  {q:"अफगानिस्तान की राजधानी क्या है?",options:["काबुल", "इस्लामाबाद", "तेहरान"],answer:0},
+  {q:"भूटान की राजधानी क्या है?",options:["काठमांडू", "थिम्फू", "ढाका"],answer:1},
+  {q:"म्यांमार की राजधानी क्या है?",options:["यांगून", "मांडले", "नेपीडॉ"],answer:2},
+  {q:"वियतनाम की राजधानी क्या है?",options:["हनोई", "हो ची मिन्ह सिटी", "नोम पेन्ह"],answer:0},
+  {q:"फिलीपींस की राजधानी क्या है?",options:["जकार्ता", "मनीला", "टोक्यो"],answer:1},
+  {q:"मलेशिया की राजधानी क्या है?",options:["सिंगापुर", "बैंकॉक", "कुआलालंपुर"],answer:2},
+  {q:"रूस की राजधानी क्या है?",options:["मॉस्को", "सेंट पीटर्सबर्ग", "कज़ान"],answer:0},
+  {q:"जर्मनी की राजधानी क्या है?",options:["म्यूनिख", "बर्लिन", "फ्रैंकफर्ट"],answer:1},
+  {q:"इटली की राजधानी क्या है?",options:["मिलान", "वेनिस", "रोम"],answer:2},
+  {q:"स्पेन की राजधानी क्या है?",options:["मैड्रिड", "बार्सिलोना", "सेविल"],answer:0},
+  {q:"पुर्तगाल की राजधानी क्या है?",options:["पोर्टो", "लिस्बन", "मैड्रिड"],answer:1},
+  {q:"मिस्र की राजधानी क्या है?",options:["अलेक्जेंड्रिया", "रबात", "काहिरा"],answer:2},
+  {q:"केन्या की राजधानी क्या है?",options:["नैरोबी", "लागोस", "अदीस अबाबा"],answer:0},
+  {q:"नाइजीरिया की राजधानी क्या है?",options:["लागोस", "अबुजा", "अक्रा"],answer:1},
+  {q:"मोरक्को की राजधानी क्या है?",options:["काहिरा", "ट्यूनिस", "रबात"],answer:2},
+  {q:"पेरू की राजधानी क्या है?",options:["लीमा", "क्विटो", "ला पाज़"],answer:0},
+  {q:"क्यूबा की राजधानी क्या है?",options:["सैंटो डोमिंगो", "हवाना", "किंग्स्टन"],answer:1},
+  {q:"स्विट्जरलैंड की राजधानी क्या है?",options:["ज्यूरिख", "जिनेवा", "बर्न"],answer:2},
+  {q:"फिनलैंड की राजधानी क्या है?",options:["हेलसिंकी", "ओस्लो", "टालिन"],answer:0},
+  {q:"नॉर्वे की राजधानी क्या है?",options:["स्टॉकहोम", "ओस्लो", "कोपेनहेगन"],answer:1},
+  {q:"स्वीडन की राजधानी क्या है?",options:["ओस्लो", "कोपेनहेगन", "स्टॉकहोम"],answer:2},
+  {q:"राजस्थान की राजधानी क्या है?",options:["जयपुर", "भोपाल", "लखनऊ"],answer:0},
+  {q:"गुजरात की राजधानी क्या है?",options:["जयपुर", "गांधीनगर", "भोपाल"],answer:1},
+  {q:"मध्य प्रदेश की राजधानी क्या है?",options:["जयपुर", "लखनऊ", "भोपाल"],answer:2},
+  {q:"महाराष्ट्र की राजधानी क्या है?",options:["मुंबई", "जयपुर", "भोपाल"],answer:0},
+  {q:"केरल की राजधानी क्या है?",options:["जयपुर", "तिरुवनंतपुरम", "भोपाल"],answer:1},
+  {q:"असम की राजधानी क्या है?",options:["जयपुर", "भोपाल", "दिसपुर"],answer:2},
+  {q:"पंजाब की राजधानी क्या है?",options:["चंडीगढ़", "जयपुर", "भोपाल"],answer:0},
+  {q:"बिहार की राजधानी क्या है?",options:["जयपुर", "पटना", "भोपाल"],answer:1},
+  {q:"उत्तर प्रदेश की राजधानी क्या है?",options:["जयपुर", "भोपाल", "लखनऊ"],answer:2},
+  {q:"ओडिशा की राजधानी क्या है?",options:["भुवनेश्वर", "जयपुर", "भोपाल"],answer:0},
+  {q:"छत्तीसगढ़ की राजधानी क्या है?",options:["जयपुर", "रायपुर", "भोपाल"],answer:1},
+  {q:"झारखंड की राजधानी क्या है?",options:["जयपुर", "भोपाल", "रांची"],answer:2},
+  {q:"तेलंगाना की राजधानी क्या है?",options:["हैदराबाद", "जयपुर", "भोपाल"],answer:0},
+  {q:"तमिलनाडु की राजधानी क्या है?",options:["जयपुर", "चेन्नई", "भोपाल"],answer:1},
+  {q:"कर्नाटक की राजधानी क्या है?",options:["जयपुर", "भोपाल", "बेंगलुरु"],answer:2},
+  {q:"पश्चिम बंगाल की राजधानी क्या है?",options:["कोलकाता", "जयपुर", "भोपाल"],answer:0},
+  {q:"हिमाचल प्रदेश की राजधानी क्या है?",options:["जयपुर", "शिमला", "भोपाल"],answer:1},
+  {q:"उत्तराखंड की राजधानी क्या है?",options:["जयपुर", "भोपाल", "देहरादून"],answer:2},
+  {q:"मेघालय की राजधानी क्या है?",options:["शिलांग", "जयपुर", "भोपाल"],answer:0},
+  {q:"मिजोरम की राजधानी क्या है?",options:["जयपुर", "आइजोल", "भोपाल"],answer:1},
+  {q:"नागालैंड की राजधानी क्या है?",options:["जयपुर", "भोपाल", "कोहिमा"],answer:2},
+  {q:"अरुणाचल प्रदेश की राजधानी क्या है?",options:["ईटानगर", "जयपुर", "भोपाल"],answer:0},
+  {q:"सिक्किम की राजधानी क्या है?",options:["जयपुर", "गंगटोक", "भोपाल"],answer:1},
+  {q:"त्रिपुरा की राजधानी क्या है?",options:["जयपुर", "भोपाल", "अगरतला"],answer:2},
+  {q:"मणिपुर की राजधानी क्या है?",options:["इंफाल", "जयपुर", "भोपाल"],answer:0},
+  {q:"गोवा की राजधानी क्या है?",options:["जयपुर", "पणजी", "भोपाल"],answer:1},
+  {q:"भारत का राष्ट्रीय वृक्ष कौन-सा है?",options:["नीम", "पीपल", "बरगद"],answer:2},
+  {q:"भारत का राष्ट्रीय फल कौन-सा है?",options:["आम", "सेब", "केला"],answer:0},
+  {q:"भारत का राष्ट्रीय जलीय जीव कौन-सा है?",options:["मगरमच्छ", "गंगा डॉल्फिन", "कछुआ"],answer:1},
+  {q:"भारत का राष्ट्रीय विरासत पशु कौन-सा है?",options:["ऊँट", "गैंडा", "हाथी"],answer:2},
+  {q:"भारत का राष्ट्रीय सरीसृप कौन-सा है?",options:["किंग कोबरा", "मगरमच्छ", "कछुआ"],answer:0},
+  {q:"भारत का राष्ट्रीय गीत कौन-सा है?",options:["जन गण मन", "वंदे मातरम्", "सारे जहाँ से अच्छा"],answer:1},
+  {q:"भारतीय तिरंगे में अशोक चक्र की कितनी तीलियाँ हैं?",options:["20", "32", "24"],answer:2},
+  {q:"भारतीय ध्वज की लंबाई-चौड़ाई का अनुपात क्या है?",options:["3:2", "2:1", "4:3"],answer:0},
+  {q:"भारत में कुल कितने राज्य हैं?",options:["29", "28", "30"],answer:1},
+  {q:"भारत में केंद्रशासित प्रदेश कितने हैं?",options:["7", "9", "8"],answer:2},
+  {q:"भारत का सबसे बड़ा राज्य क्षेत्रफल में कौन-सा है?",options:["राजस्थान", "उत्तर प्रदेश", "महाराष्ट्र"],answer:0},
+  {q:"भारत का सबसे छोटा राज्य क्षेत्रफल में कौन-सा है?",options:["सिक्किम", "गोवा", "त्रिपुरा"],answer:1},
+  {q:"भारत का दक्षिणतम मुख्यभूमि बिंदु कौन-सा है?",options:["इंदिरा पॉइंट", "रामेश्वरम", "कन्याकुमारी"],answer:2},
+  {q:"भारत में सूर्य सबसे पहले किस राज्य में उगता है?",options:["अरुणाचल प्रदेश", "गुजरात", "राजस्थान"],answer:0},
+  {q:"कर्क रेखा भारत के कितने राज्यों से गुजरती है?",options:["6", "8", "10"],answer:1},
+  {q:"भारत का सबसे बड़ा नदी द्वीप माजुली किस नदी में है?",options:["गंगा", "नर्मदा", "ब्रह्मपुत्र"],answer:2},
+  {q:"कच्छ का रण किस राज्य में है?",options:["गुजरात", "राजस्थान", "महाराष्ट्र"],answer:0},
+  {q:"नर्मदा नदी किस दिशा में बहती है?",options:["पूर्व", "पश्चिम", "उत्तर"],answer:1},
+  {q:"गोदावरी को किस नाम से भी जाना जाता है?",options:["पश्चिमी यमुना", "पूर्वी नर्मदा", "दक्षिण गंगा"],answer:2},
+  {q:"भाखड़ा नांगल बाँध किस नदी पर है?",options:["सतलुज", "गंगा", "गोदावरी"],answer:0},
+  {q:"सरदार सरोवर बाँध किस नदी पर है?",options:["गोदावरी", "नर्मदा", "महानदी"],answer:1},
+  {q:"हीराकुंड बाँध किस नदी पर है?",options:["यमुना", "कावेरी", "महानदी"],answer:2},
+  {q:"टिहरी बाँध किस नदी पर है?",options:["भागीरथी", "नर्मदा", "गोदावरी"],answer:0},
+  {q:"पश्चिमी घाट किस तट के समानांतर हैं?",options:["पूर्वी तट", "पश्चिमी तट", "गंगा मैदान"],answer:1},
+  {q:"अरावली पर्वतमाला का प्रमुख भाग किस राज्य में है?",options:["असम", "केरल", "राजस्थान"],answer:2},
+  {q:"नाथू ला दर्रा किस राज्य में है?",options:["सिक्किम", "उत्तराखंड", "राजस्थान"],answer:0},
+  {q:"रोहतांग दर्रा किस राज्य में है?",options:["असम", "हिमाचल प्रदेश", "गुजरात"],answer:1},
+  {q:"अंडमान-निकोबार की राजधानी क्या है?",options:["कवरत्ती", "दमन", "पोर्ट ब्लेयर"],answer:2},
+  {q:"लक्षद्वीप की राजधानी क्या है?",options:["कवरत्ती", "पोर्ट ब्लेयर", "दीव"],answer:0},
+  {q:"एक लीटर में कितने मिलीलीटर होते हैं?",options:["100", "1000", "10"],answer:1},
+  {q:"एक किलोमीटर में कितने मीटर होते हैं?",options:["100", "10", "1000"],answer:2},
+  {q:"एक किलोग्राम में कितने ग्राम होते हैं?",options:["1000", "100", "10"],answer:0},
+  {q:"एक लीप वर्ष में कितने दिन होते हैं?",options:["365", "366", "364"],answer:1},
+  {q:"एक दशक में कितने वर्ष होते हैं?",options:["12", "100", "10"],answer:2},
+  {q:"एक शताब्दी में कितने वर्ष होते हैं?",options:["100", "10", "1000"],answer:0},
+  {q:"एक सहस्राब्दी में कितने वर्ष होते हैं?",options:["100", "1000", "10"],answer:1},
+  {q:"त्रिभुज के आंतरिक कोणों का योग कितना है?",options:["90°", "360°", "180°"],answer:2},
+  {q:"समकोण का मान कितना है?",options:["90°", "45°", "180°"],answer:0},
+  {q:"सबसे छोटी अभाज्य संख्या कौन-सी है?",options:["1", "2", "0"],answer:1},
+  {q:"25 प्रतिशत का भिन्न रूप क्या है?",options:["1/2", "3/4", "1/4"],answer:2},
+  {q:"एक दर्जन में कितनी वस्तुएँ होती हैं?",options:["12", "10", "20"],answer:0},
+  {q:"एक पखवाड़े में कितने दिन होते हैं?",options:["10", "14", "15"],answer:1},
+  {q:"रोमन अंक X का मान क्या है?",options:["5", "50", "10"],answer:2},
+  {q:"पानी का हिमांक सामान्य दाब पर कितना है?",options:["0°C", "50°C", "100°C"],answer:0},
+  {q:"ओजोन का रासायनिक सूत्र क्या है?",options:["O2", "O3", "CO"],answer:1},
+  {q:"कार्बन डाइऑक्साइड का सूत्र क्या है?",options:["H2O", "NaCl", "CO2"],answer:2},
+  {q:"वायु में सबसे अधिक मात्रा किस गैस की है?",options:["नाइट्रोजन", "ऑक्सीजन", "कार्बन डाइऑक्साइड"],answer:0},
+  {q:"ध्वनि किस माध्यम में नहीं चल सकती?",options:["पानी", "निर्वात", "हवा"],answer:1},
+  {q:"प्रकाश की गति सबसे अधिक किसमें है?",options:["पानी", "काँच", "निर्वात"],answer:2},
+  {q:"किस पदार्थ से बिजली आसानी से गुजरती है?",options:["तांबा", "रबर", "लकड़ी"],answer:0},
+  {q:"रबर सामान्यतः विद्युत का कैसा चालक है?",options:["सुचालक", "कुचालक", "अतिचालक"],answer:1},
+  {q:"प्रकाश का दर्पण से लौटना क्या कहलाता है?",options:["अपवर्तन", "वाष्पीकरण", "परावर्तन"],answer:2},
+  {q:"वायुदाब मापने का यंत्र कौन-सा है?",options:["बैरोमीटर", "अमीटर", "थर्मामीटर"],answer:0},
+  {q:"तापमान मापने का यंत्र कौन-सा है?",options:["बैरोमीटर", "थर्मामीटर", "वोल्टमीटर"],answer:1},
+  {q:"भूकंप मापने का यंत्र कौन-सा है?",options:["बैरोमीटर", "कैलिपर", "सीस्मोग्राफ"],answer:2},
+  {q:"दिशा पता करने का उपकरण कौन-सा है?",options:["कम्पास", "स्टेथोस्कोप", "माइक्रोस्कोप"],answer:0},
+  {q:"दूर की खगोलीय वस्तुओं को देखने का उपकरण",options:["सूक्ष्मदर्शी", "दूरबीन", "थर्मामीटर"],answer:1},
+  {q:"आलू पौधे का कौन-सा भाग है?",options:["जड़", "पत्ती", "तना कंद"],answer:2},
+  {q:"गाजर पौधे का कौन-सा भाग है?",options:["जड़", "तना", "फूल"],answer:0},
+  {q:"अदरक पौधे का कौन-सा भाग है?",options:["पत्ती", "भूमिगत तना", "फूल"],answer:1},
+  {q:"दालचीनी किस भाग से मिलती है?",options:["जड़", "फूल", "छाल"],answer:2},
+  {q:"लौंग किस भाग से मिलती है?",options:["सूखी फूल कली", "जड़", "फल का गूदा"],answer:0},
+  {q:"केसर किस भाग से मिलता है?",options:["जड़", "फूल का वर्तिकाग्र", "पत्ती"],answer:1},
+  {q:"मधुमक्खी किस प्रक्रिया में मदद करती है?",options:["खनन", "वाष्पीकरण", "परागण"],answer:2},
+  {q:"केंचुआ मिट्टी के लिए कैसे उपयोगी है?",options:["मिट्टी को उपजाऊ बनाता है", "मिट्टी को प्लास्टिक बनाता है", "वर्षा रोकता है"],answer:0},
+  {q:"मकड़ी के कितने पैर होते हैं?",options:["6", "8", "10"],answer:1},
+  {q:"कीटों के सामान्यतः कितने पैर होते हैं?",options:["8", "10", "6"],answer:2},
+  {q:"विश्व का सबसे बड़ा स्तनधारी कौन है?",options:["नीली व्हेल", "हाथी", "जिराफ"],answer:0},
+  {q:"सबसे तेज दौड़ने वाला स्थलीय जानवर कौन है?",options:["शेर", "चीता", "घोड़ा"],answer:1},
+  {q:"कंगारू के बच्चे को कहाँ रखा जाता है?",options:["घोंसले में", "पंखों के नीचे", "माँ की थैली"],answer:2},
+  {q:"मलेरिया किस मच्छर से फैलता है?",options:["मादा एनोफिलीज", "एडीज नर", "मधुमक्खी"],answer:0},
+  {q:"डेंगू किस मच्छर से फैलता है?",options:["मधुमक्खी", "एडीज", "घर की मक्खी"],answer:1},
+  {q:"टीबी मुख्यतः किससे होती है?",options:["कृमि", "शैवाल", "बैक्टीरिया"],answer:2},
+  {q:"एंटीबायोटिक मुख्यतः किसके विरुद्ध काम करते हैं?",options:["बैक्टीरिया", "सभी वायरस", "एलर्जी"],answer:0},
+  {q:"स्कर्वी किस विटामिन की कमी से होता है?",options:["विटामिन D", "विटामिन C", "विटामिन K"],answer:1},
+  {q:"आयोडीन की कमी से कौन-सी समस्या हो सकती है?",options:["मलेरिया", "डेंगू", "घेंघा"],answer:2},
+  {q:"श्वेत क्रांति किससे संबंधित है?",options:["दूध उत्पादन", "गेहूँ उत्पादन", "मछली उत्पादन"],answer:0},
+  {q:"नीली क्रांति किससे संबंधित है?",options:["दूध उत्पादन", "मत्स्य उत्पादन", "कोयला खनन"],answer:1},
+  {q:"गेहूँ किस मौसम की फसल है?",options:["खरीफ", "जायद", "रबी"],answer:2},
+  {q:"धान किस मौसम की फसल है?",options:["खरीफ", "रबी", "शीतकालीन"],answer:0},
+  {q:"कपास किस प्रकार की फसल है?",options:["दलहन", "रेशेदार", "कंद"],answer:1},
+  {q:"चना किस प्रकार की फसल है?",options:["तिलहन", "रेशेदार", "दलहन"],answer:2},
+  {q:"दूध की प्राकृतिक शर्करा क्या है?",options:["लैक्टोज", "सुक्रोज", "फ्रक्टोज"],answer:0},
+  {q:"प्राकृतिक गैस का मुख्य घटक क्या है?",options:["ऑक्सीजन", "मीथेन", "हीलियम"],answer:1},
+  {q:"भारत में शिक्षक दिवस किसकी जयंती पर है?",options:["महात्मा गांधी", "रवीन्द्रनाथ टैगोर", "डॉ. सर्वपल्ली राधाकृष्णन"],answer:2},
+  {q:"राष्ट्रीय युवा दिवस किसकी जयंती पर मनाया जाता है?",options:["स्वामी विवेकानंद", "महात्मा गांधी", "रवीन्द्रनाथ टैगोर"],answer:0},
+  {q:"आर्य समाज की स्थापना किसने की?",options:["स्वामी विवेकानंद", "स्वामी दयानंद सरस्वती", "राजा राममोहन राय"],answer:1},
+  {q:"ब्रह्म समाज की स्थापना किसने की?",options:["महात्मा गांधी", "बाल गंगाधर तिलक", "राजा राममोहन राय"],answer:2},
+  {q:"चरक संहिता किससे संबंधित है?",options:["आयुर्वेद", "खगोल विज्ञान", "नाट्य"],answer:0},
+  {q:"सुश्रुत किस क्षेत्र से जुड़े थे?",options:["खगोल विज्ञान", "शल्य चिकित्सा", "कृषि"],answer:1},
+  {q:"भारत के राष्ट्रीय गान का नाम क्या है?",options:["वंदे मातरम्", "सारे जहाँ से अच्छा", "जन गण मन"],answer:2},
+  {q:"राष्ट्रीय मतदाता दिवस कब है?",options:["25 जनवरी", "26 जनवरी", "15 अगस्त"],answer:0},
+  {q:"राष्ट्रीय किसान दिवस कब है?",options:["5 जून", "23 दिसंबर", "15 अगस्त"],answer:1},
+  {q:"राष्ट्रीय खेल दिवस कब है?",options:["15 जनवरी", "5 सितंबर", "29 अगस्त"],answer:2},
+  {q:"विश्व हाथी दिवस कब है?",options:["12 अगस्त", "3 मार्च", "8 अक्टूबर"],answer:0},
+  {q:"विश्व बाघ दिवस कब है?",options:["5 जून", "29 जुलाई", "22 मई"],answer:1},
+  {q:"विश्व पर्यटन दिवस कब है?",options:["21 जून", "10 जनवरी", "27 सितंबर"],answer:2},
+  {q:"विश्व एड्स दिवस कब है?",options:["1 दिसंबर", "10 दिसंबर", "14 नवंबर"],answer:0},
+  {q:"राष्ट्रीय विज्ञान दिवस कब है?",options:["5 जून", "28 फरवरी", "11 मई"],answer:1},
+  {q:"राष्ट्रीय गणित दिवस कब है?",options:["14 नवंबर", "1 जुलाई", "22 दिसंबर"],answer:2},
+  {q:"मानवाधिकार दिवस कब है?",options:["10 दिसंबर", "1 मई", "21 जून"],answer:0},
+  {q:"भारत में राष्ट्रीय एकता दिवस कब है?",options:["15 अगस्त", "31 अक्टूबर", "2 अक्टूबर"],answer:1},
+  {q:"संविधान दिवस भारत में कब है?",options:["26 जनवरी", "15 अगस्त", "26 नवंबर"],answer:2},
+  {q:"भारत का राष्ट्रीय ध्वज किस नाम से जाना जाता है?",options:["तिरंगा", "पंचरंगा", "नीलध्वज"],answer:0},
+  {q:"किस देश की राजधानी टोक्यो है?",options:["अन्य देश", "जापान", "इनमें से कोई नहीं"],answer:1},
+  {q:"किस देश की राजधानी काठमांडू है?",options:["अन्य देश", "इनमें से कोई नहीं", "नेपाल"],answer:2},
+  {q:"किस देश की राजधानी ढाका है?",options:["बांग्लादेश", "अन्य देश", "इनमें से कोई नहीं"],answer:0},
+  {q:"किस देश की राजधानी कैनबरा है?",options:["अन्य देश", "ऑस्ट्रेलिया", "इनमें से कोई नहीं"],answer:1},
+  {q:"किस देश की राजधानी पेरिस है?",options:["अन्य देश", "इनमें से कोई नहीं", "फ्रांस"],answer:2},
+  {q:"किस देश की राजधानी लंदन है?",options:["ब्रिटेन", "अन्य देश", "इनमें से कोई नहीं"],answer:0},
+  {q:"किस देश की राजधानी ओटावा है?",options:["अन्य देश", "कनाडा", "इनमें से कोई नहीं"],answer:1},
+  {q:"किस देश की राजधानी बीजिंग है?",options:["अन्य देश", "इनमें से कोई नहीं", "चीन"],answer:2},
+  {q:"किस देश की राजधानी सियोल है?",options:["दक्षिण कोरिया", "अन्य देश", "इनमें से कोई नहीं"],answer:0},
+  {q:"किस देश की राजधानी बैंकॉक है?",options:["अन्य देश", "थाईलैंड", "इनमें से कोई नहीं"],answer:1}
+ ];;
+ const dayIndex=Math.max(0,Math.floor((Date.parse(dt+'T00:00:00Z')||Date.now())/86400000));
+ const daySlot=((dayIndex%100)+100)%100;
+ const starterQs=[gkBank[daySlot*2],gkBank[daySlot*2+1]];
+ const Q=i=>{const q=e&&e.questions&&e.questions[i]?e.questions[i]:starterQs[i];return`<div class="card" style="margin-bottom:8px"><b>Question ${i+1}</b><input id="q${i}q" placeholder="Question" value="${esc(q?q.q:'')}">${[0,1,2].map(k=>`<label style="display:flex;gap:8px;align-items:center"><input type="radio" name="q${i}r" value="${k}" ${(q?q.answer===k:k===0)?'checked':''} style="width:auto;margin:0"><input id="q${i}o${k}" placeholder="Option ${k+1}" value="${esc(q?q.options[k]:'')}" style="margin:4px 0"></label>`).join('')}<span class="m">Tick the circle next to the correct answer. GK questions are prefilled; admin chahe to edit kar sakta hai. AI generation optional hai.</span></div>`};
+ const days=[0,1,2,3,4,5,6].map(o=>istD(o)).map(d=>`<button class="btn sm ${d===dt?'':'s'}" style="white-space:nowrap" onclick="adGo('${d}')">${d.slice(5)} ${dl[d]?'✓':'—'}</button>`).join('');
+ return`<p class="m">Pick a date. Sirf 3 task links add karo. Har link ke upar apna text likho, jaise Join Now ya Watch Now. User link open karega aur 10 seconds ke baad task complete hoga. Link-task ka existing behaviour same rahega.</p><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">${days}</div><label>Date</label><input id="dd" type="date" value="${dt}" onchange="adGo(this.value)">${V(0)}${V(1)}${V(2)}<button class="btn s" id="adGenBtn" onclick="adGenerateQuestions()">Optional: Generate AI Questions</button><p class="m">Har date ke liye alag GK questions aur 3-3 options pehle se filled hain. Date badalne par naya GK set aayega. Zaroorat ho to edit karo, correct answer select karo aur Publish karo. AI key zaroori nahi hai. Link behaviour change nahi hoga.</p>${Q(0)}${Q(1)}<button class="btn" onclick="adSave()">Save / Publish</button>${e?'<button class="btn d" style="margin-top:8px" onclick="adDel()">Delete this day</button>':''}`}
+async function adGenerateQuestions(){const btn=$('#adGenBtn');try{const urls=[0,1,2].map(i=>$('#v'+i+'u').value.trim());if(urls.some(x=>!/^https?:\/\//i.test(x)))throw new Error('Pehle teeno task links add karo.');if(btn){btn.disabled=true;btn.textContent='Generating...'}const out=await api('admin/generate-questions',{urls});(out.questions||[]).forEach((q,i)=>{if(i>1)return;$('#q'+i+'q').value=q.q;for(let k=0;k<3;k++)$('#q'+i+'o'+k).value=q.options[k]||'';const radio=document.querySelector('input[name="q'+i+'r"][value="'+q.answer+'"]');if(radio)radio.checked=true});toast('2 questions generated. Review and edit before publishing.','ok')}catch(e){fail(e)}finally{if(btn){btn.disabled=false;btn.textContent='Optional: Generate AI Questions'}}}
+async function adSave(){const date=$('#dd').value;try{const videos=[];for(let i=0;i<3;i++){const link=$('#v'+i+'u').value.trim();if(!/^https?:\/\//.test(link))throw new Error('Link '+(i+1)+' must be a valid http/https link');videos.push({title:$('#v'+i+'t').value.trim()||'Join Now',url:link})}const questions=[0,1].map(i=>({q:$('#q'+i+'q').value.trim(),options:[0,1,2].map(k=>$('#q'+i+'o'+k).value.trim()),answer:+(document.querySelector('input[name="q'+i+'r"]:checked')||{value:0}).value}));await api('admin/daily',{date,videos,questions});await sync();adDate=date;render();toast('Saved for '+date,'ok')}catch(e){fail(e)}}
+async function adDel(){const date=$('#dd').value;if(!confirm('Delete content for '+date+'?'))return;try{await api('admin/dailydel',{date});await sync();adDate=date;render();toast('Deleted','ok')}catch(e){fail(e)}}
+function adminRewardsList(has){
+ const users=customers().slice().sort((a,b)=>b.created-a.created).filter(u=>has(u.id,u.email,u.name));
+ const intro='<div class="card"><h3>Referral Discount Settings</h3><p class="m">Global discount ON/OFF aur percentage set karne ke liye settings kholen.</p><button class="btn" onclick="setAT(\'business\')">Open Discount Settings</button></div><div class="card"><h3>Pay via UPI Button</h3><p class="m">UPI button ON/OFF karne ke liye Payment Settings kholen. OFF par QR/UTR option chalta rahega.</p><button class="btn" onclick="setAT(\'over\')">Open Payment Settings</button></div><h3>Per-user Bonus & Daily Targets</h3><p class="m">Har user ke liye bonus amount + reason aur cumulative daily referral targets alag set karein. Daily count sirf un direct referrals ka hai jinhone task unlock kiya.</p>';
+ return intro+users.map(u=>{
+  const targets=u.dailyReferralTargets||[], bonuses=u.bonuses||[];
+  const targetRows=targets.length?'<div style="margin-top:10px"><b>Daily targets</b>'+targets.map(t=>'<div class="row"><span>'+t.target+' registrations · '+inr(t.amount)+'</span><button class="btn d sm" onclick="adminDeleteDailyTarget(\''+u.id+'\',\''+t.id+'\')">Remove</button></div>').join('')+'</div>':'';
+  return '<div class="card"><div class="row" style="padding-top:0"><span><b>'+esc(u.name||'User')+'</b><br><span class="m">'+esc(u.email)+' · '+uidChip(u.id)+'</span></span><span class="pill '+(unlocked(u)?'Verified':'')+'">'+(unlocked(u)?'Task unlocked':'Locked')+'</span></div><div class="row"><span>Daily targets configured</span><b>'+targets.length+'</b></div><div class="row"><span>Bonus records</span><b>'+bonuses.length+'</b></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn sm" onclick="adminGiveBonus(\''+u.id+'\')">+ Give Bonus</button><button class="btn s sm" onclick="adminDailyTarget(\''+u.id+'\')">+ Add Daily Target</button><button class="btn s sm" onclick="adminSetUserDiscount(\''+u.id+'\')">Set Referral Discount</button><button class="btn s sm" onclick="adminShowBonusHistory(\''+u.id+'\')">Bonus History</button></div>'+targetRows+'</div>';
+ }).join('')||'<p class="m">No real users found.</p>';
+}
+function adminList(){const q=aq.trim().toLowerCase(),has=(...v)=>!q||v.some(x=>String(x||'').toLowerCase().includes(q)),none='<p class="m">Nothing found.</p>';
+ if(at==='daily')return dailyForm();
+ if(at==='business')return `<div class="card"><h3>Referral Discount</h3><p class="m">Valid referral link se aaye naye user ko task unlock payment par discount milega. Discount base price par calculate hoga; service fee alag rahegi. Referrer ka existing verified-payment reward system bana rahega.</p><label>Referral discount (%)</label><input id="refDiscountPct" type="number" min="0" max="100" step="1" value="${Number(CFG.referralDiscountPct)||0}"><label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="refDiscountEnabled" type="checkbox" ${CFG.referralDiscountEnabled!==false?'checked':''} style="width:auto;margin:0"> Enable referral discount</label><button class="btn" onclick="saveReferralDiscount()">Save Referral Discount</button></div><div class="card"><h3>Withdrawal Rules</h3><p class="m">Yahan se withdrawal ki minimum amount, required direct referrals aur request ka din set karein. Ye rules real users par apply honge; existing wallet data change nahi hoga.</p><label>Minimum withdrawal amount (₹)</label><input id="biz_minWd" type="number" min="0" max="1000000" step="1" value="${Number(CFG.minWd)||0}"><label>Minimum verified direct referrals</label><input id="biz_minDirectRefs" type="number" min="0" max="100000" step="1" value="${Number(CFG.minDirectRefs??3)}"><label>Withdrawal request day (India time)</label><select id="biz_withdrawalDay"><option value="any" ${CFG.withdrawalDay==='any'?'selected':''}>Any day</option>${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d,i)=>`<option value="${i}" ${String(CFG.withdrawalDay??0)===String(i)?'selected':''}>${d}</option>`).join('')}</select></div><div class="card"><h3>Task Unlock Payment</h3><p class="m">Task unlock ka base price aur service fee set karein. Checkout par user ko total amount dikhega.</p><label>Task unlock price (₹)</label><input id="biz_price" type="number" min="0" max="1000000" step="1" value="${Number(CFG.price)||0}"><label>Service fee (₹)</label><input id="biz_fee" type="number" min="0" max="1000000" step="1" value="${Number(CFG.fee)||0}"><p class="m">Current checkout total: <b>${inr((Number(CFG.price)||0)+(Number(CFG.fee)||0))}</b></p><button class="btn" onclick="saveBusinessConfig()">Save Withdrawal & Unlock Settings</button></div>`;
+ if(at==='gallery')return `<div class="card"><h3>Reward Settings (₹)</h3><p class="m">In amounts ko change karne se naye eligible rewards par asar padega. Pehle se wallet mein add rewards change nahi honge.</p>${[['commission','Direct referral payment'],['level2','Level 2 payment'],['level3','Level 3 payment'],['dailyReward','Daily task'],['taskReferral','Direct referral task complete'],['taskReferralLevel2','Level 2 referral task complete']].map(([k,label])=>`<label>${label}</label><input id="reward_${k}" type="number" min="0" max="1000000" step="0.01" value="${Number(CFG[k])||0}">`).join('')}<button class="btn" onclick="saveRewards()">Save Reward Amounts</button></div><div class="card"><h3>Refer Page Content Editor</h3><p class="m">Yahan ka text edit karein. Reward amounts upar badalne par Refer page ke Level 1/2/3 aur task rewards automatic update honge.</p>${[['intro','Top message'],['shareHint','Referral link ke neeche message'],['levelsTitle','Rewards section heading'],['rulesTitle','Rules heading'],['rules','Rules text'],['historyTitle','History heading']].map(([k,l])=>`<label>${l}</label><textarea id="refer_${k}" rows="${k==='rules'?7:3}">${esc((CFG.referContent||{})[k]||'')}</textarea>`).join('')}<button class="btn" onclick="saveReferContent()">Save Refer Page Text</button></div><div class="card"><h3>Festival / Special Offers</h3><p class="m">Diwali, Holi ya koi bhi offer add karein. Active offers home page par show honge.</p><label>Offer title</label><input id="offerTitle" placeholder="Diwali Offer"><label>Description</label><input id="offerDesc" placeholder="Special rewards this festival"><label>Start date (optional)</label><input id="offerStart" type="date"><label>End date (optional)</label><input id="offerEndDate" type="date"><label style="display:flex;gap:8px;align-items:center"><input id="offerActive" type="checkbox" checked style="width:auto"> Active</label><button class="btn" onclick="saveOffers()">Add Offer</button><h4>Saved offers</h4>${(CFG.offers||[]).map(o=>`<div class="row"><span><b>${esc(o.title)}</b><br><span class="m">${esc(o.description||'')}${o.start?' · '+esc(o.start):''}${o.end?' to '+esc(o.end):''}</span></span><button class="btn d sm" onclick="removeOffer('${esc(o.id)}')">Remove</button></div>`).join('')||'<p class="m">No offers yet.</p>'}</div><div class="card"><h3>Home Page Slider</h3><p class="m">Images Sponsored ke neeche aur How it works ke upar dikhenge. Multiple images select kar sakte hain; auto-slide har 8 seconds mein hoga. PNG/JPG/WEBP/GIF, har image 500 KB se chhoti rakhein.</p><label>Add images (multiple select allowed)</label><input id="homeImageFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple><div id="homeImagePreview" class="m">${(CFG.homeImages||[]).length} saved images</div><button class="btn" onclick="saveHomeImages()">Save Home Images</button><button class="btn s" style="margin-top:8px" onclick="clearHomeImages()">Remove All Images</button></div><div class="card"><h3>Current images (${(CFG.homeImages||[]).length})</h3>${(CFG.homeImages||[]).map((im,i)=>`<div style="margin-bottom:10px"><img src="${esc(im)}" alt="Slide ${i+1}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px"><div class="row"><span>Image ${i+1}</span><button class="btn d sm" onclick="removeHomeImage(${i})">Remove</button></div></div>`).join('')||'<p class="m">No images uploaded yet.</p>'}</div>`;
+ if(at==='over'){const P=DB.pays,vp=P.filter(p=>p.status==='Verified'),pp=P.filter(p=>p.status==='Pending Verification'),pw=DB.wd.filter(w=>['Pending','Processing'].includes(w.status));
+  return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">${stat('Total users',customers().length)}${stat('Revenue (verified)',inr(DB.adminStats?.revenue||0))}${stat('Payments to verify',pp.length,pp.length)}${stat('Withdrawals to pay',pw.length+' · '+inr(pw.reduce((s,w)=>s+w.amt,0)),pw.length)}${stat('Withdrawn (completed)',inr(DB.wd.filter(w=>w.status==='Completed').reduce((s,w)=>s+w.amt,0))+' · '+DB.wd.filter(w=>w.status==='Completed').length)}${stat('Verified payments',DB.adminStats?.verifiedCount||0)}${stat('Wallet owed to users',inr(customers().reduce((s,u)=>s+Math.max(0,balance(u)),0)))}</div><div class="card"><h3>Admin ID — Demo Controls</h3><p class="m">Yeh sirf admin account ke display/testing ke liye hain; real user payments, withdrawals ya database ledger ko change nahi karte.</p><label>Wallet balance (₹)</label><input id="demoBal" type="number" min="0" value="${Number(CFG.adminDemo?.balance)||0}"><label>Earned total (₹)</label><input id="demoEarned" type="number" min="0" value="${Number(CFG.adminDemo?.earned)||0}"><label>Referral count (display)</label><input id="demoRefs" type="number" min="0" value="${Number(CFG.adminDemo?.referrals)||0}"><label>Withdrawal history entries (display)</label><input id="demoWds" type="number" min="0" value="${Number(CFG.adminDemo?.withdrawals)||0}"><button class="btn" onclick="saveAdminDemo()">Save Admin Demo Values</button></div><p class="m">Current Revenue and Verified count were reset to 0. New verified payments will increase them normally. QR-wise payment counters remain stored even after a QR is deleted.</p>${((DB.qrStats&&DB.qrStats.slots)||[]).map(x=>`<div class="card"><div class="row"><span><b>QR ${x.slot+1}</b><br><span class="m">${esc(x.upi||'')}</span></span><span class="pill ${x.active?'Verified':''}">${x.active?'Active':'Saved'}</span></div><div class="row"><span>People</span><b>${x.stats.people}</b></div><div class="row"><span>Payments</span><b>${x.stats.submitted}</b></div><div class="row"><span>Amount received</span><b>${inr(x.stats.amount)}</b></div><div class="row"><span>Verified amount</span><b>${inr(x.stats.verifiedAmount)}</b></div></div>`).join('')}<div class="card"><h3>Deleted QR History</h3>${Object.entries((DB.qrStats&&DB.qrStats.history)||{}).filter(([qid])=>!((DB.qrStats&&DB.qrStats.slots)||[]).some(x=>x.qid===qid)).map(([qid,x])=>`<div class="row"><span><b>${esc(qid)}</b><br><span class="m">Deleted/config no longer active</span></span><span style="text-align:right">${x.people} people<br>${inr(x.amount)} received</span></div>`).join('')||'<p class="m">No deleted QR history yet.</p>'}</div><div class="card"><h3>Backup</h3><p class="m" style="margin:0 0 8px">Download a backup file now and then. Keep it private, it contains user data.</p><button class="btn s" onclick="location.href='/api/backup'">Download backup</button><button class="btn s" style="margin-top:8px" onclick="$('#rf').click()">Restore from backup file</button><input id="rf" type="file" accept=".json,application/json" style="display:none" onchange="adRestore(this)"></div>${qrCard()}<div class="card"><h3>Telegram & Payment Settings</h3><label>Home / Join Telegram</label><input id="tgJoin" value="${esc(CFG.telegramJoin||'')}" placeholder="https://t.me/..."><label>Support Telegram</label><input id="tgSupport" value="${esc(CFG.telegramSupport||'')}" placeholder="https://t.me/..."><label>Login/Register Customer Support Link (separate)</label><input id="authSupport" value="${esc(CFG.authSupport||CFG.telegramSupport||'')}" placeholder="https://t.me/... or https://wa.me/..."><label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="upiOpenApp" type="checkbox" ${CFG.upiOpenApp!==false?'checked':''} style="width:auto;margin:0"> Show “Pay via UPI” button on payment page</label><div class="card" style="margin:10px 0;background:var(--bg)"><label style="display:flex;gap:10px;align-items:center;font-size:15px;color:var(--t)"><input id="qrMode" type="checkbox" ${CFG.paymentMode==='qr'?'checked':''} style="width:auto;margin:0;transform:scale(1.2)"><span><b>QR / UTR Payment Mode</b><br><span class="m">ON = users see QR + UTR form. OFF = users see Razorpay automatic payment.</span></span></label></div><button class="btn" onclick="saveTelegram()">Save Settings</button></div>`}
+ if(at==='pay'){return DB.pays.slice().sort((a,b)=>b.ts-a.ts).filter(p=>(af=='All'||p.status.startsWith(af))&&has(p.uid,A_U(p.uid).email,A_U(p.uid).name,p.utr)).map(p=>{const u=A_U(p.uid);
+  return`<div class="card"><div class="row" style="padding-top:0"><span>${uidChip(p.uid)} · ${esc(u.name)}<br><span class="m">${esc(u.email)}</span></span><span class="pill ${p.status.split(' ')[0]}">${p.status}</span></div><div class="row"><span class="m">UTR</span><b>${esc(p.utr)}</b></div><div class="row"><span class="m">QR used</span><b>${esc(p.qrId||('QR '+((p.slot|0)+1)))}</b></div><div class="row"><span class="m">${fd(p.ts)}</span><b>${inr(p.amt)}</b></div>${p.status==='Pending Verification'?`<div style="display:flex;gap:8px;margin-top:6px"><button class="btn" onclick="setS('pays','${p.id}','Verified')">Verify</button><button class="btn s" onclick="setS('pays','${p.id}','Rejected')">Reject</button></div>`:''}</div>`}).join('')||none}
+ if(at==='wd'){const sm=st=>{const L=DB.wd.filter(w=>st.includes(w.status));return inr(L.reduce((s,w)=>s+w.amt,0))+' ('+L.length+')'};const head=`<div class="card"><div class="row" style="padding-top:0"><span>To pay (pending / processing)</span><b>${sm(['Pending','Processing'])}</b></div><div class="row"><span>Completed</span><b>${sm(['Completed'])}</b></div><div class="row"><span>Rejected</span><b>${sm(['Rejected'])}</b></div><div class="row t"><span>Total requested</span><span>${sm(['Pending','Processing','Completed','Rejected'])}</span></div></div>`;return head+DB.wd.slice().sort((a,b)=>b.ts-a.ts).filter(w=>(af=='All'||w.status===af)&&has(w.uid,A_U(w.uid).email,A_U(w.uid).name,w.upi)).map(w=>{const u=A_U(w.uid);
+  return`<div class="card"><div class="row" style="padding-top:0"><span>${uidChip(w.uid)} · ${esc(u.name)}<br><span class="m">${esc(u.email)}</span></span><span class="pill ${w.status}">${w.status}</span></div><div class="row"><span class="m">Amount</span><b>${inr(w.amt)}</b></div><div class="row"><span class="m">UPI ID</span><b>${esc(w.upi)}</b></div><div class="row"><span class="m">${fd(w.ts)} · wallet now</span><b>${inr(balance(u))}</b></div>${['Pending','Processing'].includes(w.status)?`<div style="display:flex;gap:6px;margin-top:6px">${w.status==='Pending'?`<button class="btn s" onclick="setS('wd','${w.id}','Processing')">Process</button>`:''}<button class="btn" onclick="setS('wd','${w.id}','Completed')">Complete</button><button class="btn s" onclick="setS('wd','${w.id}','Rejected')">Reject</button></div>`:''}</div>`}).join('')||none}
+ if(at==='demo'){const demos=DB.users.filter(u=>u.managedAccount&&!u.admin),demoIds=new Set(demos.map(u=>u.id)),demoPays=DB.pays.filter(p=>demoIds.has(p.uid)),demoWds=(DB.demoWd||[]).filter(w=>demoIds.has(w.uid));return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">${stat('Demo accounts',demos.length)}${stat('Demo wallet balance',inr(demos.reduce((s,u)=>s+Math.max(0,balance(u)),0)))}${stat('Demo payments',demoPays.length)}${stat('Demo withdrawals',demoWds.length+' · '+inr(demoWds.reduce((s,w)=>s+(+w.amt||0),0)))}</div><div class="card"><h3>Demo Account Overview</h3><p class="m">Yahan sirf admin-created demo accounts ka data aur activity dikhega. Real users, payments aur withdrawals se alag.</p></div><div class="card"><h3>Create Demo Account</h3><p class="m">Naya customer-style demo login banayein. Email aur password user ko login ke liye chahiye honge.</p><label>Name</label><input id="newDemoName" placeholder="Full name"><label>Gmail / Email</label><input id="newDemoEmail" type="email" placeholder="demo@gmail.com"><label>Password (minimum 8 characters)</label><input id="newDemoPassword" type="text" placeholder="Set login password"><label>Wallet balance (₹)</label><input id="newDemoBalance" type="number" min="0" value="0"><label>Earned total (₹)</label><input id="newDemoEarned" type="number" min="0" value="0"><label>Referral count</label><input id="newDemoRefs" type="number" min="0" value="0"><label>Withdrawal count</label><input id="newDemoWds" type="number" min="0" value="0"><button class="btn" onclick="createDemoAccount()">Create Demo Account</button></div>`+DB.users.filter(u=>u.managedAccount&&!u.admin).slice().sort((a,b)=>a.email.localeCompare(b.email)).filter(u=>has(u.id,u.email,u.name)).map(u=>{const d=u.demoStats||{};return `<div class="card"><div class="row" style="padding-top:0"><span><b>${esc(u.name)}</b><br><span class="m">${esc(u.email)} · ${uidChip(u.id)}</span></span><span class="pill ${u.blocked?'Rejected':'Verified'}">${u.blocked?'Blocked':u.taskLocked?'Tasks Locked':'Active'}</span></div><p class="m">Account customer jaisa hi dikhega; demo marker sirf admin panel mein hai. Locked hone par login ke baad ₹300 unlock payment prompt dikhega.</p><label>Name</label><input id="dname_${u.id}" value="${esc(u.name)}"><label>Gmail / Email</label><input id="demail_${u.id}" type="email" value="${esc(u.email)}"><label>Wallet balance (₹)</label><input id="dbal_${u.id}" type="number" min="0" value="${Number(d.balance)||0}"><label>Earned total (₹)</label><input id="dern_${u.id}" type="number" min="0" value="${Number(d.earned)||0}"><label>Referral count (display)</label><input id="dref_${u.id}" type="number" min="0" value="${Number(d.referrals)||0}"><label>Withdrawal count (display)</label><input id="dwd_${u.id}" type="number" min="0" value="${Number(d.withdrawals)||0}"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn sm" onclick="saveManagedDemo('${u.id}')">Save Account Values</button><button class="btn s sm" onclick="adminSetPassword('${u.id}')">Set Password</button><button class="btn s sm" onclick="adminUser('${u.id}','${u.blocked?'unblock':'block'}')">${u.blocked?'Unblock':'Block'}</button><button class="btn s sm" onclick="adminUser('${u.id}','${u.taskLocked?'taskunlock':'tasklock'}')">${u.taskLocked?'Unlock Tasks':'Lock Tasks'}</button><button class="btn d sm" onclick="adminUser('${u.id}','delete')">Delete Demo Account</button></div><h4 style="margin:14px 0 6px">Demo withdrawal requests</h4>${demoWds.filter(w=>w.uid===u.id).slice().sort((a,b)=>b.ts-a.ts).map(w=>`<div class="row"><span>${inr(w.amt)} · ${esc(w.upi)}<br><span class="m">${fd(w.ts)} · ${esc(w.status)}</span></span>${['Pending','Processing'].includes(w.status)?`<span style="display:flex;gap:5px">${w.status==='Pending'?`<button class="btn s sm" onclick="setS('wd','${w.id}','Processing')">Process</button>`:''}<button class="btn sm" onclick="setS('wd','${w.id}','Completed')">Complete</button><button class="btn s sm" onclick="setS('wd','${w.id}','Rejected')">Reject</button></span>`:`<span class="pill ${w.status}">${esc(w.status)}</span>`}</div>`).join('')||'<p class="m">No demo withdrawal requests yet.</p>'}</div>`}).join('')||none}
+ if(at==='bonuses'){const rows=[];DB.users.filter(u=>!u.admin).forEach(u=>(u.bonuses||[]).forEach(b=>rows.push({u,b})));rows.sort((a,b)=>(b.b.createdAt||0)-(a.b.createdAt||0));return '<h2 class="admin-section-title">Bonus Management</h2><p class="m">Pending bonuses can be cancelled. Claimed bonuses can be revoked and the credit is removed from the wallet ledger.</p><div class="admin-user-grid">'+(rows.filter(({u,b})=>has(u.name,u.email,b.reason,b.status)).map(({u,b})=>`<div class="card"><div class="row"><span><b>${esc(u.name||'User')}</b><br><span class="m">${esc(u.email)}</span></span><span class="pill ${b.status==='Claimed'?'Completed':b.status==='Pending'?'':'Rejected'}">${esc(b.status)}</span></div><div class="row"><span>${esc(b.reason||'Bonus')}<br><span class="m">${fd(b.createdAt||Date.now())}</span></span><b>${inr(b.amount)}</b></div><div class="admin-actions"><button class="btn s sm" onclick="adminGiveBonus('${u.id}')">+ Add Bonus</button>${['Pending','Claimed'].includes(b.status)?`<button class="btn d sm" onclick="adminCancelBonus('${u.id}','${b.id}')">${b.status==='Claimed'?'Revoke Bonus':'Cancel Bonus'}</button>`:''}</div></div>`).join('')||'<div class="card">No bonus records found.</div>')+'</div>'}if(at==='targethistory'){const u=DB.users.find(x=>x.id===targetHistoryUid);if(!u)return '<div class="card"><p>User not found.</p><button class="btn s" onclick="setAT(\'users\')">← Back to Users</button></div>';const hist=(u.dailyReferralTargetHistory||[]).filter(h=>h.action!=='Removed').slice().sort((a,b)=>(b.at||0)-(a.at||0)).filter(h=>has(h.target,h.amount));return '<div class="admin-back-top"><button class="btn s sm" onclick="setAT(\'users\')">← Back to Users</button></div><h2 class="admin-section-title">Daily Target History</h2><p class="m">'+esc(u.name||'User')+' · '+esc(u.email||'')+'</p><div class="admin-user-grid">'+(hist.map(h=>'<div class="card"><div class="row"><span>Target</span><b>'+Number(h.target||0)+' registrations</b></div><div class="row"><span>Reward</span><b>'+inr(h.amount||0)+'</b></div><p class="m" style="margin-bottom:0">'+fd(h.at||Date.now())+'</p></div>').join('')||'<div class="card">No target reward history yet.</div>')+'</div><div class="admin-back-bottom"><button class="btn s" onclick="setAT(\'users\')">← Back to Users</button></div>'}if(at==='targets'){return '<h2 class="admin-section-title">Daily Targets</h2><p class="m">Apply one target to everyone or add targets to individual users. Existing targets are kept.</p><div class="card"><b>Bulk action</b><p class="m">Same target and reward sabhi non-admin users ko ek saath add karein.</p><button class="btn sm" onclick="adminDailyTargetAll()">Apply Target to All Users</button></div><div class="admin-user-grid">'+(DB.users.filter(u=>!u.admin&&has(u.id,u.name,u.email,...(u.dailyReferralTargets||[]).flatMap(t=>[t.target,t.amount,t.id]))).map(u=>`<div class="card"><div class="row"><span><b>${esc(u.name||'User')}</b><br><span class="m">${esc(u.email)}</span></span><button class="btn sm" onclick="adminDailyTarget('${u.id}')">+ Add Target</button></div>${(u.dailyReferralTargets||[]).map(t=>`<div class="row"><span>${Number(t.target)} eligible registrations<br><b>${inr(t.amount)}</b></span><button class="btn d sm" onclick="adminDeleteDailyTarget('${u.id}','${t.id}')">Remove</button></div>`).join('')||'<p class="m">No targets set.</p>'}</div>`).join('')||'<div class="card">No users found.</div>')+'</div>'}if(at==='rewards'){return adminRewardsList(has)}
+ if(at==='users'){return customers().slice().sort((a,b)=>b.created-a.created).filter(u=>has(u.id,u.email,u.name)).map(u=>{const e=commissions(u).reduce((s,c)=>s+c.amt,0),r=refs(u),isDemo=!!(u.managedAccount||u.demo);
+  return`<div class="card user-admin-card"><div class="row" style="padding-top:0"><span>${uidChip(u.id)} · <b>${esc(u.name)}</b>${isDemo?' <span class="pill">Demo Account</span>':''}<br><span class="m">${esc(u.email)} · ${esc(u.phone||'No mobile')} · ${fd(u.created)}</span></span><span class="pill ${unlocked(u)?'Verified':''}">${unlocked(u)?'Unlocked':'Locked'}</span></div>
+  <div class="row"><span class="m">Balance</span><b style="color:var(--o2);font-size:18px">${inr(balance(u))}</b></div><div class="row"><span class="m">Earned</span><span>${inr(e)}</span></div><div class="row"><span class="m">Withdrawn / requested</span><span>${inr(wdSum(u))}</span></div><div class="row"><span class="m">Referrals</span><span>${r.length} (${r.filter(unlocked).length} verified)</span></div>${u.delReq?'<span class="pill Rejected">Deletion requested</span> ':''}${u.blocked?'<span class="pill Rejected">Blocked</span>':''}
+  <div class="user-admin-actions"><button class="btn sm" onclick="adminGiveBonus('${u.id}')">Reward</button><button class="btn s sm" onclick="adminDailyTarget('${u.id}')">Target</button><button class="btn s sm" onclick="adminUserHistory('${u.id}')">History</button><button class="btn s sm" onclick="adminUser('${u.id}','${u.blocked?'unblock':'block'}')">${u.blocked?'Unblock':'Block'}</button><button class="btn s sm" onclick="adminSetPassword('${u.id}')">Set Password</button><button class="btn s sm" onclick="adminUser('${u.id}','${u.taskLocked?'taskunlock':'tasklock'}')">${u.taskLocked?'Unlock Tasks':'Lock Tasks'}</button><button class="btn s sm" onclick="adminVerifyUser('${u.id}')">Verify & Unlock</button><button class="btn s sm" onclick="adminSetUserDiscount('${u.id}')">Discount</button><button class="btn d sm" onclick="confirm('Permanently delete this user account? This cannot be undone.')&&adminUser('${u.id}','delete')">Delete</button></div></div>`}).join('')||none}
+ if(at==='ref'){return DB.users.filter(u=>u.refBy&&has(u.id,u.email,A_U(u.refBy).email,u.refBy)).map(u=>`<div class="card"><div class="row" style="padding:0"><span>${uidChip(u.refBy)} ${esc(A_U(u.refBy).name)}<br><span class="m">referred</span><br>${uidChip(u.id)} ${esc(u.name)}</span><span class="pill ${unlocked(u)?'Verified':''}">${unlocked(u)?'Credited '+inr(commOf(u.id)):'Pending'}</span></div></div>`).join('')||none}
+ return DB.tix.slice().sort((a,b)=>b.ts-a.ts).filter(t=>has(t.id,t.uid,t.email,t.msg,t.type)).map(t=>`<div class="card"><div class="row" style="padding-top:0"><span>${t.uid?uidChip(t.uid):''} · ${esc(t.name||'')}<br><span class="m">${esc(t.email)} · ${fd(t.ts)}</span></span><span class="pill ${t.status==='Resolved'?'Verified':''}">${esc(t.status||'Open')}</span></div><p class="m" style="margin:0">#T-${esc(t.id||'')} · ${esc(t.type)}</p><p style="margin:4px 0;white-space:pre-wrap">${esc(t.msg)}</p><textarea id="tr_${esc(t.id)}" rows="2" placeholder="Reply to user">${esc(t.reply||'')}</textarea><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm s" onclick="adTicket('${esc(t.id)}','Open')">Open</button><button class="btn sm s" onclick="adTicket('${esc(t.id)}','In progress')">In progress</button><button class="btn sm" onclick="adTicket('${esc(t.id)}','Resolved')">Resolved</button></div></div>`).join('')||none}
+function admin(){const np=DB.pays.filter(p=>p.status==='Pending Verification').length,nw=DB.wd.filter(w=>['Pending','Processing'].includes(w.status)).length;
+ const T=[['over','Overview'],['pay','Payments'+(np?' ('+np+')':'')],['wd','Withdrawals'+(nw?' ('+nw+')':'')],['daily','Daily'],['users','Users'],['rewards','Referral Settings'],['bonuses','Bonus Management'],['targets','Daily Targets'],['ref','Referrals'],['tix','Tickets'+(DB.tix.filter(t=>t.status!=='Resolved').length?' ('+DB.tix.filter(t=>t.status!=='Resolved').length+')':'')],['demo','Demo Accounts'],['business','Withdrawal & Unlock'],['gallery','Rewards / Content']];
+ const F=at==='pay'?['All','Pending','Verified','Rejected']:at==='wd'?['All','Pending','Processing','Completed','Rejected']:null;
+ document.body.classList.add('admin-mode');return`<div class="fade"><div class="admin-back-top"><button class="btn s sm" onclick="go('profile')">← Back</button></div><h1>Admin Panel</h1><p class="m">Manage users, demo accounts, bonuses, daily targets and payments from separate sections.</p>${DB.storage==='file'&&at==='over'?'<div class="card" style="background:#fee2e2;border-color:#dc2626;color:#991b1b"><b>Database not connected.</b> Users, payments and withdrawals may be lost when the server restarts. Configure Supabase or Upstash persistent storage in your hosting environment.</div>':''}<div class="admin-tabs">${chips(T,at,'setAT')}</div>
+ ${at!=='over'&&at!=='daily'?`<input id="aqi" class="admin-search" aria-label="Search admin records" placeholder="Search ${at==='bonuses'?'bonus, user, reason or status':at==='targets'?'target, user or email':at==='targethistory'?'target history or action':'UID, email, name'+(at==='pay'?', UTR':at==='wd'?', UPI':'')}" value="${esc(aq)}" oninput="aq=this.value;$('#al').innerHTML=adminList()">`:''}
+ ${F?chips(F.map(x=>[x,x]),af,'setAF'):''}
+ ${['pay','wd','users'].includes(at)?`<button class="btn s sm" style="margin-bottom:10px" onclick="exportCsv()">Export CSV</button>`:''}
+ <div id="al">${adminList()}</div><button class="btn s admin-back-bottom" onclick="go('profile')">← Back to Profile</button></div>`}
+/* ===== actions ===== */
+const fail=e=>toast(e.message||'Something went wrong','er');
+async function run(fn){if(busy)return;busy=true;const b=$('#sub'),o=b&&b.textContent;if(b){b.disabled=true;b.textContent='Please wait…'}try{await fn()}catch(e){fail(e)}finally{busy=false;if(b&&b.isConnected){b.disabled=false;b.textContent=o}}}
+async function setS(t,i,s){try{await api('admin/'+(t=='pays'?'pay':'wd'),{id:i,status:s});await sync();render();toast(s,'ok')}catch(e){fail(e)}}
+function doReg(){run(async()=>{const e=$('#em').value.trim().toLowerCase(),phone=$('#ph').value.trim(),n=$('#nm').value.trim(),p=$('#pw').value;
+ if(!EMAIL.test(e))return toast('Enter a valid email address','er');if(!/^\+?(?:91[- ]?)?[6-9]\d{9}$/.test(phone.replace(/[()]/g,''))&&!/^\d{10}$/.test(phone.replace(/\D/g,'')))return toast('Enter a valid 10-digit mobile number','er');if(!n)return toast('Enter your name','er');if(p.length<8)return toast('Password must be at least 8 characters','er');
+ if(!$('#ag').checked)return toast('Please accept the legal terms','er');
+ await api('register',{email:e,phone,name:n,password:p,ref:$('#rc').value.trim()});await sync();toast('Account created','ok');tab='home';view=null;render()})}
+function doLogin(){run(async()=>{const e=$('#em').value.trim().toLowerCase();if(!e)return toast('Enter your email or mobile number','er');
+ await api('login',{email:e,password:$('#pw').value});await sync();toast('Welcome back','ok');tab='home';view=null;render()})}
+async function logout(){try{await api('logout',{})}catch{}try{sessionStorage.removeItem('referkaro_admin_tab');sessionStorage.removeItem('referkaro_admin_filter')}catch{};at='over';af='All';ME=null;DB={users:[],pays:[],wd:[],tix:[]};mode='login';render();toast('Logged out')}
+let fpE='';
+function forgot(){modal(`<h2>Reset password</h2><label>Email</label><input id="fe" type="email" autocomplete="email"><button class="btn" onclick="sendReset()">Send code</button><p class="m">We will email you a 6 digit code that works for 10 minutes.</p>`)}
+async function sendReset(){const e=$('#fe').value.trim().toLowerCase();if(!EMAIL.test(e))return toast('Enter a valid email address','er');
+ try{await api('forgot',{email:e});fpE=e;modal(`<h2>Enter code</h2><p class="m">If ${esc(e)} is registered, a code was sent. Check your inbox and spam.</p><label>6 digit code</label><input id="fo" inputmode="numeric" maxlength="6"><label>New password (min 8)</label><input id="fp" type="password" autocomplete="new-password"><button class="btn" onclick="otpReset()">Reset password</button>`);toast('Code sent if the email exists','ok')}catch(x){fail(x)}}
+async function otpReset(){const o=$('#fo').value.trim(),p=$('#fp').value;if(!/^\d{6}$/.test(o))return toast('Enter the 6 digit code','er');if(p.length<8)return toast('Password must be at least 8 characters','er');
+ try{await api('reset',{email:fpE,otp:o,password:p});modal('');toast('Password updated. Please login.','ok')}catch(x){fail(x)}}
+function resetPw(t){modal(`<h2>New password</h2><input id="np" type="password" placeholder="min 8 characters"><button class="btn" onclick="applyReset('${t}')">Save password</button>`)}
+async function applyReset(t){const p=$('#np').value;if(p.length<8)return toast('Min 8 characters','er');try{await api('reset',{token:t,password:p});modal('');toast('Password updated. Please login.','ok')}catch(e){fail(e)}}
+let payRetryUntil=0,payRetryTimer=null;
+function startPayRetryCooldown(){
+ payRetryUntil=Date.now()+10000;
+ if(payRetryTimer)clearInterval(payRetryTimer);
+ const tick=()=>{
+  const left=Math.max(0,payRetryUntil-Date.now());
+  const b=$('#sub');
+  if(b){b.disabled=left>0;b.textContent=left>0?'Try again in '+Math.ceil(left/1000)+'s':'Unlock Task / Pay Again';}
+  if(left<=0){clearInterval(payRetryTimer);payRetryTimer=null;}
+ };
+ tick();payRetryTimer=setInterval(tick,250);
+}
+async function cancelRazorpayOrder(oid){try{await api('razorpay/cancel',{razorpay_order_id:oid});}catch(e){}startPayRetryCooldown();}
+async function doQrPay(){
+ if(!$('#ag')||!$('#ag').checked)return toast('Please accept the refund policy and terms','er');
+ const utr=($('#utr')?.value||'').trim().replace(/\s+/g,'');
+ if(!/^[A-Za-z0-9]{6,40}$/.test(utr))return toast('Enter a valid UTR/reference number (6–40 letters or digits)','er');
+ const b=$('#sub');if(b)b.disabled=true;
+ try{await api('pay',{slot:CFG.paySlot,utr});await sync();toast('UTR submitted. Task unlocks after verification.','ok');go('course')}
+ catch(e){if(b)b.disabled=false;fail(e)}
+}
+async function doPay(){
+ if(Date.now()<payRetryUntil)return;
+ if(!CFG.razorpayEnabled||!CFG.razorpayKeyId)return toast('Razorpay is not configured yet','er');
+ if(!$('#ag').checked)return toast('Please accept the refund policy and terms','er');
+ const b=$('#sub');if(b)b.disabled=true;
+ try{
+  const o=await api('razorpay/order',{});
+  if(!window.Razorpay)throw new Error('Razorpay Checkout could not load. Refresh and try again.');
+  const rz=new Razorpay({
+   key:o.keyId,amount:o.amount,currency:'INR',name:CFG.brand||'Refer Karo',description:'Refer Karo Task Unlock',order_id:o.orderId,
+   prefill:{name:o.name||'',email:o.email||''},theme:{color:'#f97316'},modal:{ondismiss:()=>{if(b)b.disabled=false;cancelRazorpayOrder(o.orderId)}},
+   handler:async function(resp){
+    try{await api('razorpay/confirm',resp);await sync();toast('Payment successful. Task unlocked.','ok');go('course');}
+    catch(e){await sync().catch(()=>{});if(unlocked(me())){toast('Payment successful. Task unlocked.','ok');go('course')}else{toast('Payment received. Automatic verification is in progress.','ok');startRazorpayWatch();go('course')}}
+    finally{if(b)b.disabled=false}
+   }
+  });
+  rz.on('payment.failed',async function(resp){if(b)b.disabled=false;try{const st=await api('razorpay/cancel',{razorpay_order_id:o.orderId});await sync();if(st.verified||unlocked(me())){toast('Payment verified. Task unlocked.','ok');go('course');return}if(st.canRetry||['Failed','Cancelled'].includes(st.status)){toast('Payment fail/cancel confirm ho gaya. Aap ab dobara payment kar sakte hain.','er');if(tab==='course')render()}else{toast('Payment status server check kar raha hai. Thodi der baad Check Payment Status dabayein.','er');startRazorpayWatch()}}catch(e){toast('Payment status verify nahi ho saka. Refresh karke status check karein; dobara payment se pehle Transactions check karein.','er');startRazorpayWatch()}});
+  rz.open();
+ }catch(e){if(b)b.disabled=false;fail(e)}
+}
+async function doWd(){const a=+$('#wa').value,up=$('#wu').value.trim(),demo=!!me().managedAccount;
+ const wd=CFG.withdrawalDay??0,wdToday=new Date(Date.now()+19800000).getUTCDay(),wdLabel=wd==='any'?'any day':['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(wd)]||'Sunday';if(!demo&&!(wd==='any'||wdToday===Number(wd)))return toast('Withdrawal requests open on '+wdLabel+' (India time)','er');
+ if(!/^[\w.\-]{2,}@[\w]{2,}$/.test(up))return toast('Enter a valid UPI ID','er');if(!demo&&refs(me()).filter(x=>unlocked(x)).length<Number(CFG.minDirectRefs??3))return toast('At least '+Number(CFG.minDirectRefs??3)+' verified direct referrals are required','er');if(!(a>=CFG.minWd))return toast('Minimum withdrawal is '+inr(CFG.minWd),'er');if(a>balance(me()))return toast('Amount exceeds your balance','er');
+ try{await api('wd',{upi:up,amount:a});await sync();render();toast('Withdrawal requested','ok')}catch(e){fail(e)}}
+async function doTix(){const m=$('#tm').value.trim();if(!m)return toast('Write a message','er');try{await api('ticket',{type:$('#tp').value,msg:m});await sync();render();toast('Complaint submitted. Track it below.','ok')}catch(e){fail(e)}}
+async function delReq(){if(!confirm('Request deletion of your account and data?'))return;try{await api('delreq',{});await sync();render();toast('Deletion requested. Support will confirm.','ok')}catch(e){fail(e)}}
+async function mark(id){try{await api('progress',{id});await sync();modal('');render()}catch(e){fail(e)}}
+async function doChPw(){const n=$('#np2').value;if(n.length<8)return toast('New password must be at least 8 characters','er');
+ try{await api('chpw',{cur:$('#cp').value,new:n});modal('');toast('Password updated','ok')}catch(e){fail(e)}}
+/* ===== render ===== */
+function render(){const u=me(),a=$('#app');let h;document.body.classList.toggle('admin-mode',!!(u&&tab==='profile'&&view==='admin'&&isAdmin(u)));
+ if(!u)tab='auth';
+ else if(tab==='auth')tab='home';
+ if(tab==='auth')h=authView();else if(tab==='home')h=home(u);else if(tab==='checkout')h=u?checkout(u):authView();
+ else if(tab==='course')h=course(u);else if(tab==='wallet')h=wallet(u);else if(tab==='refer')h=refer(u);
+ else if(tab==='profile')h=view==='txns'?txns(u):view==='support'?support():view==='admin'&&isAdmin(u)?admin():profile(u);
+ a.innerHTML=h;
+ updateOfferCountdowns();
+ if(qrTimer){clearInterval(qrTimer);qrTimer=null}
+ const T=[['home',`<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3z"/></svg>`,'Home'],['course',`<svg viewBox="0 0 24 24"><path d="M8 4h8v3H8zM6 6h12v15H6zM9 13l2 2 4-4"/></svg>`,'Task'],['wallet',`<svg viewBox="0 0 24 24"><path d="M3 7h18v13H3zM3 7l3-3h12v3M16 13h3"/></svg>`,'Wallet'],['refer',`<svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 100-6 3 3 0 000 6zM6 15a3 3 0 100-6 3 3 0 000 6zM18 22a3 3 0 100-6 3 3 0 000 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>`,'Refer'],['profile',`<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6"/></svg>`,'Profile']];
+ try{history.replaceState(null,'',u?'#'+tab+(view?'/'+view:''):location.pathname+location.search)}catch{}
+ $('#nav').innerHTML=!u?'':`<nav>${T.map(t=>`<button class="${tab===t[0]||(tab==='checkout'&&t[0]==='home')?'on':''}" onclick="go('${t[0]}')">${t[1]}${t[2]}</button>`).join('')}</nav>`}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&$('#sub'))$('#sub').click()});
+let liveRefresh=null;function startLiveRefresh(){if(liveRefresh)clearInterval(liveRefresh);liveRefresh=setInterval(async()=>{if(document.hidden)return;try{const old=JSON.stringify({db:DB,daily:ME&&ME.dailyReferral,bonuses:ME&&ME.bonuses,upiOpenApp:CFG.upiOpenApp,discountEnabled:CFG.referralDiscountEnabled,myDiscount:CFG.myReferralDiscountPct});await sync();if(tab==='course')return;const current=JSON.stringify({db:DB,daily:ME&&ME.dailyReferral,bonuses:ME&&ME.bonuses,upiOpenApp:CFG.upiOpenApp,discountEnabled:CFG.referralDiscountEnabled,myDiscount:CFG.myReferralDiscountPct});if(current!==old&&!['auth'].includes(tab)){const ae=document.activeElement,editing=ae&&['INPUT','TEXTAREA','SELECT'].includes(ae.tagName);if(!editing)render()}}catch(e){}},15000)}
+(async()=>{try{await sync()}catch{}{const hs=location.hash.slice(1).split('/');if(ME&&['home','course','wallet','refer','profile','checkout'].includes(hs[0])){tab=hs[0];view=hs[1]||null}}render();startLiveRefresh();const rt=params.get('reset');if(rt){history.replaceState(null,'',location.pathname);resetPw(rt)}})();
+</script>
+<script>
+/* QR Add button fix: clicking "+ Add QR" opens a fresh QR slot for entry. */
+(function(){
+ if(window.__addQrFixInstalled)return;
+ window.__addQrFixInstalled=true;
+
+ function findAddQrButton(){
+   var els=document.querySelectorAll('button,a,[role="button"]');
+   for(var i=0;i<els.length;i++){
+     var t=(els[i].textContent||'').trim().replace(/\s+/g,' ');
+     if(/^\+?\s*add\s*qr$/i.test(t) || /add\s*qr/i.test(t)) return els[i];
+   }
+   return null;
+ }
+
+ document.addEventListener('click',function(e){
+   var b=findAddQrButton();
+   if(!b || e.target===b || b.contains(e.target)) return;
+
+   /* Do not interfere with the app's existing QR controls. */
+ },true);
+
+ window.__openNewQrSlot=function(){
+   var b=findAddQrButton();
+   if(b) b.click();
+ };
+})();
+</script>
+
+
+<script>
+(()=>{
+ let deferredPrompt=null;
+ const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+ function addInstallButton(){
+  if(standalone()||document.getElementById('referkro-install-app')) return;
+  const b=document.createElement('button'); b.id='referkro-install-app'; b.type='button'; b.textContent='⬇ Download App';
+  b.setAttribute('aria-label','Install ReferKro app');
+  b.style.cssText='position:fixed;right:14px;bottom:calc(145px + env(safe-area-inset-bottom,0px));z-index:9999;border:0;border-radius:999px;padding:12px 17px;background:#f97316;color:#fff;font:700 14px system-ui;box-shadow:0 4px 14px #0003;cursor:pointer';
+  b.addEventListener('click',async()=>{
+   if(deferredPrompt){deferredPrompt.prompt(); const choice=await deferredPrompt.userChoice; if(choice&&choice.outcome==='accepted') b.remove(); deferredPrompt=null; return;}
+   const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+   alert(isIOS?'Install karne ke liye Share button dabayein, phir “Add to Home Screen” chunein.':'Browser menu (⋮) kholein aur “Install app” ya “Add to Home screen” chunein.');
+  });
+  document.body.appendChild(b);
+ }
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;addInstallButton();});
+ window.addEventListener('appinstalled',()=>{const b=document.getElementById('referkro-install-app');if(b)b.remove();});
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton); else addInstallButton();
+ if('serviceWorker' in navigator && location.protocol==='https:') window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+})();
+</script>
+</body></html>

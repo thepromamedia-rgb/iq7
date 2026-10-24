@@ -1,13 +1,15 @@
 {
-  "name": "crypto-bridge",
-  "version": "3.0.0",
+  "name": "referkaro",
+  "version": "1.3.1",
   "private": true,
-  "description": "Crypto Bridge \u2014 isolated demo account management, multi bonus coins, configurable rewards and admin controls",
+  "description": "Refer Karo Node.js website",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test-server.js && node test-credits.js"
+    "check": "node --check server.js && node scripts/check-inline.js",
+    "test": "npm run check && node test/smoke.js && node test/features.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.18.0"
   }
 }

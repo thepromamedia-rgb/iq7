@@ -1,0 +1,282 @@
+{
+  "modules": [
+    {
+      "title": "Daily Task",
+      "days": [
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "Duniya ka sabse ameer insaan kaun hai? (Forbes list 2026)",
+              "options": [
+                "Elon Musk",
+                "Jeff Bezos",
+                "Bill Gates"
+              ],
+              "answer": 0
+            },
+            {
+              "q": "India ka sabse ameer insaan kaun hai? (Hurun India Rich List 2026)",
+              "options": [
+                "Ratan Tata",
+                "Shiv Nadar",
+                "Gautam Adani"
+              ],
+              "answer": 2
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "India ki currency kya hai?",
+              "options": [
+                "Yen",
+                "Rupee",
+                "Dollar"
+              ],
+              "answer": 1
+            },
+            {
+              "q": "UPI ka full form kya hai?",
+              "options": [
+                "Unified Payments Interface",
+                "United Pay India",
+                "Universal Paper Invoice"
+              ],
+              "answer": 0
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "RBI ka matlab kya hai?",
+              "options": [
+                "Royal Bank of India",
+                "Rural Bank of India",
+                "Reserve Bank of India"
+              ],
+              "answer": 2
+            },
+            {
+              "q": "GST ka full form kya hai?",
+              "options": [
+                "Government Saving Tax",
+                "Goods and Services Tax",
+                "General Sales Token"
+              ],
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "ATM ka full form kya hai?",
+              "options": [
+                "Automated Teller Machine",
+                "Auto Transfer Money",
+                "All Time Money"
+              ],
+              "answer": 0
+            },
+            {
+              "q": "Bank savings account mein jama paise par kya deta hai?",
+              "options": [
+                "Jurmaana",
+                "Gift",
+                "Byaaj (interest)"
+              ],
+              "answer": 2
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "Paise bachana kya kehlata hai?",
+              "options": [
+                "Borrowing",
+                "Saving",
+                "Spending"
+              ],
+              "answer": 1
+            },
+            {
+              "q": "1 lakh mein kitne hazaar hote hain?",
+              "options": [
+                "100",
+                "10",
+                "1000"
+              ],
+              "answer": 0
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "Forbes list kis cheez ki list banati hai?",
+              "options": [
+                "Sabse tez gaadiyon ki",
+                "Sabse bade shehron ki",
+                "Ameer logon ki"
+              ],
+              "answer": 2
+            },
+            {
+              "q": "Duniya ki sabse badi economy kaunsi hai? (GDP ke hisaab se)",
+              "options": [
+                "Japan",
+                "USA",
+                "India"
+              ],
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "videos": [
+            {
+              "title": "Join Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Watch Now",
+              "url": "",
+              "secs": 10
+            },
+            {
+              "title": "Open Now",
+              "url": "",
+              "secs": 10
+            }
+          ],
+          "questions": [
+            {
+              "q": "Mutual fund ka paisa kaun sambhalta hai?",
+              "options": [
+                "Fund manager",
+                "Dukaandaar",
+                "Driver"
+              ],
+              "answer": 0
+            },
+            {
+              "q": "Digital payment ka example kya hai?",
+              "options": [
+                "Cash",
+                "Cheque book",
+                "UPI"
+              ],
+              "answer": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+ReferKaro update: phone number required on new registrations; one account per normalized 10-digit Indian mobile number; login supports registered email or mobile number with the same password; admin user list displays mobile number. Existing accounts without a phone number remain email-login accounts. Supabase storage and migration code retained.
+
+Deploy by backing up current project, uploading this ZIP, retaining SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, then verify registration, duplicate-number rejection, email login, phone login, and admin visibility. Do not remove Upstash variables until the existing data has been verified and a backup retained.

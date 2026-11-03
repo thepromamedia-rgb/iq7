@@ -61,3 +61,13 @@ This ZIP intentionally does not import from Upstash. Before deploying it, confir
 - This tab visibly lists each real user with direct actions to give a reasoned bonus, add cumulative daily targets, set a per-user referral discount, and review/cancel pending bonus or remove targets.
 - Added shortcuts to the existing global discount and Pay via UPI settings.
 - Re-ran the full automated test suite after the UI change.
+
+## 2026-11-01 — Global Daily Targets and PWA Install CTA
+- Replaced per-user daily referral targets with one shared global target configuration in application settings. Admin adds/removes a target once; it is available to all non-admin users, including verified, unverified, existing, and newly registered accounts.
+- Daily referral progress remains based on same-day direct referrals whose task has been unlocked, preserving the existing eligibility rule. The shared target itself is available to verified and unverified referrers alike. Blocked, admin, and managed demo referrals remain excluded. Progress is still calculated using India date and resets automatically on the next day.
+- Added a one-time migration from legacy per-user target lists. Matching target/reward pairs are merged and old claim IDs are remapped so existing claimed rewards cannot be claimed again after migration.
+- Replaced the Hindi progress note with concise English copy.
+- Added a website-wide Install ReferKro CTA. It invokes the browser's PWA install prompt when available, provides browser-menu instructions where the browser does not expose a prompt, and hides after installation on the same device/browser or when opened in standalone mode. It is hidden in the admin workspace.
+- Fixed PWA icon aliases and added the `/icons/icon-192.png` and `/icons/icon-512.png` files required by the manifest and service worker. Bumped the static cache version.
+- Repaired package test-script paths so the included test suite runs from the project root.
+- Validation: `npm test` passes (syntax, server smoke, global-target visibility for verified/unverified users, preserved task-unlock eligibility, and claim tests, and PWA endpoint/icon tests). A separate legacy migration test also passed and confirmed old target claims are preserved.

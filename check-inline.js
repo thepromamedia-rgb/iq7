@@ -1,6 +1,6 @@
 const fs = require('fs');
 const vm = require('vm');
-const html = fs.readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
+const html = fs.readFileSync(require('path').join(__dirname, 'index.html'), 'utf8');
 const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
 let checked = 0;
 for (const [, attrs, source] of scripts) {

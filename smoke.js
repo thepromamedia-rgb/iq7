@@ -27,8 +27,8 @@ async function waitFor(url, child) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'referkaro-smoke-'));
   const port = await freePort();
   const base = `http://127.0.0.1:${port}`;
-  const child = spawn(process.execPath, [path.join(__dirname, '..', 'server.js')], {
-    cwd: path.join(__dirname, '..'),
+  const child = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
+    cwd: __dirname,
     env: { ...process.env, PORT: String(port), APP_URL: base, DATA_FILE: path.join(dir, 'data.json'), ADMIN_EMAIL: '', NODE_ENV: 'test', REQUIRE_PERSISTENT_STORAGE: 'false' },
     stdio: ['ignore', 'pipe', 'pipe']
   });

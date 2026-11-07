@@ -1,17 +1,16 @@
-KHUSHI CHAUDHARY — DIWALI SURPRISE WEBSITE
-==========================================
+Khushi ke liye Diwali Surprise
+================================
 
-HOW TO RUN
-1. Extract the ZIP.
-2. Open index.html in any modern browser.
-3. No installation, server, database, or internet connection is required.
+Kaise kholein:
+  1. Zip ko extract karo.
+  2. index.html pe double-click karo (Chrome / Safari / Edge mein khulega).
+  3. Phone pe bhejna ho to poora folder Netlify Drop (app.netlify.com/drop) pe daal do,
+     ek link mil jayega jo Khushi ko WhatsApp kar sakte ho.
 
-CUSTOMIZATION
-- All website content and styling are in index.html.
-- The page is responsive for mobile and desktop.
-- No personal photos are used; cat/diya/heart visuals use emoji and CSS animations.
+Kuch badalna ho to:
+  - Lines / naam / wishes: index.html aur script.js ke upar WISHES aur CAT_LINES.
+  - Shaadi ki date: script.js mein START (16 Aug 2025).
+  - Colors: style.css ke top pe :root.
 
-TESTING
-- Checked that all five sections exist and every navigation button has a matching handler.
-- Uses plain HTML/CSS/JavaScript with no external dependencies.
-- For best results, open in a current Chrome, Safari, Firefox, or Edge browser.
+Files:
+  index.html, style.css, script.js

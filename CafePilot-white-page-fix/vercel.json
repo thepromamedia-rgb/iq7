@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm install --no-audit --no-fund && npm run build -w client",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

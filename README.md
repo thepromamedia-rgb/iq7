@@ -1,103 +1,98 @@
-# ReferKaro
+# CafePilot — multi-cafe QR ordering & loyalty SaaS
 
-Node.js website with a built-in HTTP server. Requires Node.js 18.18 or newer. No runtime npm dependencies are required.
+A mobile-first cafe operations platform inspired by the supplied reference video. The reference's core loop—QR menu → order → loyalty stamp → reward → owner dashboard—is retained and expanded with a tenant-aware API, kitchen queue, customer records, table tokens, reports, and a separate super-admin API.
 
-## Hostinger + Supabase (Supabase-only build)
+> **Delivery status:** This is a source-code implementation, not a hosted production service. Database migrations, dependency installation, and the end-to-end checklist must be completed in your environment before taking paying cafes live. Do not treat seeded demo data as real cafe activity.
 
-This ZIP intentionally **does not read or write Upstash Redis**. The app's persistent state is stored as one JSON document in `public.app_state`, row `id = referkaro_main` by default.
+## Stack
+- React + TypeScript + Vite + Tailwind CSS
+- Node.js + Express API
+- PostgreSQL + Prisma ORM
+- bcrypt password hashing, signed JWT sessions, Helmet, CORS and API rate limiting
+- Zod request validation, Recharts, QR token generation
 
-### Required Hostinger environment variables
-
-| Variable | Value |
-| --- | --- |
-| `SUPABASE_URL` | Your Supabase project URL, e.g. `https://PROJECT.supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-side Supabase secret/service key; never put it in browser code or GitHub |
-| `SUPABASE_TABLE` | `app_state` (optional; default `app_state`) |
-| `SUPABASE_ROW_ID` | `referkaro_main` (optional; default `referkaro_main`) |
-| `REQUIRE_PERSISTENT_STORAGE` | `true` |
-| `APP_URL` | Your full public website URL including `https://` |
-| `ADMIN_EMAIL` | Your admin email, lower-case recommended |
-| `ADMIN_PASSWORD` | Unique strong admin password; required for production admin creation |
-| `NODE_ENV` | `production` |
-
-Optional variables:
-
-- `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`: required for Razorpay mode. Configure webhook URL as `https://YOUR-DOMAIN/api/razorpay/webhook` and test in Razorpay test mode first.
-- `RESEND_API_KEY`, `MAIL_FROM`: needed for real password-reset email delivery.
-- `ANTHROPIC_API_KEY`, `AI_MODEL`, `AI_DAILY_MSGS`: optional AI feature configuration.
-- `ENABLE_MANAGED_DEMO_ACCOUNTS=true`: explicitly enables synthetic demo accounts. Leave unset for production.
-- `ALLOW_EMPTY_SUPABASE_INIT=true`: **only** for the first start of a genuinely new empty project. Remove this variable immediately after that initial row is created. Never use it to fix a missing row in a database that already has production data.
-
-### Required Supabase schema
-
-Run in Supabase SQL Editor if the table does not already exist:
-
-```sql
-CREATE TABLE IF NOT EXISTS public.app_state (
-  id TEXT PRIMARY KEY,
-  data JSONB NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-ALTER TABLE public.app_state ENABLE ROW LEVEL SECURITY;
+## Project layout
+```
+client/                 React customer and cafe dashboard application
+  src/App.tsx           Auth, owner routes, public QR menu, order tracking
+  src/api.ts            Authenticated API client
+  src/styles.css        Responsive design system
+server/
+  src/index.ts          API, auth, tenant isolation, orders, reports
+  src/core.test.ts      Order arithmetic tests
+  prisma/schema.prisma  Relational database schema
+  prisma/seed.ts        Clearly labelled demo cafe and plans
+.env.example            Environment variable template
 ```
 
-### Deploy safely
+## Local setup
+Requirements: Node.js 20+, npm 10+, PostgreSQL 15+.
 
-1. Download/retain a backup of the current project and the app's admin backup JSON before deployment.
-2. Confirm the existing state row is `public.app_state` with `id = referkaro_main` (or set `SUPABASE_ROW_ID` to the exact existing row ID). Do not guess this value.
-3. Add the required Supabase variables in Hostinger. Keep the service key server-side only.
-4. Upload this ZIP, install dependencies if Hostinger asks (there are no runtime dependencies), and restart the Node app.
-5. Check startup logs. They should say `Storage: Supabase (app_state, row referkaro_main)`. If the row is missing or invalid, startup deliberately stops rather than silently creating an empty state.
-6. Test login with an existing email and mobile number, registration, admin panel, referral/balance totals, payment history, QR settings, withdrawals, task progress, and a harmless setting change. Restart and verify the change remains.
-7. Only after those checks pass, remove `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, and `UPSTASH_REDIS_KEY` from Hostinger. This ZIP ignores them already, so they are not needed at runtime.
+1. Create a PostgreSQL database named `cafepilot`.
+2. Copy `.env.example` to `.env` in the project root. Set `DATABASE_URL` and a unique random `JWT_SECRET` (32+ characters). Never commit `.env`.
+3. Install dependencies from the project root:
+   ```bash
+   npm install
+   ```
+4. Generate Prisma client and apply the initial migration:
+   ```bash
+   npm run db:generate -w server
+   npm run db:migrate -w server -- --name init
+   ```
+5. Add demo data only to a development database:
+   ```bash
+   npm run db:seed -w server
+   ```
+6. Start the API and web client:
+   ```bash
+   npm run dev
+   ```
+   Client: http://localhost:5173 · API: http://localhost:4000/api/health
 
-### Important storage behavior
+Demo owner (development seed only): `owner@cafepilot.demo` / `ChangeMe123!`. Change or remove this account before any shared or production deployment. The seeded cafe is explicitly named `(DEMO DATA)`.
 
-- This build reads/writes only the configured Supabase row when Supabase credentials are configured.
-- If the row is missing, the app fails closed by default. It does not create a blank row that could make existing data appear lost.
-- For local development only, if Supabase is not configured and `REQUIRE_PERSISTENT_STORAGE` is not `true`, state is saved to `data.json`. Do not use local-file storage for production.
-- State is stored as a whole JSON document. Run one production app instance while using this storage design to reduce the risk of concurrent whole-document overwrites.
-- This does not migrate files from a local `uploads/` folder. Verify upload persistence separately if the app uses uploads in production.
+## Production deployment
+- Provision managed PostgreSQL, a Node hosting service for `server`, and static hosting for `client`.
+- Configure the same `DATABASE_URL`, strong `JWT_SECRET`, `CLIENT_ORIGIN` and `VITE_API_URL` for the deployed API origin at client build time.
+- Run `prisma migrate deploy` during release; do not run seed in production.
+- Build with `npm run build`; serve the API with `npm run start -w server` and publish `client/dist` on a static host.
+- Use HTTPS, restrict CORS to the exact app domain, configure backups, monitoring, log retention, database connection pooling and image object storage.
+- For production, replace browser-local JWT storage with secure HttpOnly SameSite cookies plus CSRF protection, add email verification/password reset, MFA for privileged users, and managed secret storage.
 
-## Local development
+## Features currently implemented in source
+- Cafe registration/login, password hashing and cafe-scoped JWT claims.
+- Cafe public menu, category filters, search, cart, QR-token validation and persistent order creation.
+- Cafe dashboard metrics computed from database orders; sales chart and best seller aggregation.
+- Product/category CRUD, order listing/status transitions, kitchen queue, table creation and QR tokens.
+- Customer profiles, marketing consent field, completed-order loyalty stamp issuance with unique order constraint, loyalty configuration.
+- Cafe branding/tax settings, CSV export, audit log writes, super-admin overview/cafe endpoints and plan schema.
+- Responsive customer menu and cafe owner interface.
 
+## Integrations and honest limitations
+- **Payments:** No gateway is connected. Checkout is marked pay-at-counter; no payment success is fabricated. To enable online subscriptions, configure a provider such as Razorpay, verify webhook signatures server-side, store provider IDs and reconcile payment state from verified webhooks.
+- **WhatsApp:** Not connected. The interface explicitly reports that messages are not sent. Configure WhatsApp Business Cloud API credentials, templates, opt-in checks, webhook verification and delivery status handling before enabling.
+- **QR printing:** Table tokens are persisted and links can be copied. A production release should render printable SVG/PNG QR labels and verify the public URL against the deployed domain.
+- **Rewards/coupons:** Loyalty stamps are issued for newly completed eligible orders and protected by a unique order reference. Reward catalogue, one-time redemption and coupon application workflows remain follow-on implementation items; do not advertise these as live until completed.
+- **Super admin:** Endpoints require the `SUPER_ADMIN` role. Promote a trusted account manually using a secure database procedure; never expose self-service super-admin registration. Full plan editor, MRR ledger, support console and subscription lifecycle UI remain to be completed.
+- **Refunds, inventory, staff invitation/permissions, image uploads and automated notifications:** Schema groundwork exists for several of these, but the full workflows are not yet implemented.
+
+## Tests and verification
+Run:
 ```bash
-npm start
-```
-
-Open `http://localhost:3000`. Local development can use `data.json` if Supabase is not configured. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` to seed an admin account.
-
-## Checks
-
-```bash
+npm run typecheck
 npm test
+npm run build
 ```
+The included Vitest tests cover order arithmetic only. Before production, add API integration tests for tenant boundary enforcement, auth expiry, product CRUD, QR order creation, kitchen transitions, duplicate loyalty issuance, concurrent coupon redemption, refund state, exports, super-admin authorization, and browser/mobile flows. Run migration validation and security review against a staging database.
 
-`GET /health` returns `ok` when the server is running.
+## Security notes
+All cafe data queries in the API are scoped by the authenticated cafe ID. Never trust a cafe ID supplied by the browser. Public QR ordering resolves cafe by public slug and validates any supplied table token against that cafe. The super-admin role is checked separately. Keep secrets out of the client bundle. For commercial launch, add automated authorization tests and security review; this starter is not a compliance certification.
 
-## Production reminders
+## SaaS pricing defaults
+Suggested plan prices are Starter ₹499/month, Pro ₹999/month and Business ₹1,499/month. Plans are seeded as editable database records, but live subscription billing and entitlements are not active until gateway/webhook and plan enforcement are implemented.
 
-- Never commit service keys, passwords, Razorpay secrets, or API keys to GitHub.
-- Test Razorpay with test credentials before live use. Live payment capture, webhook delivery, refunds, and payouts must be verified in the provider dashboard.
-- Configure valid task links and correct Telegram/support links in admin settings before launch.
-- Review applicable laws, payment-provider rules, terms, privacy policy, refund policy, and payout operations before accepting real customers.
-
-## Optional AI-generated daily questions
-
-The daily-task admin screen keeps the existing three link tasks unchanged: each link still has its own display title, users open it, and the task completes after 10 seconds. The admin can click **Generate 2 Questions from These Links** to fetch readable text from the three public pages and generate two multiple-choice questions with three options each. Review/edit both questions and select the correct answer before clicking **Save / Publish**. Existing daily task API and Supabase app-state persistence are used.
-
-To enable generation, add these Hostinger environment variables and restart the Node app:
-- `AI_API_KEY` — API key for an OpenAI-compatible chat-completions provider (keep it server-side; never put it in browser code or GitHub).
-- `AI_API_URL` — optional; defaults to `https://api.openai.com/v1/chat/completions`.
-- `AI_MODEL` — optional; defaults to `gpt-4o-mini`.
-
-The feature only fetches public HTTP(S) HTML/plain-text pages and rejects obvious private/local IP URL patterns and redirects. Some sites block automated access or render content only in JavaScript; those links may not generate questions. Admin can still enter/edit questions manually. Do not treat generated answers as authoritative without reviewing them.
-
-## 1.3.0 features (2026-10-21)
-- Referral discount remains controlled by the admin ON/OFF setting; the referral-page offer message is hidden when disabled or when no positive discount is configured.
-- Admin can create a one-time user bonus with an amount and reason. The user claims it from Home; the server credits the wallet exactly once. Pending bonuses can be cancelled by the admin.
-- Admin can configure cumulative daily referral targets per user (for example 3, 5, 10). Only direct referrals registered during the current India-time day and whose task access is unlocked count. Each target reward can be claimed once per day; progress resets at the India-time day boundary while claim history remains.
-- Admin can toggle the Pay via UPI button independently of QR/UTR mode. The UPI link pre-fills the current checkout amount; manual UTR payment requests still require admin verification.
-- Added feature smoke tests for bonus claiming, daily target completion/claim idempotency, and UPI button setting propagation.
-
-Before deploying, back up the production Supabase row and test with staging credentials. The UPI deep link opens a payment app but cannot itself confirm payment; QR/UTR payments remain manual admin verification unless a bank/provider verification integration is configured.
+## Latest build notes (2026-11-08)
+- Offers page now supports creating, listing, pausing and reactivating cafe-scoped coupons. Coupon checkout application and redemption accounting are not yet implemented.
+- Production startup refuses to use the development JWT secret fallback.
+- `docs/reference-contact-sheet.jpg` contains sampled frames from the supplied reference video to keep the visual/product direction with the source package.
+- See `TEST_REPORT.md` for exact verification results and unfinished launch requirements. Automated build/typecheck could not be completed in the authoring environment because npm dependency installation timed out.

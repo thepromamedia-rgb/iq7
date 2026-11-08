@@ -4,6 +4,9 @@ Date: 2026-11-08
 
 ## Verification performed
 
+- Repaired the workspace layout: frontend sources are now under `client/src`, backend under `server/src`, and Prisma files under `server/prisma`, matching the root npm workspaces and deployment scripts.
+- Added the Netlify SPA fallback file under `client/public/_redirects` and retained the Vercel rewrite configuration.
+
 - ZIP package created and integrity-checked after source updates.
 - Reference video was available and reviewed; a contact sheet is included at `docs/reference-contact-sheet.jpg` for visual context.
 - Source inspection completed for client routes, API handlers, Prisma schema, environment templates and workspace scripts.
@@ -14,7 +17,7 @@ Date: 2026-11-08
 
 | Check | Result | Notes |
 |---|---|---|
-| `npm install` | Not completed | Dependency installation timed out in this environment. |
+| `npm install` | Not completed | Dependency installation timed out in this environment; offline retry confirmed the npm cache does not contain the required packages. |
 | Client/server typecheck | Blocked | Dependencies were not installed; TypeScript reported missing packages/types. |
 | Vitest | Not run | Dependencies unavailable. |
 | Production build | Not run | Dependencies unavailable. |

@@ -9,7 +9,7 @@ This repository is source code. Do **not** upload the ZIP itself or the `client`
 1. Use Node.js 20+ and run `npm install` from the extracted project root.
 2. Set `VITE_API_URL` to your deployed backend API base URL, including `/api` (example shape: `https://YOUR-API-DOMAIN.example/api`). If frontend and API share one domain, `/api` is correct.
 3. Run `npm run build -w client`.
-4. Set your static host's publish/output directory to `client/dist`.
+4. Set your static host's publish/output directory to `client/dist` (the Vite app is in the `client` workspace).
 5. Deploy the backend separately and configure its database, `JWT_SECRET`, and allowed frontend origin as described in `README.md`.
 
 ## If you use Vercel
